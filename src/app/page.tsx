@@ -4,6 +4,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold">KOPKAS</h1>
       <p className="mt-3 text-lg">percobaan ubaghgasdjdsiaf</p>
       <p>casnfdsfosfhos</p>
+      <h1>ksjofasof</h1>
     </main>
   );
 }
