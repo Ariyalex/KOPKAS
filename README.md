@@ -34,3 +34,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# KOPKAS - Kotak Pengaduan Kekerasan Seksual
+
+KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang dirancang untuk menampung aspirasi dan pengaduan terkait kekerasan seksual di lingkungan Kampus Putih UIN Sunan Kalijaga Yogyakarta. Platform ini berfungsi sebagai media penghubung antara penyintas dan pihak terkait, serta menyediakan kotak pengaduan yang anonim dan terintegrasi. Proyek KOPKAS dikembangkan menggunakan metode Agile oleh sebuah tim yang terdiri dari berbagai peran dan keahlian dalam proses pengembangannya.
+
+## Developer
+- **Front End**: Ariya Duta  
+Mengimplementasikan interface web dari desain yang dibuat UI/UX menggunakan php dan tailwind css, membuat web menjadi interaktif menggunakan JS
+- **Back End**: Ahmad Zamroni Trikarta  
+Mengelola logika aplikasi, autentikasi, akses data MySQL, dan komunikasi real-time user-admin menggunakan Laravel serta mendukung kebutuhan frontend.
+- **UI/UX**: Vina sopyamuliana  
+  Mendesain tampilan dan alur penggunaan web menggunakan Figma, memastikan tampilan user-friendly dan konsisten di setiap halaman.
+  
