@@ -7,7 +7,7 @@ KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang
 Mengimplementasikan interface web dari desain yang dibuat UI/UX menggunakan php dan tailwind css, membuat web menjadi interaktif menggunakan JS
 - **Back End**: Ahmad Zamroni Trikarta (@zaaammmmm)  
 Mengelola logika aplikasi, autentikasi, akses data MySQL, dan komunikasi real-time user-admin menggunakan Laravel serta mendukung kebutuhan frontend.
-- **UI/UX**: Vina sopyamuliana (@Vinaspmlana)  
+- **UI/UX**: Vina sopyamuliana (@Vinaspymlana)  
   Mendesain tampilan dan alur penggunaan web menggunakan Figma, memastikan tampilan user-friendly dan konsisten di setiap halaman.
   
 ## Getting Started
