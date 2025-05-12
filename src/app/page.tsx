@@ -1,5 +1,5 @@
-import { HeaderHome } from "./ui/home_ui/header_home";
-import { HomeIntro } from "./ui/home_ui/home_intro";
+import { HeaderHome } from "../components/home_ui/header_home";
+import { HomeIntro } from "../components/home_ui/home_intro";
 
 export default function Home() {
   return (
