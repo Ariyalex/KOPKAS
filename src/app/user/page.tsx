@@ -1,7 +1,17 @@
+import { Card } from "@/components/common/card";
+import { HeaderUser } from "@/components/user_ui/header_user";
+import { NavUser } from "@/components/user_ui/nav_user";
+import { DashboardMessage, DashboardUser } from "@/components/user_ui/dashboard_user";
+
 export default function Page() {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <h1 className="text-4xl font-bold">ini user page</h1>
+        <main>
+            <HeaderUser />
+            <div className="p-8 flex flex-row gap-6 w-full h-screen">
+                <NavUser className="flex-1/6" />
+                <DashboardUser className="flex-3/6" />
+                <DashboardMessage className="flex-2/6" />
+            </div>
         </main>
     );
 }
