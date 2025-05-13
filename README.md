@@ -19,9 +19,13 @@ Mengelola logika aplikasi, autentikasi, akses data MySQL, dan komunikasi real-ti
 
 ## Teknologi yang Digunakan
 - **Frontend**: Next.js + Tailwind CSS
-- **Backend**: Next.js (App Router)
+- **Backend**: Node.js + Next.js (App Router)
 - **Database**: Supabase Realtime Database
-  
+
+## Akses & Proteksi
+- **User**: Hanya user login yang bisa akses keluhan dalam mengirim dan melihat keluhan
+- **Admin**: Admin punya akses khusus hanya untuk melihat dan membalas keluhan
+
 ## Getting Started
 
 #### Cloning repository  
@@ -29,6 +33,11 @@ Mengelola logika aplikasi, autentikasi, akses data MySQL, dan komunikasi real-ti
 ```bash
 git clone https://github.com/Ariyalex/KOPKAS.git  
 cd kopkas
+```
+
+#### Install Depedensi  
+```bash
+npm install
 ```
 
 #### Menjalankan program:
