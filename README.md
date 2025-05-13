@@ -1,4 +1,4 @@
-# KOPKAS - Kotak Pengaduan Kekerasan Seksual
+![Icon](public/logo.svg)# KOPKAS - Kotak Pengaduan Kekerasan Seksual
 
 KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang dirancang untuk menampung aspirasi dan pengaduan terkait kekerasan seksual di lingkungan Kampus Putih UIN Sunan Kalijaga Yogyakarta. Platform ini berfungsi sebagai media penghubung antara penyintas dan pihak terkait, serta menyediakan kotak pengaduan yang anonim dan terintegrasi. Proyek KOPKAS dikembangkan menggunakan metode Agile oleh sebuah tim yang terdiri dari berbagai peran dan keahlian dalam proses pengembangannya.
 
