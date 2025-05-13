@@ -10,13 +10,14 @@ export function HomeIntro() {
                 </div>
                 <button className="rounded-full bg-[#1E390E] text-white w-fit px-5 py-3.5">
                     LAPORKAN SEKARANG
-                </button>
-            </div>
+                </button>            </div>
             <Image
-                className="flex h-[625px] w-auto"
                 alt="kopkas"
                 src="/home1.png"
-                width={900} height={900} />
+                width={625}
+                height={625}
+                className="h-auto max-h-[625px] w-auto object-contain"
+            />
         </div>
     );
 }

@@ -4,36 +4,8 @@ import clsx from "clsx";
 import Image from "next/image";
 import { FilledButton } from "../common/button";
 import { Book, MessageSquare, TriangleAlert } from "lucide-react";
-
-interface ReportsItemDummy {
-    id: string;
-    submitted: string;
-    status: string;
-}
-
-//item dummy report
-const ReportContentDummy: ReportsItemDummy[] = [
-    {
-        id: "2025-001",
-        submitted: "Mei 20, 2025",
-        status: "In Progress"
-    },
-    {
-        id: "2025-002",
-        submitted: "April 30, 2025",
-        status: "Resolved"
-    },
-    {
-        id: "2025-003",
-        submitted: "Mei 24, 2025",
-        status: "Resolved"
-    },
-    {
-        id: "2025-004",
-        submitted: "Mei 22, 2025",
-        status: "In Progress"
-    },
-]
+import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
+import { ReportContentDummy } from "./dummy/reports_dummy";
 
 interface DbUser {
     className?: ClassValue;
@@ -45,27 +17,35 @@ interface DbMessage {
 }
 
 export function DashboardUser({ className }: DbUser) {
+    // Mengambil data user dari DummyUserContent
+    const userData = DummyUserContent.find(user => user.role === "user");
+
     return (
         <div className={clsx("flex flex-col gap-6", className)}>
             {/* profile */}
             <Card width="w-full">
                 <div className="flex felx-row gap-5 items-center w-full">
-                    <Image
-                        src={"/dummy.jpg"}
-                        alt="profile"
-                        width={100} height={100}
-                        className="rounded-full"
-                    />
-                    <div className="flex flex-col h-full p-6 w-full">
-                        <h1 className="text-2xl text-[#5C8D89]">Vestia Zeta</h1>
-                        <p className="text-[#5C8D89]">Active Member since April 17</p>
-                        <div className="inline-flex mt-5">
-                            {/* button edit profile */}
-                            <FilledButton href="">
-                                Edit Profile
-                            </FilledButton>
-                        </div>
-                    </div>
+                    {userData && (
+                        <>
+                            <Image
+                                src={userData.photo}
+                                alt="profile"
+                                width={100}
+                                height={100}
+                                className="rounded-full object-cover w-[100px] h-[100px]"
+                            />
+                            <div className="flex flex-col h-full p-6 w-full">
+                                <h1 className="text-2xl text-[#5C8D89]">{userData.name}</h1>
+                                <p className="text-[#5C8D89]">Active Member since April 17</p>
+                                <div className="inline-flex mt-5">
+                                    {/* button edit profile */}
+                                    <FilledButton href="">
+                                        Edit Profile
+                                    </FilledButton>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </Card>
 
@@ -115,52 +95,34 @@ export function DashboardUser({ className }: DbUser) {
     );
 }
 
-interface MessagesItemDummy {
-    name: string;
-    photo: string;
-    message: string;
-    sent: string;
-}
-
-//item dummy pesan
-const MessagesContentDummy: MessagesItemDummy[] = [
-    {
-        name: "Admin Kopkas",
-        photo: "/dummy.jpg",
-        message: "Laporan kamu sedang diproses, silahkan tunggu",
-        sent: "2 jam yang lalu"
-    },
-    {
-        name: "Psikolog Artoria",
-        photo: "/dummy2.jpg",
-        message: "Halo Zeta, gimana kabarmu?",
-        sent: "Kemarin"
-    },
-]
-
 // message
 export function DashboardMessage({ className }: DbMessage) {
     return (
         <div className={clsx("", className)}>
-
-            <Card width="w-full" height="h-full">
+            <Card width="w-full" height="h-full" className="flex flex-col overflow-hidden">
                 <h1 className="text-2xl font-medium text-[#5C8D89]">Pesan</h1>
-                <div className="flex flex-col gap-4 my-4">
-                    {MessagesContentDummy.map(({ name, photo, message, sent }, index) => (
-                        <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
-                            <Image
-                                src={photo}
-                                alt="message"
-                                width={60} height={60}
-                                className="rounded-full h-[60px] w-[60px]"
-                            />
-                            <div className="flex flex-col gap-2">
-                                <h3 className="text-[#5C8D89] font-medium text-lg">{name}</h3>
-                                <p>{message}</p>
-                                <p className="text-[#6B7280]">{sent}</p>
+                <div className="flex flex-col gap-4 my-4 h-auto overflow-y-scroll">
+                    {MessagesContentDummy.map((message, index) => {
+                        const user = DummyUserContent.find(user => user.id === message.userId);
+                        if (!user) return null;
+
+                        return (
+                            <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
+                                <Image
+                                    src={user.photo}
+                                    alt={user.name}
+                                    width={60}
+                                    height={60}
+                                    className="rounded-full object-cover w-[60px] h-[60px] flex-shrink-0"
+                                />
+                                <div className="flex flex-col gap-2">
+                                    <h3 className="text-[#5C8D89] font-medium text-lg">{user.name}</h3>
+                                    <p className="truncate max-w-[320px] overflow-hidden">{message.message}</p>
+                                    <p className="text-[#6B7280]">{message.sent}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </Card>
         </div>
