@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import 'rsuite/dist/rsuite-no-reset.min.css';
 import { Quicksand } from "next/font/google";
-import "./globals.css";
 import { CustomProvider } from "rsuite";
+import 'rsuite/dist/rsuite-no-reset.min.css';
+import "./globals.css";
 
 const quicksand = Quicksand({
   subsets: ['latin'],
