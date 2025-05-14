@@ -99,7 +99,7 @@ export function FormRegister() {
         />
         <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
           I agree to the{' '}
-          <a href="#" className="text-[#74B49B] hover:underline">Terms and Conditions</a>
+          <a href="/register/terms" className="text-[#74B49B] hover:underline">Terms and Conditions</a>
         </label>
       </div>
 
