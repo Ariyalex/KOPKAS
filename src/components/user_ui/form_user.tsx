@@ -91,12 +91,15 @@ export function FormUser() {
     }
 
     //handle submit
+    //supabase
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.datetime || !formData.lokasi || !formData.kekerasan) {
             toaster.push(message);
             return;
         }
+
+        //supabase
         console.log("form data: ", formData);
         resetForm();
     }

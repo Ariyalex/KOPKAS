@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <main>
             <HeaderUser />
             <div className="p-8 flex flex-row gap-6 w-full h-screen">
-                <NavUser className="flex-1/6" />
+                <NavUser className="flex-1/6 flex justify-between flex-col" />
                 {children}
             </div>
         </main>

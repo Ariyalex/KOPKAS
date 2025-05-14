@@ -1,6 +1,6 @@
 'use client'
 
-import { House, MessageSquare, TriangleAlert } from "lucide-react";
+import { House, LogOut, MessageSquare, TriangleAlert } from "lucide-react";
 import { Card } from "../common/card";
 import Link from "next/link";
 import { ClassValue } from "clsx";
@@ -31,6 +31,8 @@ const navContent: NavItem[] = [
         Icon: TriangleAlert,
         route: "/user/form"
     },
+
+
 ]
 
 interface NavProps {
@@ -40,10 +42,9 @@ interface NavProps {
 
 export function NavUser({ className }: NavProps) {
     const pathname = usePathname();
-
     return (
         <Card width="w-auto" height="h-full" className={className}>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
                 {navContent.map(({ title, Icon, route }, index) => {
                     const isActive = pathname === route;
                     return (
@@ -62,7 +63,17 @@ export function NavUser({ className }: NavProps) {
                         </Link>
                     );
                 })}
+
             </div>
+            <Link
+                href="/"
+                className={clsx(
+                    "flex felx-col p-2 gap-2 text-[#5C8D89] rounded-md bg-white font-normal hover:bg-red-200 hover:text-black group",
+                )}
+            >
+                <LogOut className="text-[#5C8D89] group-hover:text-black" />
+                <h3 className="">Log Out</h3>
+            </Link>
         </Card>
     );
 }

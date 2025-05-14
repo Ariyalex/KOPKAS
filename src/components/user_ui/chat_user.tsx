@@ -24,7 +24,9 @@ export function ChatUser({ className }: ChatProps) {
     }, [messages]);
 
     //function untuk menangani pengiriman pesan
+    //supabase edit
     const handleSendMessage = () => {
+        //message kosong
         if (!inputMessage.trim()) return;
 
         const newMessage = {
