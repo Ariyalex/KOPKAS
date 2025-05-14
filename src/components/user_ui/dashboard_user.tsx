@@ -57,15 +57,10 @@ export function DashboardUser({ className }: DbUser) {
                     <h3 className="text-lg font-medium text-[#5C8D89]">Laporan!</h3>
                     <p>2 Insiden telah kamu laporkan</p>
                 </Card>
-                <Card padding="p-8" className="flex-1 flex gap-2.5 flex-col">
+                <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                     <MessageSquare color="#74B49B" size={40} />
                     <h3 className="text-lg font-medium text-[#5C8D89]">Pesan</h3>
                     <p><span>{messageData.length}</span> pesan belum dibaca</p>
-                </Card>
-                <Card padding="p-8" className="flex-1 flex gap-2.5 flex-col">
-                    <Book color="#74B49B" size={40} />
-                    <h3 className="text-lg font-medium text-[#5C8D89]">Resources</h3>
-                    <p>Akses bantuan</p>
                 </Card>
             </div>
 
