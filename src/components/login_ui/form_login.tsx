@@ -55,7 +55,7 @@ export function FormLogin() {
             Remember me
           </label>
         </div>
-        <a href="#" className="text-sm text-[#74B49B] hover:underline">
+        <a href="/forget" className="text-sm text-[#74B49B] hover:underline">
           Forgot password?
         </a>
       </div>

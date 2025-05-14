@@ -16,7 +16,7 @@ export default function LoginPage() {
           <div className="max-w-md mx-auto">
             <h1 className="text-3xl font-bold text-[#5C8D89] mb-6">Login</h1>
             <FormLogin />
-                        <p className="mt-6 text-center text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-gray-600">
               Don't have an account?{' '}
               <a href="/register" className="text-[#74B49B] hover:underline cursor-pointer">
                 Sign up
