@@ -1,6 +1,6 @@
 # KOPKAS - Kotak Pengaduan Kekerasan Seksual
 
-KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang dirancang untuk menampung aspirasi dan pengaduan terkait kekerasan seksual di lingkungan Kampus Putih UIN Sunan Kalijaga Yogyakarta. Platform ini berfungsi sebagai media penghubung antara penyintas dan pihak terkait, serta menyediakan kotak pengaduan yang anonim dan terintegrasi. Proyek KOPKAS dikembangkan menggunakan metode Agile oleh sebuah tim yang terdiri dari berbagai peran dan keahlian dalam proses pengembangannya.
+KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang dirancang untuk menampung aspirasi dan pengaduan terkait kekerasan seksual di lingkungan Kampus Putih UIN Sunan Kalijaga Yogyakarta. Platform ini berfungsi sebagai media penghubung antara penyintas dan pihak terkait, serta menyediakan kotak pengaduan yang anonim dan terintegrasi. Proyek KOPKAS dikembangkan menggunakan metode Scrumban oleh sebuah tim yang terdiri dari berbagai peran dan keahlian dalam proses pengembangannya.
 
 ## Fitur Utama
 - Autentikasi pengguna (login, register)
@@ -8,6 +8,11 @@ KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang
 - Chat real-time antara pengguna dan admin
 - Dashboard admin untuk mengelola pengaduan
 - Status tracking (pending, in_progress, resolved)
+
+## Jobdesk Scrumban
+- **Scrum master**: Ariya Duta (@Ariyalex)  
+- **Product owner**: Ariya Duta (@Ariyalex)  
+- **Client**: Ahmad Zamroni Trikarta (@zaaammmmm)  
 
 ## Developer
 - **Front End**: Ariya Duta (@Ariyalex)  

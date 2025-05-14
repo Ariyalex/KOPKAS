@@ -73,7 +73,7 @@ export function FormUser() {
 
     //controller
     const [formData, setFormData] = useState<FormDataType>({
-        datetime: new Date(),
+        datetime: null,
         lokasi: "",
         kekerasan: "",
         kronologi: "",

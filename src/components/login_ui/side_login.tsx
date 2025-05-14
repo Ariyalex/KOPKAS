@@ -4,10 +4,10 @@ export function SideLogin() {
   return (
     <div className="hidden lg:flex lg:w-1/2 bg-[#74B49B] items-center justify-center p-12">
       <div className="text-white text-center">
-        <Image 
-          src="/logo.svg" 
-          alt="Kopkas Logo" 
-          width={300} 
+        <Image
+          src="/logo.svg"
+          alt="Kopkas Logo"
+          width={300}
           height={300}
           className="mx-auto"
         />
