@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import 'rsuite/dist/rsuite-no-reset.min.css';
 import { Quicksand } from "next/font/google";
 import "./globals.css";
+import { CustomProvider } from "rsuite";
 
 const quicksand = Quicksand({
   subsets: ['latin'],
@@ -19,11 +21,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${quicksand.variable} font-sans`}
-      >
-        {children}
-      </body>
+      <CustomProvider>
+        <body
+          className={`${quicksand.variable} font-sans`}
+        >
+          {children}
+        </body>
+      </CustomProvider>
     </html>
   );
 }

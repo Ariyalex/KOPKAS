@@ -29,7 +29,7 @@ const navContent: NavItem[] = [
     {
         title: "Laporkan Insiden",
         Icon: TriangleAlert,
-        route: ""
+        route: "/user/form"
     },
 ]
 

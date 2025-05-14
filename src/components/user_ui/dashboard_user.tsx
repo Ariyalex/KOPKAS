@@ -2,7 +2,7 @@ import { ClassValue } from "clsx";
 import { Card } from "../common/card";
 import clsx from "clsx";
 import Image from "next/image";
-import { FilledButton } from "../common/button";
+import { RouteButton } from "../common/button";
 import { Book, MessageSquare, TriangleAlert } from "lucide-react";
 import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import { ReportContentDummy } from "./dummy/reports_dummy";
@@ -19,6 +19,7 @@ interface DbMessage {
 export function DashboardUser({ className }: DbUser) {
     // Mengambil data user dari DummyUserContent
     const userData = DummyUserContent.find(user => user.role === "user");
+    const messageData = MessagesContentDummy;
 
     return (
         <div className={clsx("flex flex-col gap-6", className)}>
@@ -34,14 +35,14 @@ export function DashboardUser({ className }: DbUser) {
                                 height={100}
                                 className="rounded-full object-cover w-[100px] h-[100px]"
                             />
-                            <div className="flex flex-col h-full p-6 w-full">
+                            <div className="flex flex-col h-full w-full">
                                 <h1 className="text-2xl text-[#5C8D89]">{userData.name}</h1>
                                 <p className="text-[#5C8D89]">Active Member since April 17</p>
                                 <div className="inline-flex mt-5">
                                     {/* button edit profile */}
-                                    <FilledButton href="">
+                                    <RouteButton href="">
                                         Edit Profile
-                                    </FilledButton>
+                                    </RouteButton>
                                 </div>
                             </div>
                         </>
@@ -51,15 +52,15 @@ export function DashboardUser({ className }: DbUser) {
 
             {/* menu */}
             <div className="flex flex-row gap-6 w-full h-auto">
-                <Card padding="p-8" className="flex-1 flex gap-2.5 flex-col">
+                <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                     <TriangleAlert color="white" size={40} fill="#74B49B" />
-                    <h3 className="text-lg font-medium text-[#5C8D89]">Laporkan Insiden</h3>
-                    <p>Isi form baru untuk melaporkan pelecehan</p>
+                    <h3 className="text-lg font-medium text-[#5C8D89]">Laporan!</h3>
+                    <p>2 Insiden telah kamu laporkan</p>
                 </Card>
                 <Card padding="p-8" className="flex-1 flex gap-2.5 flex-col">
                     <MessageSquare color="#74B49B" size={40} />
                     <h3 className="text-lg font-medium text-[#5C8D89]">Pesan</h3>
-                    <p>3 pesan belum dibaca</p>
+                    <p><span>{messageData.length}</span> pesan belum dibaca</p>
                 </Card>
                 <Card padding="p-8" className="flex-1 flex gap-2.5 flex-col">
                     <Book color="#74B49B" size={40} />
@@ -69,7 +70,7 @@ export function DashboardUser({ className }: DbUser) {
             </div>
 
             {/* rencent report */}
-            <Card width="w-full" padding="p-8" className="h-auto flex flex-col overflow-hidden">
+            <Card width="w-full" padding="p-5" className="h-auto flex flex-col overflow-hidden">
                 <h1 className="text-2xl font-medium text-[#5C8D89]">Laporan Sebelumnya</h1>
                 <div className="flex flex-col gap-4 my-4 overflow-y-auto">
                     {ReportContentDummy.map(({ id, submitted, status }, index) => (
@@ -117,7 +118,7 @@ export function DashboardMessage({ className }: DbMessage) {
                                 />
                                 <div className="flex flex-col gap-2">
                                     <h3 className="text-[#5C8D89] font-medium text-lg">{user.name}</h3>
-                                    <p className="truncate max-w-[320px] overflow-hidden">{message.message}</p>
+                                    <p className="truncate max-w-[230px] overflow-hidden">{message.message}</p>
                                     <p className="text-[#6B7280]">{message.sent}</p>
                                 </div>
                             </div>
