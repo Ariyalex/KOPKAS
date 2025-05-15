@@ -128,7 +128,7 @@ export function LaporanTable() {
     };
 
     return (
-        <div className="w-full h-screen p-4 flex flex-col gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]">
+        <div className="w-full h-auto p-4 flex flex-col gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]">
             <div className="flex flex-col gap-4 mb-4">
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold">Laporan Masuk</h2>
@@ -170,7 +170,7 @@ export function LaporanTable() {
                 </div>
 
                 {showFilters && (
-                    <div className="p-3 bg-[#F4F9F4] rounded-md border border-[#E6FFFA]">
+                    <div className="p-3 bg-white rounded-md border border-[#E6FFFA]">
                         <h3 className="text-sm text-[#3CB371] font-medium mb-2">Filter Status:</h3>
                         <CheckboxGroup
                             inline
@@ -290,9 +290,8 @@ export function LaporanTable() {
             </div>
 
             <Table
-                fillHeight
                 data={getData()}
-                height={340}
+                height={700}
                 hover={true}
                 rowClassName={"hover:bg-[#F4F9F4]"}
                 loading={loading}
