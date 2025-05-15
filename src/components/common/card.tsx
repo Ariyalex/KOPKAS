@@ -7,12 +7,13 @@ interface CardProps {
     height?: string;
     padding?: string;
     shadow?: string;
+    bgColor?: string;
     className?: ClassValue;
 }
 
-export function Card({ children, width, height, padding = "p-5", shadow = "shadow-sm", className }: CardProps) {
+export function Card({ children, width, height, padding = "p-5", shadow = "shadow-sm", bgColor = "bg-white", className }: CardProps) {
     return (
-        <div className={clsx("rounded-lg bg-white w-fit overflow-clip", width, height, padding, shadow, className)}>
+        <div className={clsx("rounded-lg w-fit overflow-clip", width, height, padding, shadow, bgColor, className)}>
             {children}
         </div>
     );
