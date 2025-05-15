@@ -6,6 +6,7 @@ import { RouteButton } from "../common/button";
 import { Book, MessageSquare, TriangleAlert } from "lucide-react";
 import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import { ReportContentDummy } from "./dummy/reports_dummy";
+import { Tag } from "../common/tag";
 
 interface DbUser {
     className?: ClassValue;
@@ -75,13 +76,13 @@ export function DashboardUser({ className }: DbUser) {
                                 <p>Submitted on {submitted}</p>
                             </div>
                             {status === "Resolved" ? (
-                                <div className="py-1 px-2 w-fit h-fit text-sm rounded-full text-[#065F46] bg-[#D1FAE5]">
+                                <Tag color="text-[#065F46]" bgColor="bg-[#D1FAE5]">
                                     {status}
-                                </div>
+                                </Tag>
                             ) : (
-                                <div className="py-1 px-2 w-fit h-fit text-sm rounded-full text-[#B45309] bg-[#FEF3C7]">
+                                <Tag color="text-[#B45309]" bgColor="bg-[#FEF3C7]">
                                     {status}
-                                </div>
+                                </Tag>
                             )}
                         </div>
                     ))}
