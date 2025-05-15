@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <main>
             <HeaderAdmin />
-            <div className="flex flex-row w-full h-screen">
+            <div className="flex flex-row w-full h-auto">
                 <NavAdmin />
                 {children}
             </div>

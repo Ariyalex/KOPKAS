@@ -37,7 +37,7 @@ const navContent: NavItem[] = [
 export function NavAdmin() {
     const pathname = usePathname();
     return (
-        <div className="w-full h-full flex-1/6 flex justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
+        <div className="w-full h-auto flex-1/6 flex justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
             <div className="flex flex-col gap-4">
                 {navContent.map(({ title, Icon, route }, index) => {
                     const isActive = pathname === route;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DummyUserContent } from "../user_ui/dummy/chat_dummy";
-import { Badge, IconButton } from "rsuite";
+import { Badge } from "rsuite";
 import { Bell } from "lucide-react";
 
 export function HeaderAdmin() {
