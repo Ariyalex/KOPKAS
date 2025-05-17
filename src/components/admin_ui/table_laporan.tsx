@@ -357,7 +357,7 @@ export function LaporanTable() {
                                     className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
                                 >
                                     <ExternalLink size={16} className="mr-1" />
-                                    <span>data</span>
+                                    <span>Detail</span>
                                 </button>
                             )
                         }}

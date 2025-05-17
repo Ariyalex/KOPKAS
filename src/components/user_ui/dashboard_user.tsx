@@ -1,17 +1,19 @@
+'use client'
+
 import { ClassValue } from "clsx";
 import { Card } from "../common/card";
 import clsx from "clsx";
 import Image from "next/image";
-import { RouteButton } from "../common/button";
-import { Book, MessageSquare, TriangleAlert } from "lucide-react";
+import { FilledButton, RouteButton } from "../common/button";
+import { Book, Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
 import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import { ReportContentDummy } from "./dummy/reports_dummy";
 import { Tag } from "../common/tag";
+import { useState } from "react";
 
 interface DbUser {
     className?: ClassValue;
 }
-
 
 interface DbMessage {
     className?: ClassValue;
@@ -21,14 +23,52 @@ export function DashboardUser({ className }: DbUser) {
     // Mengambil data user dari DummyUserContent
     const userData = DummyUserContent.find(user => user.role === "user");
     const messageData = MessagesContentDummy;
+    const reports = ReportContentDummy;
+
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [newName, setNewName] = useState(userData?.name || "");
+    const [showNameEdit, setShowNameEdit] = useState(false);
+    const [showPhotoEdit, setShowPhotoEdit] = useState(false);
+
+    const handleEditClick = () => {
+        setIsEditing(!isEditing);
+        // Reset states when toggling edit mode
+        if (isEditing) {
+            setShowNameEdit(false);
+            setShowPhotoEdit(false);
+        }
+    };
+
+    const handleEditName = () => {
+        setShowNameEdit(true);
+        setShowPhotoEdit(false);
+    };
+
+    const handleEditPhoto = () => {
+        setShowPhotoEdit(true);
+        setShowNameEdit(false);
+    };
+
+    const handleSaveName = () => {
+        // Here you would actually save the name to the database
+        // For now, we'll just close the edit form
+        setShowNameEdit(false);
+    };
+
+    const handleSavePhoto = () => {
+        // Here you would actually save the photo to the database
+        // For now, we'll just close the edit form
+        setShowPhotoEdit(false);
+    };
 
     return (
         <div className={clsx("flex flex-col gap-6", className)}>
             {/* profile */}
             <Card width="w-full">
-                <div className="flex felx-row gap-5 items-center w-full">
-                    {userData && (
-                        <>
+                {userData && (
+                    <div className="flex felx-row gap-5 items-center justify-start w-full">
+                        <div className="relative">
                             <Image
                                 src={userData.photo}
                                 alt="profile"
@@ -36,19 +76,88 @@ export function DashboardUser({ className }: DbUser) {
                                 height={100}
                                 className="rounded-full object-cover w-[100px] h-[100px]"
                             />
-                            <div className="flex flex-col h-full w-full">
-                                <h1 className="text-2xl text-[#5C8D89]">{userData.name}</h1>
-                                <p className="text-[#5C8D89]">Active Member since April 17</p>
-                                <div className="inline-flex mt-5">
-                                    {/* button edit profile */}
-                                    <RouteButton href="">
-                                        Edit Profile
-                                    </RouteButton>
+                            {showPhotoEdit && (
+                                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 rounded-full">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <ImageIcon className="text-white" size={30} />
                                 </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-2 h-full w-auto">
+                            <div>
+                                {showNameEdit ? (
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <input
+                                            type="text"
+                                            value={newName}
+                                            onChange={(e) => setNewName(e.target.value)}
+                                            className="text-xl text-[#5C8D89] border-[#5C8D89] border-b-2 outline-none bg-transparent"
+                                        />
+                                        <FilledButton
+                                            onClick={handleSaveName}
+                                            paddingy="py-1"
+                                            paddingx="px-3"
+                                        >
+                                            Save
+                                        </FilledButton>
+                                        <FilledButton
+                                            onClick={() => setShowNameEdit(false)}
+                                            bgColor="bg-gray-300"
+                                            paddingy="py-1"
+                                            paddingx="px-3"
+                                        >
+                                            <X size={16} />
+                                        </FilledButton>
+                                    </div>
+                                ) : (
+                                    <h1 className="text-2xl text-[#5C8D89]">{userData.name}</h1>
+                                )}
+                                <p className="text-[#5C8D89]">Active Member since April 17</p>
                             </div>
-                        </>
-                    )}
-                </div>
+                            <div className="inline-flex gap-2">
+                                {isEditing ? (
+                                    <>
+                                        <FilledButton
+                                            onClick={handleEditName}
+                                            bgColor={showNameEdit ? "bg-[#5C8D89]" : "bg-[#74B49B]"}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <Edit size={16} />
+                                                Edit Name
+                                            </div>
+                                        </FilledButton>
+                                        <FilledButton
+                                            onClick={handleEditPhoto}
+                                            bgColor={showPhotoEdit ? "bg-[#5C8D89]" : "bg-[#74B49B]"}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <ImageIcon size={16} />
+                                                Edit Photo
+                                            </div>
+                                        </FilledButton>
+                                        <FilledButton
+                                            onClick={handleEditClick}
+                                            bgColor="bg-gray-400"
+                                        >
+                                            Cancel
+                                        </FilledButton>
+                                    </>
+                                ) : (
+                                    <FilledButton onClick={handleEditClick}>
+                                        <div className="flex items-center gap-2">
+                                            <Edit size={16} />
+                                            Edit Profile
+                                        </div>
+                                    </FilledButton>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </Card>
 
             {/* menu */}
@@ -56,7 +165,7 @@ export function DashboardUser({ className }: DbUser) {
                 <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                     <TriangleAlert color="white" size={40} fill="#74B49B" />
                     <h3 className="text-lg font-medium text-[#5C8D89]">Laporan!</h3>
-                    <p>2 Insiden telah kamu laporkan</p>
+                    <p><span>{reports.length}</span> Insiden telah kamu laporkan</p>
                 </Card>
                 <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                     <MessageSquare color="#74B49B" size={40} />
