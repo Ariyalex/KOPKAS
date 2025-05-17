@@ -7,6 +7,9 @@
 
 body {
   background: var(--background);
-  color: var(--foreground);
   font-family: var(--font-quicksand);
+  --rs-btn-default-bg:#5C8D89;
+  --rs-btn-default-text: #FFFFFF;
+  --rs-btn-default-hover-bg: #74B49B;
+  --rs-btn-default-hover-text: #FFFFFF;
 }

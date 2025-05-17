@@ -7,9 +7,12 @@ import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table }
 import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
 import Column from "rsuite/esm/Table/TableColumn";
 import { Cell, HeaderCell } from "rsuite-table";
-import { Tag } from "../common/tag";
+import { Tag, StatusTag } from "../common/tag";
+import { useRouter } from "next/navigation";
 
 export function LaporanTable() {
+    const router = useRouter();
+
     // State for sorting
     const [sortColumn, setSortColumn] = useState<string>('');
     const [sortType, setSortType] = useState<'asc' | 'desc' | undefined>('asc');
@@ -127,6 +130,11 @@ export function LaporanTable() {
         }, 200);
     };
 
+    //handle routing by id
+    const routingId = (id: number) => {
+        router.push(`/admin/report/${id}`);
+    }
+
     return (
         <div className="w-full h-auto p-4 flex flex-col gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]">
             <div className="flex flex-col gap-4 mb-4">
@@ -155,7 +163,7 @@ export function LaporanTable() {
                                         className="text-red-500"
                                     />
                                 ) : (
-                                    <Search size={16} className="text-[#3CB371]" />
+                                    <Search size={16} className="text-white" />
                                 )}
                             </InputGroup.Addon>
                         </InputGroup>
@@ -333,67 +341,26 @@ export function LaporanTable() {
                         <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
                     </HeaderCell>
                     <Cell dataKey="status">
-                        {(rowData) => {
-                            const status = rowData.status;
-                            let color;
-                            let statusText;
-                            let bgColor;
-                            let priorityOrder;
-
-                            switch (status) {
-                                case 'baru':
-                                    color = 'text-blue-700';
-                                    statusText = 'Baru';
-                                    bgColor = "bg-blue-100";
-                                    priorityOrder = 1;
-                                    break;
-                                case 'diproses':
-                                    color = 'text-orange-700';
-                                    statusText = 'Diproses';
-                                    bgColor = "bg-orange-100";
-                                    priorityOrder = 2;
-                                    break;
-                                case 'selesai':
-                                    color = 'text-[#047857]';
-                                    statusText = 'Selesai';
-                                    bgColor = "bg-[#D1FAE5]";
-                                    priorityOrder = 3;
-                                    break;
-                                case 'ditolak':
-                                    color = 'text-red-700';
-                                    statusText = 'Ditolak';
-                                    bgColor = "bg-red-100";
-                                    priorityOrder = 4;
-                                    break;
-                                default:
-                                    color = 'text-gray-700';
-                                    bgColor = "bg-gray-100";
-                                    statusText = 'Tidak diketahui';
-                                    priorityOrder = 999;
-                            }
-                            return (
-                                <div className="flex items-center justify-center">
-                                    <Tag color={color as any} bgColor={bgColor as any}>
-                                        {statusText}
-                                    </Tag>
-                                </div>
-                            );
-                        }}
+                        {(rowData) => <StatusTag status={rowData.status} />}
                     </Cell>
                 </Column>
                 <Column width={100} align="center" flexGrow={1}>
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
                     </HeaderCell>
-                    <Cell>
-                        {() => (
-                            <button
-                                className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
-                            >
-                                <ExternalLink size={16} className="mr-1" />
-                                <span>Detail</span>
-                            </button>
-                        )}
+                    <Cell dataKey="id">
+                        {(rowdata) => {
+                            const id = rowdata.id;
+                            return (
+                                <button
+                                    onClick={() => routingId(id)}
+                                    className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
+                                >
+                                    <ExternalLink size={16} className="mr-1" />
+                                    <span>data</span>
+                                </button>
+                            )
+                        }}
                     </Cell>
                 </Column>
             </Table>

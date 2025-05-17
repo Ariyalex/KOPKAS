@@ -1,6 +1,5 @@
 'use client'
 
-import Image from "next/image";
 import { Card } from "../common/card";
 import { AuthInput } from "../common/input";
 import { useState } from "react";

@@ -4,7 +4,7 @@ import { Table, Badge, Button, IconButton } from "rsuite";
 import { Card } from "../common/card";
 import { ExternalLink } from "lucide-react";
 import { laporanDummyData, LaporanData } from "./dummy/laporan_dummy";
-import { Tag } from "../common/tag";
+import { Tag, StatusTag } from "../common/tag";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
@@ -75,46 +75,7 @@ export function LaporanTablePreview() {
                         <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
                     </HeaderCell>
                     <Cell dataKey="status">
-                        {(rowData) => {
-                            const status = rowData.status;
-                            let color;
-                            let statusText;
-                            let bgColor;
-
-                            switch (status) {
-                                case 'baru':
-                                    color = 'text-blue-700';
-                                    statusText = 'Baru';
-                                    bgColor = "bg-blue-100";
-                                    break;
-                                case 'diproses':
-                                    color = 'text-orange-700';
-                                    statusText = 'Diproses';
-                                    bgColor = "bg-orange-100";
-                                    break;
-                                case 'selesai':
-                                    color = 'text-[#047857]';
-                                    statusText = 'Selesai';
-                                    bgColor = "bg-[#D1FAE5]";
-                                    break;
-                                case 'ditolak':
-                                    color = 'text-red-700';
-                                    statusText = 'Ditolak';
-                                    bgColor = "bg-red-100";
-                                    break;
-                                default:
-                                    color = 'text-gray-700';
-                                    bgColor = "bg-gray-100";
-                                    statusText = 'Tidak diketahui';
-                            }
-                            return (
-                                <div className="flex items-center justify-center">
-                                    <Tag color={color as any} bgColor={bgColor as any}>
-                                        {statusText}
-                                    </Tag>
-                                </div>
-                            );
-                        }}
+                        {(rowData) => <StatusTag status={rowData.status} />}
                     </Cell>
                 </Column>
                 <Column width={100} align="center" flexGrow={1}>
