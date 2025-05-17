@@ -10,20 +10,27 @@ import { Notification, useToaster } from "rsuite";
 
 export function Register() {
     const toaster = useToaster();
+
     const message = (
         <Notification
             type="warning"
             header="Password yang dimasukkan tidak sama!!" closable
         >
         </Notification>
-    ); interface AuthInputDataType {
+    );
+
+    interface AuthInputDataType {
         email: string;
+        username: string;
         password: string;
         confirmPass: string;
         terms: boolean;
-    }    //controller
+    };
+
+    //controller
     const [authData, setAuthData] = useState<AuthInputDataType>({
         email: "",
+        username: "",
         password: "",
         confirmPass: "",
         terms: false,
@@ -44,8 +51,8 @@ export function Register() {
     }
 
     return (
-        <Card width="w-auto" height="h-auto" className="flex flex-col gap-6 p-10 justify-center items-center">
-            <div className="flex flex-col gap-5 items-center">
+        <Card width="w-auto" height="h-auto" className="flex flex-col gap-4 px-10 py-5 justify-center items-center">
+            <div className="flex flex-col gap-3 items-center">
                 <Image
                     src={"/logo.svg"}
                     alt="logo"
@@ -59,7 +66,7 @@ export function Register() {
             </div>
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col gap-6 w-[400px]"
+                className="flex flex-col gap-4 w-[400px]"
             >
                 <AuthInput
                     title="Email"
@@ -67,6 +74,13 @@ export function Register() {
                     placeholder="Masukkan email"
                     onChange={(event) => setAuthData({ ...authData, email: event.target.value })}
                     value={authData.email}
+                />
+                <AuthInput
+                    title="Username"
+                    type="text"
+                    placeholder="Buat Username"
+                    onChange={(event) => setAuthData({ ...authData, username: event.target.value })}
+                    value={authData.username}
                 />
                 <AuthInput
                     title="Password"

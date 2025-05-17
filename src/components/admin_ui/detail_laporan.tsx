@@ -1,7 +1,5 @@
 'use client'
 
-import { useParams } from "next/navigation";
-import { find } from "rsuite/esm/internals/utils/ReactChildren";
 import { LaporanData, laporanDummyData } from "./dummy/laporan_dummy";
 import { Card } from "../common/card";
 import Image from "next/image";
@@ -18,18 +16,25 @@ interface DetailLaporanProps {
 }
 
 export function DetailLaporan({ params }: DetailLaporanProps) {
+    //unutk mendapatkan id
     const id = parseInt(params.id);
+
+    //controller
     const [data, setData] = useState<LaporanData | undefined>(undefined);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statusUpdated, setStatusUpdated] = useState<boolean>(false);
     const [lastUpdatedStatus, setLastUpdatedStatus] = useState<string | null>(null);
+
+    //notifikasi
     const toaster = useToaster();
 
+
     useEffect(() => {
-        // Find the report data on the client side to avoid hydration mismatch
+        //find data berdasarkan id
         const reportData = laporanDummyData.find(item => item.id === id);
         setData(reportData);
     }, [id]);
+
     const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
         toaster.push(
             <Notification type={type} header={
@@ -40,7 +45,9 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
             </Notification>,
             { placement: 'topEnd' }
         );
-    }; const handleStatusChange = (value: string) => {
+    };
+
+    const handleStatusChange = (value: string) => {
         // Skip if trying to set the same status
         if (data?.status === value.toLowerCase()) {
             showNotification('info', `Status laporan sudah ${value}`);
@@ -51,6 +58,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
         setStatusUpdated(false);
 
         // Simulate API call with timeout
+        //megirim ke database
         setTimeout(() => {
             try {
                 // Map dropdown values to status values in the data
@@ -157,7 +165,8 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                         month: 'long',
                                         year: 'numeric',
                                     })}</p>
-                                </div>                                <div className="flex flex-col gap-1.5">
+                                </div>
+                                <div className="flex flex-col gap-1.5">
                                     <h3 className="text-[#5C8D89] text-base font-medium">Status Laporan</h3>                                    <div className="flex flex-row gap-5 items-center">                                        <div
                                         className="transition-all duration-300"
                                         style={{
@@ -176,7 +185,8 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                         />
                                         {isLoading && (
                                             <Loader size="sm" />
-                                        )}                                        {statusUpdated && (
+                                        )}
+                                        {statusUpdated && (
                                             <div
                                                 className="flex items-center text-green-600"
                                                 style={{

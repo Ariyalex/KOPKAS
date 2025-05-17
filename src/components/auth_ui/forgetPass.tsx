@@ -20,6 +20,7 @@ export function ForgetPass() {
     const isDisable = !authData.email
 
 
+    //post
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log("form data: ", authData);

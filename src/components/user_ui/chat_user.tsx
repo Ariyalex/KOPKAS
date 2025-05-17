@@ -57,42 +57,43 @@ export function ChatUser({ className }: ChatProps) {
             <div className="flex flex-row gap-4 py-3 px-5 w-full items-center border-b-2 border-b-[#E5E7EB]">
                 <h1 className="text-[#5C8D89] font-bold text-2xl">Chatbox</h1>
             </div>
-            <div className="flex flex-col flex-1 overflow-hidden">                <div className="overflow-y-auto p-5 flex-1 flex flex-col gap-4 bg-[#F4F9F4]">
-                {messages.map((message, index) => {
-                    const user = DummyUserContent.find(user => user.id === message.userId);
-                    if (!user) return null;
+            <div className="flex flex-col flex-1 overflow-hidden">
+                <div className="overflow-y-auto p-5 flex-1 flex flex-col gap-4 bg-[#F4F9F4]">
+                    {messages.map((message, index) => {
+                        const user = DummyUserContent.find(user => user.id === message.userId);
+                        if (!user) return null;
 
-                    // Cek apakah pesan dari user (kita sendiri)
-                    const isCurrentUser = user.role === "user";
+                        // Cek apakah pesan dari user (kita sendiri)
+                        const isCurrentUser = user.role === "user";
 
-                    return (
-                        <div
-                            key={index}
-                            className={`flex flex-row items-start gap-3 max-w-[70%] ${isCurrentUser ? 'self-end' : ''}`}
-                        >
-                            {!isCurrentUser && (
-                                <Image
-                                    src={user.photo}
-                                    alt={user.name}
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full object-cover w-[40px] h-[40px]"
-                                />
-                            )}
-                            <div className="flex flex-col">
-                                <div className={`px-3 py-1 rounded-lg shadow-sm ${isCurrentUser ? 'bg-[#74B49B] text-white' : 'bg-white'}`}>
-                                    {!isCurrentUser && (
-                                        <h3 className="text-[#5C8D89] font-medium text-lg">{user.name}</h3>
-                                    )}
-                                    <p>{message.message}</p>
+                        return (
+                            <div
+                                key={index}
+                                className={`flex flex-row items-start gap-3 max-w-[70%] ${isCurrentUser ? 'self-end' : ''}`}
+                            >
+                                {!isCurrentUser && (
+                                    <Image
+                                        src={user.photo}
+                                        alt={user.name}
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full object-cover w-[40px] h-[40px]"
+                                    />
+                                )}
+                                <div className="flex flex-col">
+                                    <div className={`px-3 py-1 rounded-lg shadow-sm ${isCurrentUser ? 'bg-[#74B49B] text-white' : 'bg-white'}`}>
+                                        {!isCurrentUser && (
+                                            <h3 className="text-[#5C8D89] font-medium text-lg">{user.name}</h3>
+                                        )}
+                                        <p>{message.message}</p>
+                                    </div>
+                                    <span className={`text-sm text-gray-500 mt-1 ${isCurrentUser ? 'text-right' : ''}`}>{message.sent}</span>
                                 </div>
-                                <span className={`text-sm text-gray-500 mt-1 ${isCurrentUser ? 'text-right' : ''}`}>{message.sent}</span>
                             </div>
-                        </div>
-                    );
-                })}
-                <div ref={messagesEndRef} />
-            </div>
+                        );
+                    })}
+                    <div ref={messagesEndRef} />
+                </div>
                 <div className="p-3 border-t border-gray-200 bg-white">
                     <div className="flex gap-2">
                         <input

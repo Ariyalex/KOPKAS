@@ -4,8 +4,8 @@ import { ClassValue } from "clsx";
 import { Card } from "../common/card";
 import clsx from "clsx";
 import Image from "next/image";
-import { FilledButton, RouteButton } from "../common/button";
-import { Book, Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
+import { FilledButton } from "../common/button";
+import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
 import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import { ReportContentDummy } from "./dummy/reports_dummy";
 import { Tag } from "../common/tag";
@@ -20,45 +20,49 @@ interface DbMessage {
 }
 
 export function DashboardUser({ className }: DbUser) {
-    // Mengambil data user dari DummyUserContent
+    // Mengambil data 
     const userData = DummyUserContent.find(user => user.role === "user");
     const messageData = MessagesContentDummy;
     const reports = ReportContentDummy;
 
+    //controller
+    const [isEditing, setIsEditing] = useState(false); //editing
+    const [newName, setNewName] = useState(userData?.name || ""); //controller input nama baru
+    const [showNameEdit, setShowNameEdit] = useState(false); //menampilkan tombol edit nama
+    const [showPhotoEdit, setShowPhotoEdit] = useState(false);// menampilkan tombol edit foto
 
-    const [isEditing, setIsEditing] = useState(false);
-    const [newName, setNewName] = useState(userData?.name || "");
-    const [showNameEdit, setShowNameEdit] = useState(false);
-    const [showPhotoEdit, setShowPhotoEdit] = useState(false);
 
+    //handle edit click
     const handleEditClick = () => {
         setIsEditing(!isEditing);
-        // Reset states when toggling edit mode
+        // Reset states ketika menekan tombol edit
         if (isEditing) {
             setShowNameEdit(false);
             setShowPhotoEdit(false);
         }
     };
 
+    //menangani edit name
     const handleEditName = () => {
-        setShowNameEdit(true);
-        setShowPhotoEdit(false);
+        setShowNameEdit(true); //edit name ditampilkan
+        setShowPhotoEdit(false);//edit photo tidak ditampilkan
     };
 
+    //menangani edit photo
     const handleEditPhoto = () => {
-        setShowPhotoEdit(true);
-        setShowNameEdit(false);
+        setShowPhotoEdit(true);//menampilkan edit photo
+        setShowNameEdit(false);//tidak menampilkan edit nama
     };
 
     const handleSaveName = () => {
-        // Here you would actually save the name to the database
-        // For now, we'll just close the edit form
+        // disini untuk menyimpan nama ke database
+        //sementara edit form ditutup
         setShowNameEdit(false);
     };
 
     const handleSavePhoto = () => {
-        // Here you would actually save the photo to the database
-        // For now, we'll just close the edit form
+        // disini untuk menyimpan photo ke database
+        // sementara edit ditutup
         setShowPhotoEdit(false);
     };
 
@@ -66,6 +70,7 @@ export function DashboardUser({ className }: DbUser) {
         <div className={clsx("flex flex-col gap-6", className)}>
             {/* profile */}
             <Card width="w-full">
+                {/* ketika ada user data */}
                 {userData && (
                     <div className="flex felx-row gap-5 items-center justify-start w-full">
                         <div className="relative">
@@ -76,6 +81,7 @@ export function DashboardUser({ className }: DbUser) {
                                 height={100}
                                 className="rounded-full object-cover w-[100px] h-[100px]"
                             />
+                            {/* ketika controller true */}
                             {showPhotoEdit && (
                                 <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 rounded-full">
                                     <input
@@ -89,6 +95,7 @@ export function DashboardUser({ className }: DbUser) {
                         </div>
                         <div className="flex flex-col gap-2 h-full w-auto">
                             <div>
+                                {/* ketika controller true */}
                                 {showNameEdit ? (
                                     <div className="flex items-center gap-2 mb-2">
                                         <input

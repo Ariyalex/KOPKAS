@@ -12,6 +12,7 @@ interface ChatsAdminProps {
 }
 
 export function ChatsAdmin({ onSelectChat, activeChatId = "chat-1" }: ChatsAdminProps) {
+    //controller search
     const [searchQuery, setSearchQuery] = useState<string>('');
 
     // Filter chats based on search query
