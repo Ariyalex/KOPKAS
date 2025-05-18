@@ -4,7 +4,7 @@ KOPKAS (Kotak Pengaduan Kekerasan Seksual) adalah platform berbasis website yang
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-In%20Development-orange)
-![Made with Next.js](https://img.shields.io/badge/Frontend-Next.js-blue)
+![Made with Next.js](https://img.shields.io/badge/Frontend-Next.js-yellow)
 ![Made with Next.js](https://img.shields.io/badge/Backend-Next.js-blue)
 ![Made with Supabase](https://img.shields.io/badge/Database-Supabase-lightgrey)
 
