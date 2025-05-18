@@ -9,7 +9,7 @@ export function HeaderHome() {
             <div>
                 <ul className="flex flex-row items-center gap-10 px-4 py-3">
                     <Link className="text-2xl" href="/user">DAFTAR</Link>
-                    <Link className="bg-[#C4DADA] font-bold text-2xl px-4 py-3 border-white border-[1px]" href="#">MASUK</Link>
+                    <Link className="bg-[#C4DADA] font-bold text-2xl px-4 py-3 border-white border-[1px]" href="/login">MASUK</Link>
                 </ul>
             </div>
         </div>

@@ -1,45 +1,130 @@
 'use client'
 
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { Notification, useToaster } from "rsuite";
+import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { AuthInput } from "../common/input";
-import { useState } from "react";
-import { FilledButton } from "../common/button";
-import Link from "next/link";
 
 export function Login() {
+    const supabase = createClientComponentClient();
+    const router = useRouter();
+    const toaster = useToaster();
+    const [isLoading, setIsLoading] = useState(false);
+
     interface AuthInputDataType {
         email: string;
         password: string;
     }
 
-    //controller
+    interface ValidationErrors {
+        email?: string;
+        password?: string;
+    }
+
     const [authData, setAuthData] = useState<AuthInputDataType>({
         email: "",
         password: "",
     });
 
-    const isDisable = !authData.email || !authData.password;
+    const [errors, setErrors] = useState<ValidationErrors>({});
 
+    const showNotification = (type: 'success' | 'error' | 'warning', message: string) => {
+        toaster.push(
+            <Notification type={type} header={type === 'success' ? 'Berhasil' : 'Error'} closable duration={4500}>
+                {message}
+            </Notification>,
+            { placement: 'topCenter' }
+        );
+    };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const validateAll = (): ValidationErrors => {
+        const newErrors: ValidationErrors = {};
+
+        if (!authData.email) {
+            newErrors.email = 'Email tidak boleh kosong';
+        } else if (!/\S+@\S+\.\S+/.test(authData.email)) {
+            newErrors.email = 'Format email tidak valid';
+        }
+
+        if (!authData.password) {
+            newErrors.password = 'Password tidak boleh kosong';
+        }
+
+        setErrors(newErrors);
+        return newErrors;
+    };
+
+    const isDisable = !authData.email || !authData.password || isLoading;
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        console.log("form data: ", authData);
-    }
+        if (isLoading) return;
+        setIsLoading(true);
+
+        try {
+            const errorsFound = validateAll();
+            const isValid = Object.keys(errorsFound).length === 0;
+
+            if (!isValid) {
+                Object.values(errorsFound).forEach(msg => {
+                    if (msg) {
+                        showNotification('error', msg);
+                    }
+                });
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: authData.email,
+                password: authData.password,
+            });
+
+            if (error) throw error;
+
+            if (data?.user) {
+                // Get user role from public.users table
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (userError) throw userError;
+
+                showNotification('success', 'Login berhasil! Harap tunggu...');
+
+                // Redirect based on role
+                if (userData?.role === 'admin') {
+                    router.push('/admin');
+                } else {
+                    router.push('/user');
+                }
+            }
+        } catch (error: any) {
+            let errorMessage = 'Login gagal';
+            
+            if (error?.message?.includes('Invalid login credentials')) {
+                errorMessage = 'Email atau password salah';
+            } else if (error?.message?.includes('Email not confirmed')) {
+                errorMessage = 'Email belum diverifikasi. Silakan cek email Anda';
+            }
+            
+            showNotification('error', errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
-        <Card width="w-auto" height="h-auto" className="flex flex-col gap-6 p-10 justify-center items-center">
-            <div className="flex flex-col gap-5 items-center">
-                <Image
-                    src={"/logo.svg"}
-                    alt="logo"
-                    width={33}
-                    height={33}
-                    className="w-[33px] h-[33px]"
-                />
-                <h1 className="text-3xl font-semibold text-[#1F2937]">
-                    Masuk ke KOPKAS
-                </h1>
+        <Card width="w-auto" height="h-auto" className="flex flex-col gap-4 px-10 py-5 justify-center items-center">
+            <div className="flex flex-col gap-3 items-center">
+                <Image src={"/logo.svg"} alt="logo" width={33} height={33} className="w-[33px] h-[33px]" />
+                <h1 className="text-3xl font-semibold text-[#1F2937]">Login ke KOPKAS</h1>
             </div>
             <form
                 onSubmit={handleSubmit}
@@ -49,23 +134,31 @@ export function Login() {
                     title="Email"
                     type="email"
                     placeholder="Masukkan email"
-                    onChange={(event) => setAuthData({ ...authData, email: event.target.value })}
+                    onChange={(event) => {
+                        setAuthData({ ...authData, email: event.target.value });
+                        setErrors({ ...errors, email: undefined });
+                    }}
                     value={authData.email}
+                    error={errors.email}
                 />
                 <AuthInput
                     title="Password"
                     type="password"
                     placeholder="Masukkan password"
-                    onChange={(event) => setAuthData({ ...authData, password: event.target.value })}
+                    onChange={(event) => {
+                        setAuthData({ ...authData, password: event.target.value });
+                        setErrors({ ...errors, password: undefined });
+                    }}
                     value={authData.password}
+                    error={errors.password}
                 />
                 <FilledButton
                     type="submit"
-                    className="font-medium"
+                    className="font-medium flex justify-center items-center gap-2"
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
                 >
-                    Login
+                    {isLoading ? 'Loading...' : 'Login'}
                 </FilledButton>
             </form>
             <div className="flex flex-col gap-3 justify-center items-center">

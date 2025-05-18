@@ -1,15 +1,14 @@
 'use client'
 
-import { ClassValue } from "clsx";
-import { Card } from "../common/card";
-import clsx from "clsx";
-import Image from "next/image";
-import { FilledButton } from "../common/button";
+import clsx, { ClassValue } from "clsx";
 import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
-import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
-import { ReportContentDummy } from "./dummy/reports_dummy";
-import { Tag } from "../common/tag";
+import Image from "next/image";
 import { useState } from "react";
+import { FilledButton } from "../common/button";
+import { Card } from "../common/card";
+import { Tag } from "../common/tag";
+import { DummyUserContent, MessagesContentDummy } from "./dummy/chat_dummy";
+import { ReportContentDummy } from "./dummy/reports_dummy";
 
 interface DbUser {
     className?: ClassValue;
