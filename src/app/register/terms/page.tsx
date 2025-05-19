@@ -1,6 +1,6 @@
 'use client'
 
-import { ContentTerms } from '@/components/terms_ui/content_terms'
+import { ContentTerms } from '@/components/auth_ui/terms'
 import Link from 'next/link'
 
 export default function TermsPage() {

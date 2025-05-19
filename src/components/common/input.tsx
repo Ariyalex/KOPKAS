@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, HTMLInputTypeAttribute } from "react";
-import { DatePicker, SelectPicker, Stack } from "rsuite";
-import { Card } from "./card";
-import { FilledButton } from "./button";
-import { Eye, EyeOff } from "lucide-react";
 import clsx from "clsx";
+import { Eye, EyeOff } from "lucide-react";
+import { HTMLInputTypeAttribute, useRef, useState } from "react";
+import { DatePicker, SelectPicker, Stack } from "rsuite";
+import { FilledButton } from "./button";
+import { Card } from "./card";
 
 interface TextFieldProps {
     title: string;
@@ -187,6 +187,8 @@ interface AuthInputProps {
     bgColor?: string;
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    // menambahkan properti error untuk menampilkan pesan kesalahan
+    error?: string;
 }
 
 export function AuthInput({ title, type, placeholder, value, bgColor, onChange }: AuthInputProps) {
