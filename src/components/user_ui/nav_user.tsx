@@ -4,8 +4,9 @@ import { House, LogOut, MessageSquare, Plus } from "lucide-react";
 import { Card } from "../common/card";
 import Link from "next/link";
 import { ClassValue } from "clsx";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
+import { supabase } from "@/lib/supabase";
 
 interface NavItem {
     title: string;
@@ -39,9 +40,23 @@ interface NavProps {
     className?: ClassValue;
 }
 
+export const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.log(error.message)
+    }
+}
+
 
 export function NavUser({ className }: NavProps) {
     const pathname = usePathname();
+    const router = useRouter()
+
+    const onLogout = async () => {
+        await handleLogout();
+        router.push("/");
+    }
+
     return (
         <Card width="w-auto" height="h-full" className={className}>
             <div className="flex flex-col gap-4">
@@ -65,15 +80,15 @@ export function NavUser({ className }: NavProps) {
                 })}
 
             </div>
-            <Link
-                href="/"
+            <button
+                onClick={onLogout}
                 className={clsx(
                     "flex felx-col p-2 gap-2 text-[#DC2626] rounded-md bg-white font-normal hover:bg-red-50 group",
                 )}
             >
                 <LogOut className="text-[#DC2626]" />
                 <h3 className="">Log Out</h3>
-            </Link>
+            </button>
         </Card>
     );
-}
+} 

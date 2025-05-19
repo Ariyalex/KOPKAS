@@ -2,8 +2,9 @@
 
 import { ChartLine, ClipboardList, LogOut, MessagesSquare, } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
+import { supabase } from "@/lib/supabase";
 
 interface NavItem {
     title: string;
@@ -31,11 +32,22 @@ const navContent: NavItem[] = [
     },
 ]
 
-
-
+export const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+        console.log(error.message)
+    }
+}
 
 export function NavAdmin() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    const onLogout = async () => {
+        await handleLogout();
+        router.push("/");
+    }
+
     return (
         <div className="w-full h-auto flex-1/6 flex justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
             <div className="flex flex-col gap-4">
@@ -59,15 +71,15 @@ export function NavAdmin() {
                 })}
 
             </div>
-            <Link
-                href="/"
+            <button
+                onClick={onLogout}
                 className={clsx(
                     "flex felx-col p-2 gap-2 text-[#DC2626] rounded-md bg-white font-normal hover:bg-red-50 group",
                 )}
             >
                 <LogOut className="text-[#DC2626]" />
                 <h3 className="">Log Out</h3>
-            </Link>
+            </button>
         </div>
     );
 }

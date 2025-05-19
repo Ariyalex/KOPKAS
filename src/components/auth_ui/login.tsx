@@ -86,6 +86,7 @@ export function Login() {
 
             if (error) throw error;
 
+
             if (data?.user) {
                 // Get user role from public.users table
                 const { data: userData, error: userError } = await supabase
@@ -95,6 +96,14 @@ export function Login() {
                     .single();
 
                 if (userError) throw userError;
+
+                //menyimpan session
+                if (data.session) {
+                    await supabase.auth.setSession({
+                        access_token: data.session.access_token,
+                        refresh_token: data.session.refresh_token,
+                    });
+                }
 
                 showNotification('success', 'Login berhasil! Harap tunggu...');
 
@@ -107,13 +116,13 @@ export function Login() {
             }
         } catch (error: any) {
             let errorMessage = 'Login gagal';
-            
+
             if (error?.message?.includes('Invalid login credentials')) {
                 errorMessage = 'Email atau password salah';
             } else if (error?.message?.includes('Email not confirmed')) {
                 errorMessage = 'Email belum diverifikasi. Silakan cek email Anda';
             }
-            
+
             showNotification('error', errorMessage);
         } finally {
             setIsLoading(false);

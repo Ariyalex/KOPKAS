@@ -1,3 +1,5 @@
+'use client'
+
 import { HeaderHome } from "../components/home_ui/header_home";
 import { HomeIntro } from "../components/home_ui/home_intro";
 
