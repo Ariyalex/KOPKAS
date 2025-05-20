@@ -12,9 +12,9 @@ interface CardProps {
     overflow?: string;
 }
 
-export function Card({ children, width, height, padding = "p-5", shadow = "shadow-sm", bgColor = "bg-white", overflow = "overflow-clip", className }: CardProps) {
+export function Card({ children, width = "w-fit", height, padding = "p-5", shadow = "shadow-sm", bgColor = "bg-white", overflow = "overflow-clip", className }: CardProps) {
     return (
-        <div className={clsx("rounded-lg w-fit", width, height, padding, shadow, bgColor, overflow, className)}>
+        <div className={clsx("rounded-lg ", width, height, padding, shadow, bgColor, overflow, className)}>
             {children}
         </div>
     );

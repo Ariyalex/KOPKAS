@@ -3,6 +3,7 @@ import { Quicksand } from "next/font/google";
 import { CustomProvider } from "rsuite";
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import "./globals.css";
+import { Footer } from "@/components/home_ui/footer";
 
 const quicksand = Quicksand({
   subsets: ['latin'],

@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { FilledButton } from "../common/button";
+import { ArrowRight } from "lucide-react";
 
 export function HomeIntro() {
     const router = useRouter();
@@ -29,24 +31,28 @@ export function HomeIntro() {
     }
 
     return (
-        <div className="flex flex-row gap-20 px-20">
-            <div className="flex flex-col py-8 gap-12 items-center">
+        <div className="flex flex-row gap-20 px-48 py-10 bg-[#F5FFFA]">
+            <div className="flex flex-col py-8 gap-12 items-start">
                 <div className="flex gap-16 flex-col">
-                    <h1 className="text-[55px]/tight font-bold text-right text-[#2B2B2B]"><span className="font-black">BERANI</span>  BICARA, KAMI SIAP MENDENGAR</h1>
-                    <p className="text-right text-[24px] text-[#1E390E] pl-5">kopkas adalah wadah aman untuk melaporkan kekerasan  seksual secara rahasia dan terpercaya </p>
+                    <h1 className="text-5xl/tight font-bold text-left text-[#1F2937]">Berani Bicara, Kami Siap Mendengarkan</h1>
+                    <p className="text-left text-lg text-[#4B5563]">KOPKAS hadir sebagai ruang aman untuk melaporkan dan mendapatkan pendampingan profesional terkait kekerasan seksual.</p>
                 </div>
-                <button
+                <FilledButton
                     onClick={checkSession}
-                    className="rounded-full bg-[#1E390E] text-white w-fit px-5 py-3.5">
-                    LAPORKAN SEKARANG
-                </button>
+                    bgColor="bg-[#5C8D89]"
+                >
+                    <div className="flex flex-row justify-center items-center gap-2">
+                        <p>Laporkan Sekarang</p>
+                        <ArrowRight size={16} />
+                    </div>
+                </FilledButton>
             </div>
             <Image
                 alt="kopkas"
-                src="/home1.png"
+                src="/welcome.png"
                 width={625}
                 height={625}
-                className="h-auto max-h-[625px] w-auto object-contain"
+                className="h-auto max-h-[594px] w-auto object-contain"
             />
         </div>
     );
