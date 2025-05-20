@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
-import { Notification, useToaster } from "rsuite";
+import { Loader, Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { AuthInput } from "../common/input";
@@ -105,8 +105,6 @@ export function Login() {
                     });
                 }
 
-                showNotification('success', 'Login berhasil! Harap tunggu...');
-
                 // Redirect based on role
                 if (userData?.role === 'admin') {
                     router.push('/admin');
@@ -167,7 +165,9 @@ export function Login() {
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
                 >
-                    {isLoading ? 'Loading...' : 'Login'}
+                    <div className='flex justify-center items-center'>
+                        {isLoading ? <Loader content="loading..." /> : <p>Login</p>}
+                    </div>
                 </FilledButton>
             </form>
             <div className="flex flex-col gap-3 justify-center items-center">
