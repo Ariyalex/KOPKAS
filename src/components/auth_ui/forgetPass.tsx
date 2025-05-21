@@ -49,6 +49,7 @@ export function ForgetPass() {
                 />
                 <FilledButton
                     type="submit"
+                    width="w-full"
                     className="font-medium"
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}

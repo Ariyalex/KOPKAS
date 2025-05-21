@@ -176,7 +176,9 @@ export function Login() {
                 <p
                     className="font-medium"
                 >
-                    Belum memiliki akun? <Link href="/register" className="text-[#3CB371]">Register</Link></p>
+                    Belum memiliki akun?
+                    <Link href="/register" className="text-[#3CB371]">Register</Link>
+                </p>
                 <Link href="login/forget" className="text-[#3CB371] font-medium">Lupa password?</Link>
             </div>
         </Card>
