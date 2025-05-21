@@ -162,10 +162,12 @@ export function Login() {
                 />
                 <FilledButton
                     type="submit"
+                    width="w-full"
                     className="font-medium flex justify-center items-center gap-2"
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
-                >                    <div className='flex justify-center items-center'>
+                >
+                    <div className='flex justify-center items-center'>
                         {isLoading ? <SpinnerLoader /> : <p>Login</p>}
                     </div>
                 </FilledButton>

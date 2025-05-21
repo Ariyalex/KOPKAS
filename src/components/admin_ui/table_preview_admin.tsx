@@ -1,11 +1,11 @@
 'use client'
 
-import { Table, Badge, Button, IconButton } from "rsuite";
+import { Table, Button } from "rsuite";
 import { Card } from "../common/card";
 import { ExternalLink } from "lucide-react";
 import { laporanDummyData, LaporanData } from "./dummy/laporan_dummy";
 import { Tag, StatusTag } from "../common/tag";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 // Make sure to destructure these directly from Table

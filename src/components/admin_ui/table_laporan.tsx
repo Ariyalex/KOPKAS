@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { LaporanData, laporanDummyData } from "./dummy/laporan_dummy";
-import { Card } from "../common/card";
 import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table } from "rsuite";
 import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
 import Column from "rsuite/esm/Table/TableColumn";
 import { Cell, HeaderCell } from "rsuite-table";
-import { Tag, StatusTag } from "../common/tag";
+import { StatusTag } from "../common/tag";
 import { useRouter } from "next/navigation";
 
 export function LaporanTable() {

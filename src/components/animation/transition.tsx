@@ -9,6 +9,11 @@ interface PageTransitionProps {
     className?: string;
 }
 
+interface GesturesProps {
+    children: ReactNode;
+
+}
+
 export function TransitionFadeIn({ children, className }: PageTransitionProps) {
     const pathname = usePathname();
 
@@ -37,4 +42,16 @@ export function TransitionFadeIn({ children, className }: PageTransitionProps) {
             {children}
         </motion.div>
     );
+}
+
+export function Gestures({ children }: GesturesProps) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ duration: 0.1 }}
+        >
+            {children}
+        </motion.div>
+    )
 }

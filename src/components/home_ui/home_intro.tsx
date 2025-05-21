@@ -36,7 +36,8 @@ export function HomeIntro({ session, userData }: HomeIntroProps) {
                 <div className="flex gap-16 flex-col">
                     <h1 className="text-5xl/tight font-bold text-left text-[#1F2937]">Berani Bicara, Kami Siap Mendengarkan</h1>
                     <p className="text-left text-lg text-[#4B5563]">KOPKAS hadir sebagai ruang aman untuk melaporkan dan mendapatkan pendampingan profesional terkait kekerasan seksual.</p>
-                </div>                <FilledButton
+                </div>
+                <FilledButton
                     onClick={handleButtonClick}
                     bgColor="bg-[#5C8D89]"
                 >

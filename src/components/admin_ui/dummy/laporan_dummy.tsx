@@ -16,11 +16,11 @@ export interface LaporanData {
 const detailedDummyData: LaporanData[] = [
     {
         id: 1001,
-        pelapor: 'Anisa Wijaya',
+        pelapor: 'Prabowo',
         datetime: new Date('2025-03-15T08:30:00'),
         lokasi: 'Gedung Fakultas Teknik, Lantai 3, Ruang 304',
         kekerasan: 'Pelecehan Verbal',
-        kronologi: 'Saya sedang mengerjakan tugas di ruang kelas ketika dosen tersebut masuk dan mulai membuat komentar tidak pantas mengenai penampilan saya di depan teman-teman sekelas. Dia mengatakan bahwa pakaian saya terlalu menarik perhatian dan tidak sesuai untuk lingkungan akademik, padahal saya hanya mengenakan kemeja dan celana panjang standar.',
+        kronologi: 'disaat ruang sepi, tiba tiba mayor Teddy mendorong saya ke tembok dan menyentuh bagian privat serta membuat saya berteriak "i am lion pizza chicken, oh shit"',
         bukti: '/dummy.jpg',
         tanggal: new Date('2025-03-15T10:30:00'),
         status: 'baru'

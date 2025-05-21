@@ -3,7 +3,7 @@
 import { LaporanData, laporanDummyData } from "./dummy/laporan_dummy";
 import { Card } from "../common/card";
 import Image from "next/image";
-import { Tag, StatusTag } from "../common/tag";
+import { StatusTag } from "../common/tag";
 import { FilledButton } from "../common/button";
 import { Dropdown } from "rsuite";
 import { SpinnerLoader } from "@/components/common/loading";

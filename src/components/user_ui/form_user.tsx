@@ -173,9 +173,11 @@ export function FormUser() {
 
                     })}
                 </div>
-                <FilledButton type="submit">
-                    Kirim
-                </FilledButton>
+                <div className="w-fit">
+                    <FilledButton type="submit">
+                        Kirim
+                    </FilledButton>
+                </div>
             </form>
         </Card >
     )

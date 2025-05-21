@@ -1,15 +1,9 @@
 'use client'
-
-import { Table, Badge, Dropdown, Button, IconButton, Input, InputGroup, CheckboxGroup, Checkbox } from "rsuite";
 import { Card } from "../common/card";
-import { CircleCheckBig, FileText, MessagesSquare, Users, ExternalLink, SortAsc, SortDesc, Filter, Search, X } from "lucide-react";
-import { laporanDummyData, LaporanData } from "./dummy/laporan_dummy";
-import { Tag } from "../common/tag";
-import { useState, useEffect } from "react";
+import { CircleCheckBig, FileText, MessagesSquare, Users } from "lucide-react";
 import { LaporanTablePreview } from "./table_preview_admin";
 
 // Make sure to destructure these directly from Table
-const { Column, HeaderCell, Cell } = Table;
 
 interface DashboardItem {
     title: string;

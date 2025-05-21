@@ -5,6 +5,7 @@ import { Card } from "../common/card";
 import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { FilledButton } from "../common/button";
 
 interface ChatProps {
     className?: ClassValue;
@@ -104,12 +105,13 @@ export function ChatUser({ className }: ChatProps) {
                             placeholder="Ketik pesan..."
                             className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#74B49B]"
                         />
-                        <button
+                        <FilledButton
+                            paddingx="px-4"
+                            paddingy="py-2"
                             onClick={handleSendMessage}
-                            className="bg-[#74B49B] text-white px-4 py-2 rounded-lg hover:bg-[#5C8D89] transition-colors"
                         >
                             Kirim
-                        </button>
+                        </FilledButton>
                     </div>
                 </div>
             </div>

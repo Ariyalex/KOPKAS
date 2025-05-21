@@ -208,7 +208,9 @@ export function Register() {
                     {errors.terms && (
                         <p className="text-red-500 text-sm ml-6">{errors.terms}</p>
                     )}
-                </div>                <FilledButton
+                </div>
+                <FilledButton
+                    width='w-full'
                     type="submit"
                     className="font-medium flex justify-center items-center gap-2"
                     bgColor="bg-[#5C8D89]"
