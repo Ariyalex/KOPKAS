@@ -34,7 +34,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId = "chat-1" }: ChatsAdmin
     };
 
     return (
-        <div className="flex flex-col h-full w-full flex-2/6 gap-4 bg-white px-5 py-3 border-l border-gray-200">
+        <div className="flex flex-col h-full flex-2/6 gap-4 bg-white px-5 py-3 border-l border-gray-200">
             <div className="flex flex-col gap-3">
                 <h1 className="text-2xl text-black font-medium">Chats</h1>
                 <InputGroup className="w-full">

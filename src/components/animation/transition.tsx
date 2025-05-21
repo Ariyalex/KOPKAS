@@ -1,5 +1,6 @@
 'use client'
 
+import { ClassValue } from "clsx";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect } from "react";
@@ -9,9 +10,14 @@ interface PageTransitionProps {
     className?: string;
 }
 
-interface GesturesProps {
+interface ButtonGesturesProps {
     children: ReactNode;
+    clasName?: string;
+}
 
+interface CardGesturesProps {
+    children: ReactNode;
+    clasName?: string;
 }
 
 export function TransitionFadeIn({ children, className }: PageTransitionProps) {
@@ -44,12 +50,25 @@ export function TransitionFadeIn({ children, className }: PageTransitionProps) {
     );
 }
 
-export function Gestures({ children }: GesturesProps) {
+export function ButtonGesture({ children, clasName }: ButtonGesturesProps) {
     return (
         <motion.div
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             transition={{ duration: 0.1 }}
+            className={clasName}
+        >
+            {children}
+        </motion.div>
+    )
+}
+
+export function CardGesture({ children, clasName }: CardGesturesProps) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.04 }}
+            transition={{ duration: 0.1 }}
+            className={clasName}
         >
             {children}
         </motion.div>

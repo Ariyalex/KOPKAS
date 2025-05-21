@@ -85,8 +85,7 @@ export function Register() {
         return newErrors;
     };
 
-    const isDisable = !authData.email || !authData.full_name || !authData.password ||
-        !authData.confirmPass || !authData.terms || isLoading;
+    const isDisable = isLoading;
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -154,13 +153,16 @@ export function Register() {
     return (
         <Card width="w-auto" height="h-auto" className="flex flex-col gap-4 px-10 py-5 justify-center items-center">
             <div className="flex flex-col gap-3 items-center">
-                <Image src={"/logo.svg"} alt="logo" width={33} height={33} className="w-[33px] h-[33px]" />
+                <Link href={"/"}>
+                    <Image src={"/logo.svg"} alt="logo" width={33} height={33} className="w-[33px] h-[33px]" />
+                </Link>
                 <h1 className="text-3xl font-semibold text-[#1F2937]">Daftar ke KOPKAS</h1>
             </div>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[400px]">
                 <AuthInput
                     title="Email"
                     type="email"
+                    required={true}
                     placeholder="Masukkan email"
                     onChange={(event) => setAuthData({ ...authData, email: event.target.value })}
                     value={authData.email}
@@ -169,6 +171,7 @@ export function Register() {
                 <AuthInput
                     title="Username"
                     type="text"
+                    required={true}
                     placeholder="Buat Username"
                     onChange={(event) => setAuthData({ ...authData, full_name: event.target.value })}
                     value={authData.full_name}
@@ -177,6 +180,7 @@ export function Register() {
                 <AuthInput
                     title="Password"
                     type="password"
+                    required={true}
                     placeholder="Masukkan password"
                     onChange={(event) => setAuthData({ ...authData, password: event.target.value })}
                     value={authData.password}
@@ -185,6 +189,7 @@ export function Register() {
                 <AuthInput
                     title="Konfirmasi Password"
                     type="password"
+                    required={true}
                     placeholder="Konfirmasi password"
                     onChange={(event) => setAuthData({ ...authData, confirmPass: event.target.value })}
                     value={authData.confirmPass}
@@ -195,6 +200,7 @@ export function Register() {
                     <div className="flex items-start gap-2">
                         <input
                             type="checkbox"
+                            required={true}
                             id="terms-checkbox"
                             checked={authData.terms}
                             onChange={(e) => setAuthData({ ...authData, terms: e.target.checked })}

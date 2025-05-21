@@ -11,6 +11,7 @@ import { Notification, useToaster } from "rsuite";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import CheckIcon from '@rsuite/icons/Check';
+import { ButtonGesture } from "../animation/transition";
 
 interface DetailLaporanProps {
     params: { id: string };
@@ -168,22 +169,27 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                     })}</p>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
-                                    <h3 className="text-[#5C8D89] text-base font-medium">Status Laporan</h3>                                    <div className="flex flex-row gap-5 items-center">                                        <div
-                                        className="transition-all duration-300"
-                                        style={{
-                                            transform: statusUpdated ? 'scale(1.05)' : 'scale(1)',
-                                            boxShadow: statusUpdated ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                                            borderRadius: '9999px'
-                                        }}
-                                    >
-                                        <StatusTag status={data.status} />
-                                    </div>
-                                        <CustomDropdown
-                                            title={isLoading ? "Memperbarui..." : "Perbarui Status"}
-                                            placement="rightStart"
-                                            size="sm"
-                                            className={`transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'opacity-100'}`}
-                                        />                                        {isLoading && (
+                                    <h3 className="text-[#5C8D89] text-base font-medium">Status Laporan</h3>
+                                    <div className="flex flex-row gap-5 items-center">
+                                        <div
+                                            className="transition-all duration-300"
+                                            style={{
+                                                transform: statusUpdated ? 'scale(1.05)' : 'scale(1)',
+                                                boxShadow: statusUpdated ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
+                                                borderRadius: '9999px'
+                                            }}
+                                        >
+                                            <StatusTag status={data.status} />
+                                        </div>
+                                        <ButtonGesture>
+                                            <CustomDropdown
+                                                title={isLoading ? "Memperbarui..." : "Perbarui Status"}
+                                                placement="rightStart"
+                                                size="sm"
+                                                className={`transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'opacity-100'}`}
+                                            />
+                                        </ButtonGesture>
+                                        {isLoading && (
                                             <div className="ml-2">
                                                 <SpinnerLoader />
                                             </div>
@@ -264,7 +270,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                 )}
                             </Card>
                         </div>
-                        <Link href={"/admin/report"}>
+                        <Link href={"/admin/report"} className="w-fit">
                             <FilledButton bgColor="bg-[#5C8D89]" paddingx="px-3" paddingy="py-2">
                                 Kembali
                             </FilledButton>

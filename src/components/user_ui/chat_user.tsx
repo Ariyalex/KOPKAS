@@ -53,12 +53,12 @@ export function ChatUser({ className }: ChatProps) {
     return (
         <Card
             padding="p-0"
-            className={clsx("flex flex-col h-full", className)}
+            className={clsx("flex flex-col h-full ", className)}
         >
             <div className="flex flex-row gap-4 py-3 px-5 w-full items-center border-b-2 border-b-[#E5E7EB]">
                 <h1 className="text-[#5C8D89] font-bold text-2xl">Chatbox</h1>
             </div>
-            <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex flex-col flex-1 overflow-hidden ">
                 <div className="overflow-y-auto p-5 flex-1 flex flex-col gap-4 bg-[#F4F9F4]">
                     {messages.map((message, index) => {
                         const user = DummyUserContent.find(user => user.id === message.userId);

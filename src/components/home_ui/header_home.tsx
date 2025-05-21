@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Gestures } from "../animation/transition";
+import { ButtonGesture } from "../animation/transition";
 
 interface HeaderHomeProps {
     userData?: {
@@ -41,7 +41,7 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                     </div>
                 ) : (
                     <div className="flex flex-row gap-2 justify-center items-center">
-                        <Gestures>
+                        <ButtonGesture>
 
                             <Link
                                 href={"/login"}
@@ -49,15 +49,15 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                             >
                                 Masuk
                             </Link>
-                        </Gestures>
-                        <Gestures>
+                        </ButtonGesture>
+                        <ButtonGesture>
                             <Link
                                 href={"/register"}
                                 className="font-white rounded-md text-white bg-[#5C8D89] px-6 py-2"
                             >
                                 Daftar
                             </Link>
-                        </Gestures>
+                        </ButtonGesture>
                     </div>
                 )}
             </div>

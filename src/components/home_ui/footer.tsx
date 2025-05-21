@@ -1,6 +1,7 @@
 import { Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ButtonGesture } from "../animation/transition";
 
 export function Footer() {
     return (
@@ -37,36 +38,42 @@ export function Footer() {
                 <div className="flex flex-2 flex-col gap-4">
                     <h4 className="text-lg font-bold">Media Sosial</h4>
                     <div className="flex flex-row gap-2">
-                        <Link
-                            href={""}
-                            className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
-                            <Image
-                                src={"/svg/facebook.svg"}
-                                alt="facebook"
-                                width={20} height={20}
-                                className="w-3"
-                            />
-                        </Link>
-                        <Link
-                            href={""}
-                            className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
-                            <Image
-                                src={"/svg/twitter.svg"}
-                                alt="twitter"
-                                width={20} height={20}
-                                className="w-4"
-                            />
-                        </Link>
-                        <Link
-                            href={""}
-                            className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
-                            <Image
-                                src={"/svg/instagram.svg"}
-                                alt="instagram"
-                                width={20} height={20}
-                                className="w-3.5"
-                            />
-                        </Link>
+                        <ButtonGesture>
+                            <Link
+                                href={""}
+                                className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
+                                <Image
+                                    src={"/svg/facebook.svg"}
+                                    alt="facebook"
+                                    width={20} height={20}
+                                    className="w-3"
+                                />
+                            </Link>
+                        </ButtonGesture>
+                        <ButtonGesture>
+                            <Link
+                                href={""}
+                                className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
+                                <Image
+                                    src={"/svg/twitter.svg"}
+                                    alt="twitter"
+                                    width={20} height={20}
+                                    className="w-4"
+                                />
+                            </Link>
+                        </ButtonGesture>
+                        <ButtonGesture>
+                            <Link
+                                href={""}
+                                className="flex justify-center items-center p-3 rounded-full w-10 h-10 bg-[#5C8D89] ">
+                                <Image
+                                    src={"/svg/instagram.svg"}
+                                    alt="instagram"
+                                    width={20} height={20}
+                                    className="w-3.5"
+                                />
+                            </Link>
+                        </ButtonGesture>
                     </div>
                 </div>
             </div>

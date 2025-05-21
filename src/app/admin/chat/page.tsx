@@ -8,7 +8,7 @@ export default function Page() {
     const [activeChatId, setActiveChatId] = useState<string>("chat-1");
 
     return (
-        <div className="flex flex-row flex-5/6 h-screen">
+        <div className="flex flex-row flex-5/6 w-full h-screen">
             <ChatAdmin activeChatId={activeChatId} />
             <ChatsAdmin
                 activeChatId={activeChatId}

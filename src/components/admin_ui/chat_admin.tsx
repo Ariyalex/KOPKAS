@@ -4,6 +4,7 @@ import { DummyUsers, ChatMessagesDummy } from "./dummy/chat_dummy";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FilledButton } from "../common/button";
+import { Loading } from "../common/loading";
 
 interface ChatProps {
     activeChatId?: string;
@@ -16,9 +17,11 @@ export function ChatAdmin({ activeChatId = "chat-1" }: ChatProps) {
     const [messages, setMessages] = useState<any[]>([]);
     //ref untuk scroll pesan
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Update messages when activeChatId changes
     useEffect(() => {
+        setIsLoading(true);
         if (activeChatId && ChatMessagesDummy[activeChatId]) {
             setMessages(ChatMessagesDummy[activeChatId].map(msg => ({
                 userId: msg.senderId,
@@ -26,6 +29,7 @@ export function ChatAdmin({ activeChatId = "chat-1" }: ChatProps) {
                 sent: msg.timestamp
             })));
         }
+        setIsLoading(false)
     }, [activeChatId]);
 
     //scroll ke bawah saat pesan berubah
@@ -57,10 +61,16 @@ export function ChatAdmin({ activeChatId = "chat-1" }: ChatProps) {
         if (e.key === "Enter") {
             handleSendMessage();
         }
-    };
+    }; if (isLoading) {
+        return (
+            <div className="flex flex-col overflow-hidden items-center justify-center h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
+                <Loading text="Loading..." fullScreen={false} />
+            </div>
+        );
+    }
 
     return (
-        <div className="flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-2">
+        <div className="flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
             <div className="overflow-y-auto p-5 flex-1 flex flex-col gap-4 bg-[#F4F9F4]">
                 {messages.map((message, index) => {
                     const user = DummyUsers.find(user => user.id === message.userId);

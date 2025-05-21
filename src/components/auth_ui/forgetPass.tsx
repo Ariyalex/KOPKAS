@@ -6,8 +6,11 @@ import { useState } from "react";
 import { FilledButton } from "../common/button";
 import Link from "next/link";
 import { ArrowLeft, KeyRound } from "lucide-react";
+import { SpinnerLoader } from "../common/loading";
 
 export function ForgetPass() {
+    const [isLoading, setIsLoading] = useState(false);
+
     interface AuthInputDataType {
         email: string;
     }
@@ -17,13 +20,19 @@ export function ForgetPass() {
         email: "",
     });
 
-    const isDisable = !authData.email
-
+    const isDisable = isLoading;
 
     //post
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        if (isLoading) return;
+        setIsLoading(true);
+
+        //supabase
         console.log("form data: ", authData);
+
+        //udah selesai langsung loading false
+        setIsLoading(false);
     }
 
     return (
@@ -42,6 +51,7 @@ export function ForgetPass() {
                 <AuthInput
                     title="Email"
                     type="email"
+                    required={true}
                     placeholder="nama@email.com"
                     bgColor="bg-white"
                     onChange={(event) => setAuthData({ ...authData, email: event.target.value })}
@@ -54,10 +64,12 @@ export function ForgetPass() {
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
                 >
-                    Reset Password
+                    <div className='flex justify-center items-center'>
+                        {isLoading ? <SpinnerLoader /> : <p>Reset Password</p>}
+                    </div>
                 </FilledButton>
             </form>
-            <div className="flex flex-col gap-3 justify-center items-center">
+            <div >
                 <Link href="/login" className="text-[#3CB371] font-medium flex flex-row justify-center items-center text-center"><ArrowLeft />  Kembali ke Login</Link>
             </div>
         </Card>

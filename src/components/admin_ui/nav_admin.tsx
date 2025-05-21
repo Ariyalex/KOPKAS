@@ -74,7 +74,7 @@ export function NavAdmin() {
             <button
                 onClick={onLogout}
                 className={clsx(
-                    "flex felx-col p-2 gap-2 text-[#DC2626] rounded-md bg-white font-normal hover:bg-red-50 group",
+                    "flex felx-col p-2 gap-2 text-[#DC2626] rounded-md bg-white font-normal hover:bg-red-50 group cursor-pointer",
                 )}
             >
                 <LogOut className="text-[#DC2626]" />

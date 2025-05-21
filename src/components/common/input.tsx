@@ -80,7 +80,7 @@ export function TextArea({ title, placeholder, value, onChange }: TextAreaProps)
                 placeholder={placeholder}
                 value={value}
                 onChange={onChange}
-                className="border-2 resize-none rounded-md focus:border-[#74B49B] h-[100px] border-[#E5E7EB] px-2 py-1 outline-none"
+                className="border-2 resize-none rounded-md focus:border-[#74B49B] h-[150px] border-[#E5E7EB] px-2 py-1 outline-none"
             />
         </Card>
     )
@@ -187,11 +187,12 @@ interface AuthInputProps {
     bgColor?: string;
     value: string;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    required?: boolean;
     // menambahkan properti error untuk menampilkan pesan kesalahan
     error?: string;
 }
 
-export function AuthInput({ title, type, placeholder, value, bgColor, onChange }: AuthInputProps) {
+export function AuthInput({ title, type, placeholder, value, bgColor, required = false, onChange }: AuthInputProps) {
     const [showPassword, setShowPassword] = useState(false);
 
     // Only apply password toggling if the input is a password field
@@ -206,6 +207,7 @@ export function AuthInput({ title, type, placeholder, value, bgColor, onChange }
                     type={inputType}
                     placeholder={placeholder}
                     value={value}
+                    required={required}
                     onChange={onChange}
                     className={clsx("border-[1px] h-[50px] w-full placeholder:font-medium rounded-md focus:border-[#74B49B]  border-[#3CB37133] px-2 py-1 outline-none", bgColor)}
                 />
