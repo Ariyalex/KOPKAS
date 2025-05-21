@@ -136,7 +136,7 @@ export function LaporanTable() {
     }
 
     return (
-        <div className="w-full h-auto p-4 flex flex-col gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]">
+        <div >
             <div className="flex flex-col gap-4 mb-4">
                 <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold">Laporan Masuk</h2>

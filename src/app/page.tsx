@@ -7,8 +7,8 @@ import { PsikologKopkas } from "@/components/home_ui/psikolog_home";
 import { Footer } from "@/components/home_ui/footer";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader } from "rsuite";
 import { Session } from "@supabase/supabase-js";
+import { Loading } from "@/components/common/loading";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -59,13 +59,8 @@ export default function Home() {
 
     checkSession();
   }, []);
-
   if (isLoading) {
-    return (
-      <div className="h-screen w-screen flex items-center justify-center">
-        <Loader size="lg" content="Loading..." vertical />
-      </div>
-    );
+    return <Loading text="Loading..." fullScreen={true} />;
   }
 
   return (

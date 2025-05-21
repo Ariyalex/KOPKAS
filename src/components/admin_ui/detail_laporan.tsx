@@ -5,7 +5,8 @@ import { Card } from "../common/card";
 import Image from "next/image";
 import { Tag, StatusTag } from "../common/tag";
 import { FilledButton } from "../common/button";
-import { Dropdown, Loader } from "rsuite";
+import { Dropdown } from "rsuite";
+import { SpinnerLoader } from "@/components/common/loading";
 import { Notification, useToaster } from "rsuite";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -182,9 +183,10 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                             placement="rightStart"
                                             size="sm"
                                             className={`transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : 'opacity-100'}`}
-                                        />
-                                        {isLoading && (
-                                            <Loader size="sm" />
+                                        />                                        {isLoading && (
+                                            <div className="ml-2">
+                                                <SpinnerLoader />
+                                            </div>
                                         )}
                                         {statusUpdated && (
                                             <div

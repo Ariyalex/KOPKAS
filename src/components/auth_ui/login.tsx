@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useState } from "react";
-import { Loader, Notification, useToaster } from "rsuite";
+import { Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { AuthInput } from "../common/input";
+import { SpinnerLoader } from "../common/loading";
 
 export function Login() {
     const supabase = createClientComponentClient();
@@ -164,9 +165,8 @@ export function Login() {
                     className="font-medium flex justify-center items-center gap-2"
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
-                >
-                    <div className='flex justify-center items-center'>
-                        {isLoading ? <Loader content="loading..." /> : <p>Login</p>}
+                >                    <div className='flex justify-center items-center'>
+                        {isLoading ? <SpinnerLoader /> : <p>Login</p>}
                     </div>
                 </FilledButton>
             </form>

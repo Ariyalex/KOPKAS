@@ -9,6 +9,7 @@ import { Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { AuthInput } from "../common/input";
+import { SpinnerLoader } from "../common/loading";
 
 export function Register() {
     const supabase = createClientComponentClient();
@@ -207,15 +208,15 @@ export function Register() {
                     {errors.terms && (
                         <p className="text-red-500 text-sm ml-6">{errors.terms}</p>
                     )}
-                </div>
-
-                <FilledButton
+                </div>                <FilledButton
                     type="submit"
                     className="font-medium flex justify-center items-center gap-2"
                     bgColor="bg-[#5C8D89]"
                     disabled={isDisable}
                 >
-                    <span>{isLoading ? 'Loading...' : 'Register'}</span>
+                    <div className="flex justify-center items-center gap-2">
+                        {isLoading ? <SpinnerLoader /> : <span>Register</span>}
+                    </div>
                 </FilledButton>
             </form>
 

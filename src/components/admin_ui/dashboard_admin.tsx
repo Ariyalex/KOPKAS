@@ -42,7 +42,7 @@ export const DashboardContent: DashboardItem[] = [
 
 export function DashboardAdmin() {
     return (
-        <div className="flex flex-col h-auto gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]">
+        <div className="flex flex-col h-auto gap-5">
             <div>
                 <h1 className="text-[#1F2937] text-2xl font-semibold">Dashboard</h1>
                 <p className="text-[#6B7280]">Overview data terkini</p>
