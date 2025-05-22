@@ -59,6 +59,8 @@ export default function Home() {
 
     checkSession();
   }, []);
+
+
   if (isLoading) {
     return <Loading text="Loading..." fullScreen={true} />;
   }
