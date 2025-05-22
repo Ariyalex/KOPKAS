@@ -3,8 +3,7 @@ import { DashboardMessage, DashboardUser } from "@/components/user_ui/dashboard_
 export default function Page() {
     return (
         <div className="flex flex-row flex-5/6 gap-6">
-            <DashboardUser className="flex-4/6" />
-            <DashboardMessage className="flex-2/6" />
+            <DashboardUser />
         </div>
     );
 }
