@@ -1,25 +1,70 @@
 'use client'
 
-import { Table, Button } from "rsuite";
-import { Card } from "../common/card";
 import { ExternalLink } from "lucide-react";
-import { laporanDummyData, LaporanData } from "./dummy/laporan_dummy";
-import { Tag, StatusTag } from "../common/tag";
-import { useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button, Table } from "rsuite";
+import { Card } from "../common/card";
+import { StatusTag } from "../common/tag";
 
-// Make sure to destructure these directly from Table
+// import keperluan backend
+import type { Database } from '@/lib/database.types';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+interface Report {
+    id: string;
+    title: string;
+    status: 'new' | 'in_progress' | 'completed' | 'rejected';
+    created_at: string;
+    reporter: {
+        full_name: string;
+    } | null;
+}
+
 const { Column, HeaderCell, Cell } = Table;
 
 // Komponen LaporanTablePreview untuk menampilkan tabel preview laporan di dashboard
 export function LaporanTablePreview() {
+    const supabase = createClientComponentClient<Database>();
+    const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    // Get limited data for preview
-    const getData = () => {
-        // Return only the first 5 items
-        return laporanDummyData.slice(0, 5);
-    };
+    useEffect(() => {
+        async function fetchReports() {
+            try {
+                const { data, error } = await supabase
+                    .from('reports')
+                    .select(`
+                        id,
+                        title,
+                        status,
+                        created_at,
+                        reporter:reporter_id (
+                            full_name
+                        )
+                    `)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+                
+                // Perbaikan type assertion
+                if (data) {
+                    setReports(data as unknown as Report[]);
+                } else {
+                    setReports([]);
+                }
+
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+                setReports([]);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchReports();
+    }, [supabase]);
 
     return (
         <Card shadow="shadow-xs" className="w-full h-auto p-4">
@@ -35,7 +80,7 @@ export function LaporanTablePreview() {
             </div>
 
             <Table
-                data={getData()}
+                data={reports}
                 height={300}
                 hover={true}
                 rowClassName={(rowData) => "hover:bg-[#F4F9F4]"}
@@ -53,15 +98,17 @@ export function LaporanTablePreview() {
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                     </HeaderCell>
-                    <Cell dataKey="pelapor" />
+                    <Cell>
+                        {(rowData: Report) => rowData.reporter?.full_name || 'Unknown'}
+                    </Cell>
                 </Column>
                 <Column width={200} flexGrow={1} align="left">
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                        <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
+                        <h3 className="text-[#6B7280] font-medium text-base">Tanggal Masuk</h3>
                     </HeaderCell>
-                    <Cell dataKey="tanggal">
-                        {(rowData) => {
-                            const date = new Date(rowData.tanggal);
+                    <Cell>
+                        {(rowData: Report) => {
+                            const date = new Date(rowData.created_at);
                             return date.toLocaleDateString('id-ID', {
                                 day: 'numeric',
                                 month: 'long',

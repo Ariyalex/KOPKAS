@@ -70,6 +70,15 @@ const categories = [
     { id: "lainnya", name: "Lainnya" }
 ];
 
+function generateReportId(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = 'R';
+    for (let i = 0; i < 4; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
 export function FormUser() {
     const supabase = createClientComponentClient<Database>()
     const router = useRouter()
@@ -136,44 +145,89 @@ export function FormUser() {
                 return
             }
 
+            // Generate unique report ID
+            const reportId = generateReportId();
+
+            // Check if ID already exists
+            const { data: existingReport } = await supabase
+                .from('reports')
+                .select('id')
+                .eq('id', reportId)
+                .single();
+
+            if (existingReport) {
+                // If ID exists, try submission again
+                return handleSubmit(e);
+            }
+
             // Upload evidence file if exists
             let evidence_url = null
             if (formData.evidence_files) {
                 try {
                     const file = formData.evidence_files
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        toaster.push(
+                            <Notification type="error" header="Error" closable>
+                                Ukuran file terlalu besar (maksimal 5MB)
+                            </Notification>
+                        )
+                        return
+                    }
+
+                    // Validate file type
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+                    if (!allowedTypes.includes(file.type)) {
+                        toaster.push(
+                            <Notification type="error" header="Error" closable>
+                                Tipe file tidak didukung (JPG, PNG, atau PDF)
+                            </Notification>
+                        )
+                        return
+                    }
+
                     const fileExt = file.name.split('.').pop()
-                    const fileName = `${Math.random()}.${fileExt}`
+                    // Generate unique filename
+                    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
                     const filePath = `${session.user.id}/${fileName}`
 
-                    const { error: uploadError } = await supabase.storage
+                    // Upload file dengan menggunakan upsert
+                    const { error: uploadError, data } = await supabase.storage
                         .from('evidences')
-                        .upload(filePath, file)
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        })
 
                     if (uploadError) {
                         console.error('Upload error:', uploadError)
                         throw uploadError
                     }
 
+                    // Get public URL
                     const { data: { publicUrl } } = supabase.storage
                         .from('evidences')
                         .getPublicUrl(filePath)
 
                     evidence_url = publicUrl
-                } catch (uploadError) {
+
+                } catch (uploadError: any) {
                     console.error('File upload error:', uploadError)
                     toaster.push(
                         <Notification type="error" header="Error" closable>
-                            Gagal mengunggah file bukti pendukung
+                            Gagal mengunggah file: {uploadError.message || 'Unknown error'}
                         </Notification>
                     )
                     return
                 }
             }
 
-            // Create report
+            // Create report with custom ID
             const { data, error: reportError } = await supabase
                 .from('reports')
                 .insert({
+                    id: reportId,
                     reporter_id: session.user.id,
                     title: title,
                     description: formData.description,
@@ -194,7 +248,7 @@ export function FormUser() {
             // Show success notification
             toaster.push(
                 <Notification type="success" header="Laporan Terkirim" closable>
-                    Laporan Anda telah berhasil dikirim
+                    Laporan Anda telah berhasil dikirim dengan ID: {reportId}
                 </Notification>
             )
 

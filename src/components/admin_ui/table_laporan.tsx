@@ -1,17 +1,32 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import { LaporanData, laporanDummyData } from "./dummy/laporan_dummy";
-import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table } from "rsuite";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
-import Column from "rsuite/esm/Table/TableColumn";
-import { Cell, HeaderCell } from "rsuite-table";
-import { StatusTag } from "../common/tag";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { useEffect, useState } from "react";
+import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table } from "rsuite";
+import { Cell, HeaderCell } from "rsuite-table";
+import Column from "rsuite/esm/Table/TableColumn";
+import { StatusTag } from "../common/tag";
+
+// import keperluan backend
+import type { Database } from '@/lib/database.types';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+interface Report {
+    id: string;
+    title: string;
+    status: 'new' | 'in_progress' | 'completed' | 'rejected';
+    created_at: string;
+    reporter: {
+        id: string;
+        full_name: string;
+    };
+}
 
 export function LaporanTable() {
     const router = useRouter();
+    const supabase = createClientComponentClient<Database>();
 
     // State for sorting
     const [sortColumn, setSortColumn] = useState<string>('');
@@ -23,117 +38,98 @@ export function LaporanTable() {
     const [showFilters, setShowFilters] = useState<boolean>(false);
     const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
+    // State for reports
+    const [reports, setReports] = useState<Report[]>([]);
+
     // Add useEffect to update table when any filter or sort changes
     useEffect(() => {
+        async function fetchReports() {
+            try {
+                let query = supabase
+                    .from('reports')
+                    .select(`
+                        id,
+                        title,
+                        status,
+                        created_at,
+                        reporter:users!reports_reporter_id_fkey (
+                            id,
+                            full_name
+                        )
+                    `);
+
+                // Apply search query
+if (searchQuery.trim()) {
+    query = query
+        .filter('id::text', 'ilike', `%${searchQuery}%`)
+        .filter('reporter.full_name', 'ilike', `%${searchQuery}%`);
+}
+
+                // Apply status filters
+                if (statusFilter.length > 0) {
+                    query = query.in('status', statusFilter);
+                }
+
+                // Apply sorting
+                query = query.order(sortColumn || 'created_at', { 
+                    ascending: sortType === 'asc',
+                    nullsFirst: false 
+                });
+
+                const { data, error } = await query;
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                setReports(data as unknown as Report[]);
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
         setLoading(true);
         const timer = setTimeout(() => {
-            setLoading(false);
+            fetchReports();
         }, 300);
+
         return () => clearTimeout(timer);
-    }, [searchQuery, statusFilter, sortColumn, sortType]);
-
-    // Get data with filters and sorting applied
-    const getData = () => {
-        // First filter the data
-        let data = [...laporanDummyData];
-
-        // Apply status filters
-        if (statusFilter.length > 0) {
-            data = data.filter(item => statusFilter.includes(item.status));
-        }
-
-        // Apply search query
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            data = data.filter(item =>
-                String(item.id).toLowerCase().includes(query) ||
-                item.pelapor.toLowerCase().includes(query) ||
-                new Date(item.tanggal).toLocaleDateString('id-ID').toLowerCase().includes(query)
-            );
-        }
-
-        // Then sort the filtered data
-        if (sortColumn && sortType) {
-            return data.sort((a, b) => {
-                const aValue = a[sortColumn as keyof LaporanData];
-                const bValue = b[sortColumn as keyof LaporanData];
-
-                if (sortColumn === 'tanggal') {
-                    // For date type
-                    const aDate = aValue as Date;
-                    const bDate = bValue as Date;
-
-                    return sortType === 'asc' ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime();
-                } else if (sortColumn === 'status') {
-                    // Custom sort order for status: baru -> diproses -> selesai -> ditolak
-                    const statusOrder = {
-                        'baru': 1,
-                        'diproses': 2,
-                        'selesai': 3,
-                        'ditolak': 4
-                    };
-
-                    const aStatus = statusOrder[aValue as keyof typeof statusOrder] || 999;
-                    const bStatus = statusOrder[bValue as keyof typeof statusOrder] || 999;
-
-                    return sortType === 'asc' ? aStatus - bStatus : bStatus - aStatus;
-                } else if (typeof aValue === 'string' && typeof bValue === 'string') {
-                    // For string type
-                    return sortType === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-                } else {
-                    // For number or other types
-                    const aNum = aValue as number;
-                    const bNum = bValue as number;
-                    return sortType === 'asc' ? aNum - bNum : bNum - aNum;
-                }
-            });
-        }
-        return data;
-    };
+    }, [supabase, searchQuery, statusFilter, sortColumn, sortType]);
 
     // Handle sort change
     const handleSortColumn = (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
         setLoading(true);
-        setTimeout(() => {
-            setSortColumn(sortColumn);
-            setSortType(sortType || 'asc'); // Default to 'asc' if sortType is undefined
-            setLoading(false);
-        }, 300);
+        setSortColumn(sortColumn);
+        setSortType(sortType || 'asc');
     };
 
-    // Direct sort functions for quick sorting
+    // Direct sort functions
     const sortByDate = () => {
         setLoading(true);
-        setTimeout(() => {
-            if (sortColumn === 'tanggal' && sortType === 'asc') {
-                setSortColumn('tanggal');
-                setSortType('desc');
-            } else {
-                setSortColumn('tanggal');
-                setSortType('asc');
-            }
-            setLoading(false);
-        }, 200);
+        if (sortColumn === 'created_at' && sortType === 'asc') {
+            setSortType('desc');
+        } else {
+            setSortColumn('created_at');
+            setSortType('asc');
+        }
     };
 
     const sortByStatus = () => {
         setLoading(true);
-        setTimeout(() => {
-            if (sortColumn === 'status' && sortType === 'asc') {
-                setSortColumn('status');
-                setSortType('desc');
-            } else {
-                setSortColumn('status');
-                setSortType('asc');
-            }
-            setLoading(false);
-        }, 200);
+        if (sortColumn === 'status' && sortType === 'asc') {
+            setSortType('desc');
+        } else {
+            setSortColumn('status');
+            setSortType('asc');
+        }
     };
 
-    //handle routing by id
-    const routingId = (id: number) => {
+    // Handle routing by id
+    const routingId = (id: string) => {
         router.push(`/admin/report/${id}`);
-    }
+    };
 
     return (
         <LayoutGroup
@@ -148,24 +144,27 @@ export function LaporanTable() {
                                     placeholder="Cari laporan..."
                                     value={searchQuery}
                                     onChange={(value) => {
-                                        setSearchQuery(value);
-                                        setLoading(true);
-                                        setTimeout(() => setLoading(false), 300);
+                                        try {
+                                            // Sanitasi input pencarian
+                                            const sanitizedValue = value.replace(/[^\w\s]/gi, '');
+                                            setSearchQuery(sanitizedValue);
+                                            setLoading(true);
+                                        } catch (error) {
+                                            console.error('Error in search input:', error);
+                                        }
                                     }}
                                 />
-                                <InputGroup.Addon className="bg-[#E6FFFA] cursor-pointer">
+                                <InputGroup.Addon 
+                                    className="bg-[#E6FFFA] cursor-pointer hover:bg-[#D1FAE5]"
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setLoading(true);
+                                    }}
+                                >
                                     {searchQuery ? (
-                                        <X
-                                            size={16}
-                                            onClick={() => {
-                                                setSearchQuery('');
-                                                setLoading(true);
-                                                setTimeout(() => setLoading(false), 300);
-                                            }}
-                                            className="text-red-500"
-                                        />
+                                        <X size={16} className="text-red-500 hover:text-red-700" />
                                     ) : (
-                                        <Search size={16} className="text-white" />
+                                        <Search size={16} className="text-[#5C8D89]" />
                                     )}
                                 </InputGroup.Addon>
                             </InputGroup>
@@ -296,7 +295,7 @@ export function LaporanTable() {
                                         : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'
                                         }`}
                                 >
-                                    <span>Tanggal</span>
+                                    <span>Tanggal Masuk</span>
                                     {sortColumn === 'tanggal' ? (
                                         sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
                                     ) : null}
@@ -357,7 +356,7 @@ export function LaporanTable() {
                 </div>
 
                 <Table
-                    data={getData()}
+                    data={reports}
                     height={700}
                     hover={true}
                     rowClassName={"hover:bg-[#F4F9F4]"}
@@ -378,15 +377,17 @@ export function LaporanTable() {
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                         </HeaderCell>
-                        <Cell dataKey="pelapor" />
+                    <Cell>
+                        {(rowData: Report) => rowData.reporter?.full_name || 'Anonymous'}
+                    </Cell>
                     </Column>
                     <Column width={200} flexGrow={1} align="left" sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
                         </HeaderCell>
-                        <Cell dataKey="tanggal">
-                            {(rowData) => {
-                                const date = new Date(rowData.tanggal);
+                        <Cell>
+                            {(rowData: Report) => {
+                                const date = new Date(rowData.created_at);
                                 return date.toLocaleDateString('id-ID', {
                                     day: 'numeric',
                                     month: 'long',

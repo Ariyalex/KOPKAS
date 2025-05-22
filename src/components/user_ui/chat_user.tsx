@@ -1,11 +1,11 @@
 'use client'
 
 import { ClassValue, clsx } from "clsx";
-import { Card } from "../common/card";
-import { MessagesContentDummy, DummyUserContent } from "./dummy/chat_dummy";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FilledButton } from "../common/button";
+import { Card } from "../common/card";
+import { DummyUserContent, MessagesContentDummy } from "./dummy/chat_dummy";
 
 interface ChatProps {
     className?: ClassValue;

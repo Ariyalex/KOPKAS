@@ -1,9 +1,15 @@
 'use client'
-import { Card } from "../common/card";
 import { CircleCheckBig, FileText, MessagesSquare, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Table } from "rsuite";
+import { Card } from "../common/card";
 import { LaporanTablePreview } from "./table_preview_admin";
 
-// Make sure to destructure these directly from Table
+// import keperluan backend
+import type { Database } from "@/lib/database.types";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+const { Column, HeaderCell, Cell } = Table;
 
 interface DashboardItem {
     title: string;
@@ -11,30 +17,107 @@ interface DashboardItem {
     jumlah: number;
 }
 
-export const DashboardContent: DashboardItem[] = [
-    {
-        title: "Laporan Masuk",
-        Icon: FileText,
-        jumlah: 23,
-    },
-    {
-        title: "Laporan Selesai",
-        Icon: CircleCheckBig,
-        jumlah: 12,
-    },
-    {
-        title: "Total Pengguna",
-        Icon: Users,
-        jumlah: 44,
-    },
-    {
-        title: "Konsultasi Aktif",
-        Icon: MessagesSquare,
-        jumlah: 7,
-    },
-]
+interface DashboardData {
+    totalReports: number;
+    completedReports: number;
+    totalUsers: number;
+    activeChats: number;
+}
 
 export function DashboardAdmin() {
+    const supabase = createClientComponentClient<Database>();
+    const [dashboardData, setDashboardData] = useState<DashboardData>({
+        totalReports: 0,
+        completedReports: 0,
+        totalUsers: 0,
+        activeChats: 0
+    });
+
+    const DashboardContent: DashboardItem[] = [
+        {
+            title: "Laporan Masuk",
+            Icon: FileText,
+            jumlah: dashboardData.totalReports,
+        },
+        {
+            title: "Laporan Selesai",
+            Icon: CircleCheckBig,
+            jumlah: dashboardData.completedReports,
+        },
+        {
+            title: "Total Pengguna",
+            Icon: Users,
+            jumlah: dashboardData.totalUsers,
+        },
+        {
+            title: "Konsultasi Aktif",
+            Icon: MessagesSquare,
+            jumlah: dashboardData.activeChats,
+        },
+    ]
+
+    // Fetch dashboard data
+    useEffect(() => {
+        async function fetchDashboardData() {
+            try {
+                // Get total reports
+                const { data: reportsData, error: reportsError } = await supabase
+                    .from('reports')
+                    .select('*', { count: 'exact' });
+
+                // Get completed reports
+                const { data: completedData, error: completedError } = await supabase
+                    .from('reports')
+                    .select('*', { count: 'exact' })
+                    .eq('status', 'completed');
+
+                // Get total users
+                const { data: usersData, error: usersError } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact' })
+                    .eq('role', 'user');
+
+                // Get active chats
+                const { data: activeData, error: activeError } = await supabase
+                    .from('reports')
+                    .select('*', { count: 'exact' })
+                    .eq('status', 'in_progress');
+
+                if (reportsError || completedError || usersError || activeError) {
+                    throw new Error('Error fetching data');
+                }
+
+                setDashboardData({
+                    totalReports: reportsData?.length || 0,
+                    completedReports: completedData?.length || 0,
+                    totalUsers: usersData?.length || 0,
+                    activeChats: activeData?.length || 0
+                });
+
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        fetchDashboardData();
+
+        // Set up realtime subscription
+        const channel = supabase
+            .channel('dashboard-changes')
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'reports' 
+            }, () => {
+                fetchDashboardData();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [supabase]);
+    
     return (
         <div className="flex flex-col h-auto gap-5">
             <div>

@@ -62,6 +62,8 @@ export function DashboardUser({ className }: DbUser) {
     const [showNameEdit, setShowNameEdit] = useState(false); //menampilkan tombol edit nama
     const [showPhotoEdit, setShowPhotoEdit] = useState(false);// menampilkan tombol edit foto
 
+    // Fetch messages blom dimasukin
+
     // Fetch user data
     useEffect(() => {
         async function fetchUserData() {
@@ -107,42 +109,6 @@ export function DashboardUser({ className }: DbUser) {
         }
 
         fetchReports()
-    }, [supabase])
-
-    // Fetch messages (chats)
-    useEffect(() => {
-        async function fetchMessages() {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) return
-
-            const { data: messagesData, error } = await supabase
-                .from('chats')
-                .select(`
-                    id,
-                    message,
-                    created_at,
-                    sender:sender_id (
-                        id,
-                        full_name
-                    )
-                `)
-                .eq('sender_id', session.user.id)
-                .order('created_at', { ascending: false })
-
-            if (error) {
-                console.error('Error fetching messages:', error)
-                return
-            }
-
-            if (messagesData) {
-                setMessages(messagesData as unknown as Message[])
-            } else {
-                setMessages([])
-            }
-
-        }
-
-        fetchMessages()
     }, [supabase])
 
     // Handle name update
@@ -428,55 +394,8 @@ export function DashboardMessage({ className }: DbMessage) {
     const supabase = createClientComponentClient<Database>()
     const [messages, setMessages] = useState<Message[]>([])
 
-    useEffect(() => {
-        async function fetchMessages() {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) return
+    // Fetch messages
 
-            const { data: messagesData, error } = await supabase
-                .from('chats')
-                .select(`
-                    id,
-                    message,
-                    created_at,
-                    sender:sender_id (
-                        id,
-                        full_name
-                    )
-                `)
-                .order('created_at', { ascending: false })
-                .limit(10)
-
-            if (error) {
-                console.error('Error fetching messages:', error)
-                return
-            }
-
-            if (messagesData) {
-                setMessages(messagesData as unknown as Message[])
-            } else {
-                setMessages([])
-            }
-        }
-
-        fetchMessages()
-
-        // Subscribe to new messages
-        const channel = supabase
-            .channel('new_messages')
-            .on('postgres_changes', {
-                event: 'INSERT',
-                schema: 'public',
-                table: 'chats'
-            }, payload => {
-                setMessages(current => [payload.new as Message, ...current])
-            })
-            .subscribe()
-
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }, [supabase])
 
     return (
         <div className={clsx("", className)}>
