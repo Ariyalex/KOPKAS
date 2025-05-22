@@ -1,17 +1,22 @@
 'use client'
 
 import React, { useState } from "react";
+import { Notification, useToaster } from "rsuite";
+import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { DateInput, Dropdown, FileInput, TextArea, TextField } from "../common/input";
-import { FilledButton } from "../common/button";
-import { Notification, useToaster } from "rsuite";
+
+// import keperluan backend
+import { Database } from "@/lib/database.types";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useRouter } from "next/navigation";
 
 interface FormDataType {
-    datetime: Date | null;
-    lokasi: string;
-    kekerasan: string;
-    kronologi: string;
-    bukti: File | null;
+    category_id: string;
+    incident_date: Date | null;
+    location: string;
+    description: string;
+    evidence_files: File | null;
 }
 
 interface FormItem {
@@ -24,31 +29,31 @@ interface FormItem {
 //nav item
 const FormContent: FormItem[] = [
     {
-        name: "datetime",
+        name: "incident_date",
         title: "Tanggal dan Waktu kejadian",
         placeholder: "ex: 05/05/2025 12:12",
         type: "datetime"
     },
     {
-        name: "lokasi",
+        name: "location",
         title: "Lokasi Kejadian",
         placeholder: "ex: Fakultas Saintek",
         type: "text"
     },
     {
-        name: "kekerasan",
+        name: "category_id",
         title: "Jenis Kekerasan yang dialami",
         placeholder: "Pilih kekerasan yang dialami",
         type: "dropdown",
     },
     {
-        name: "bukti",
+        name: "evidence_files",
         title: "Bukti Pendukung",
         placeholder: "Pilih file",
         type: "file"
     },
     {
-        name: "kronologi",
+        name: "description",
         title: "Kronologi Kejadian",
         placeholder: "Jelaskan kronologi kejadian",
         type: "textarea"
@@ -56,55 +61,158 @@ const FormContent: FormItem[] = [
 
 ]
 
-const JenisKekerasan = [
-    "Pelecehan verbal", "Pelecehan fisik", "Pelecehan visual", "Pelecehan digital", "Pemaksaan hubungan seksual", "Lainnya"
+const categories = [
+    { id: "verbal", name: "Pelecehan verbal" },
+    { id: "fisik", name: "Pelecehan fisik" },
+    { id: "visual", name: "Pelecehan visual" },
+    { id: "digital", name: "Pelecehan digital" },
+    { id: "seksual", name: "Pemaksaan hubungan seksual" },
+    { id: "lainnya", name: "Lainnya" }
 ];
 
 export function FormUser() {
+    const supabase = createClientComponentClient<Database>()
+    const router = useRouter()
     const toaster = useToaster();
-    const message = (
-        <Notification
-            type="warning"
-            header="Form belum lengkap" closable
-        >
-            ada beberapa form yang harus diisi
-        </Notification>
-    )
+    const [isLoading, setIsLoading] = useState(false)
 
-    //controller
+
+    // controller form data
     const [formData, setFormData] = useState<FormDataType>({
-        datetime: null,
-        lokasi: "",
-        kekerasan: "",
-        kronologi: "",
-        bukti: null,
+        category_id: "",
+        description: "",
+        location: "",
+        incident_date: null,
+        evidence_files: null,
     });
 
+    // reset form data
     const resetForm = () => {
         setFormData({
-            datetime: null,
-            lokasi: "",
-            kekerasan: "",
-            kronologi: "",
-            bukti: null,
+            category_id: "",
+            description: "",
+            location: "",
+            incident_date: null,
+            evidence_files: null,
         })
     }
 
-    //handle submit
-    //supabase
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.datetime || !formData.lokasi || !formData.kekerasan) {
-            toaster.push(message);
-            return;
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsLoading(true)
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                toaster.push(
+                    <Notification type="error" header="Error" closable>
+                        Sesi login tidak ditemukan. Silahkan login ulang.
+                    </Notification>
+                )
+                return
+            }
+
+            // Get category name for title
+            const selectedCategory = categories.find(cat => cat.id === formData.category_id)
+            if (!selectedCategory) {
+                toaster.push(
+                    <Notification type="error" header="Error" closable>
+                        Kategori tidak ditemukan
+                    </Notification>
+                )
+                return
+            }
+
+            // Generate title from category
+            const title = `Laporan ${selectedCategory.name}`
+
+            // Validate form
+            if (!formData.category_id || !formData.description || !formData.incident_date || !formData.location) {
+                toaster.push(
+                    <Notification type="warning" header="Form belum lengkap" closable>
+                        Harap isi tanggal kejadian, lokasi, kategori, dan kronologi kejadian
+                    </Notification>
+                )
+                return
+            }
+
+            // Upload evidence file if exists
+            let evidence_url = null
+            if (formData.evidence_files) {
+                try {
+                    const file = formData.evidence_files
+                    const fileExt = file.name.split('.').pop()
+                    const fileName = `${Math.random()}.${fileExt}`
+                    const filePath = `${session.user.id}/${fileName}`
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('evidences')
+                        .upload(filePath, file)
+
+                    if (uploadError) {
+                        console.error('Upload error:', uploadError)
+                        throw uploadError
+                    }
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('evidences')
+                        .getPublicUrl(filePath)
+
+                    evidence_url = publicUrl
+                } catch (uploadError) {
+                    console.error('File upload error:', uploadError)
+                    toaster.push(
+                        <Notification type="error" header="Error" closable>
+                            Gagal mengunggah file bukti pendukung
+                        </Notification>
+                    )
+                    return
+                }
+            }
+
+            // Create report
+            const { data, error: reportError } = await supabase
+                .from('reports')
+                .insert({
+                    reporter_id: session.user.id,
+                    title: title,
+                    description: formData.description,
+                    location: formData.location,
+                    incident_date: formData.incident_date?.toISOString(),
+                    category_id: formData.category_id,
+                    evidence_files: evidence_url ? [evidence_url] : null,
+                    status: 'new'
+                })
+                .select()
+                .single()
+
+            if (reportError) {
+                console.error('Report submission error:', reportError)
+                throw reportError
+            }
+
+            // Show success notification
+            toaster.push(
+                <Notification type="success" header="Laporan Terkirim" closable>
+                    Laporan Anda telah berhasil dikirim
+                </Notification>
+            )
+
+            // Reset form and redirect
+            resetForm()
+            router.push('/user')
+
+        } catch (error: any) {
+            console.error('Error details:', error)
+            toaster.push(
+                <Notification type="error" header="Error" closable>
+                    {error.message || 'Terjadi kesalahan saat mengirim laporan'}
+                </Notification>
+            )
+        } finally {
+            setIsLoading(false)
         }
-
-        //supabase
-        console.log("form data: ", formData);
-        resetForm();
     }
-
-
 
     return (
         <Card
@@ -157,7 +265,10 @@ export function FormUser() {
                                     title={title}
                                     placeholder={placeholder}
                                     value={formData[name] as string}
-                                    data={JenisKekerasan.map(item => ({ label: item, value: item }))}
+                                    data={categories.map(cat => ({ 
+                                        label: cat.name, 
+                                        value: cat.id 
+                                    }))}
                                     onChange={(value) => setFormData({ ...formData, [name]: value || "" })}
                                 />
                             )

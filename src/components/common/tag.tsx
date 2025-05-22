@@ -15,52 +15,38 @@ export function Tag({ color, bgColor, children }: TagProps) {
 }
 
 interface StatusTagProps {
-    status: 'baru' | 'diproses' | 'selesai' | 'ditolak' | string;
+    status: 'new' | 'in_progress' | 'completed' | 'rejected';
 }
 
 export function StatusTag({ status }: StatusTagProps) {
-    let color: string;
-    let statusText: string;
-    let bgColor: string;
-    let priorityOrder: number;
+    const getStatusConfig = (status: string): { label: string; className: string } => {
+        const config = {
+            'new': {
+                label: 'Baru',
+                className: 'bg-blue-100 text-blue-800'
+            },
+            'in_progress': {
+                label: 'Diproses',
+                className: 'bg-yellow-100 text-yellow-800'
+            },
+            'completed': {
+                label: 'Selesai',
+                className: 'bg-green-100 text-green-800'
+            },
+            'rejected': {
+                label: 'Ditolak',
+                className: 'bg-red-100 text-red-800'
+            }
+        }[status];
 
-    switch (status) {
-        case 'baru':
-            color = 'text-blue-700';
-            statusText = 'Baru';
-            bgColor = "bg-blue-100";
-            priorityOrder = 1;
-            break;
-        case 'diproses':
-            color = 'text-orange-700';
-            statusText = 'Diproses';
-            bgColor = "bg-orange-100";
-            priorityOrder = 2;
-            break;
-        case 'selesai':
-            color = 'text-[#047857]';
-            statusText = 'Selesai';
-            bgColor = "bg-[#D1FAE5]";
-            priorityOrder = 3;
-            break;
-        case 'ditolak':
-            color = 'text-red-700';
-            statusText = 'Ditolak';
-            bgColor = "bg-red-100";
-            priorityOrder = 4;
-            break;
-        default:
-            color = 'text-gray-700';
-            bgColor = "bg-gray-100";
-            statusText = 'Tidak diketahui';
-            priorityOrder = 999;
-    }
+        return config || { label: 'Tidak diketahui', className: 'bg-gray-100 text-gray-800' };
+    };
+
+    const { label, className } = getStatusConfig(status);
 
     return (
-        <div className="flex items-center justify-center">
-            <Tag color={color} bgColor={bgColor}>
-                {statusText}
-            </Tag>
-        </div>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${className}`}>
+            {label}
+        </span>
     );
 }

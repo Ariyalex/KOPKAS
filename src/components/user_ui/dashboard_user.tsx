@@ -3,12 +3,14 @@
 import clsx, { ClassValue } from "clsx";
 import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { Tag } from "../common/tag";
-import { DummyUserContent, MessagesContentDummy } from "./dummy/chat_dummy";
-import { ReportContentDummy } from "./dummy/reports_dummy";
+
+// import keperluan backend
+import type { Database } from "@/lib/database.types";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface DbUser {
     className?: ClassValue;
@@ -18,27 +20,238 @@ interface DbMessage {
     className?: ClassValue;
 }
 
+interface UserData {
+    id: string;
+    email: string;
+    full_name: string;
+    role: string;
+    created_at: string;
+    photo?: string; // Menambahkan field photo yang digunakan di komponen
+}
+
+interface Report {
+    id: string;
+    title: string;
+    status: string;
+    created_at: string;
+}
+
+interface Message {
+    id: string;
+    message: string;
+    created_at: string;
+    sender: {
+        id: string;
+        full_name: string | null;
+    }
+}
+
 export function DashboardUser({ className }: DbUser) {
+    // Supabase client
+    const supabase = createClientComponentClient<Database>();
+
     // Mengambil data 
-    const userData = DummyUserContent.find(user => user.role === "user");
-    const messageData = MessagesContentDummy;
-    const reports = ReportContentDummy;
+    const [userData, setUserData] = useState<UserData | null>(null)
+    const [reports, setReports] = useState<Report[]>([])
+    const [messages, setMessages] = useState<Message[]>([])
 
     //controller
+    const [isLoading, setIsLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false); //editing
-    const [newName, setNewName] = useState(userData?.name || ""); //controller input nama baru
+    const [newName, setNewName] = useState("") //controller input nama baru
     const [showNameEdit, setShowNameEdit] = useState(false); //menampilkan tombol edit nama
     const [showPhotoEdit, setShowPhotoEdit] = useState(false);// menampilkan tombol edit foto
 
+    // Fetch user data
+    useEffect(() => {
+        async function fetchUserData() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
 
-    //handle edit click
+            const { data: userData, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', session.user.id)
+                .single()
+
+            if (error) {
+                console.error('Error fetching user:', error)
+                return
+            }
+
+            setUserData(userData)
+            setNewName(userData.full_name || '')
+        }
+
+        fetchUserData()
+    }, [supabase])
+
+    // Fetch reports
+    useEffect(() => {
+        async function fetchReports() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const { data: reportsData, error } = await supabase
+                .from('reports')
+                .select('id, title, status, created_at')
+                .eq('reporter_id', session.user.id)
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error('Error fetching reports:', error)
+                return
+            }
+
+            setReports(reportsData)
+        }
+
+        fetchReports()
+    }, [supabase])
+
+    // Fetch messages (chats)
+    useEffect(() => {
+        async function fetchMessages() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const { data: messagesData, error } = await supabase
+                .from('chats')
+                .select(`
+                    id,
+                    message,
+                    created_at,
+                    sender:sender_id (
+                        id,
+                        full_name
+                    )
+                `)
+                .eq('sender_id', session.user.id)
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error('Error fetching messages:', error)
+                return
+            }
+
+            if (messagesData) {
+                setMessages(messagesData as unknown as Message[])
+            } else {
+                setMessages([])
+            }
+
+        }
+
+        fetchMessages()
+    }, [supabase])
+
+    // Handle name update
+    const handleSaveName = async () => {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return
+
+        const { error } = await supabase
+            .from('users')
+            .update({ full_name: newName })
+            .eq('id', session.user.id)
+
+        if (error) {
+            console.error('Error updating name:', error)
+            return
+        }
+
+        setShowNameEdit(false)
+        if (userData) {
+            setUserData({ ...userData, full_name: newName })
+        }
+    }
+
+    const handleSavePhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            setIsLoading(true);
+            const file = event.target.files?.[0]
+            if (!file) {
+                throw new Error('No file selected')
+            }
+
+            // Validasi file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                throw new Error('File size too large (max 2MB)')
+            }
+
+            // Validasi file type
+            if (!file.type.startsWith('image/')) {
+                throw new Error('File must be an image')
+            }
+
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) {
+                throw new Error('No session found')
+            }
+
+            // Delete old photo if exists
+            if (userData?.photo) {
+                const oldPath = userData.photo.split('/').pop()
+                if (oldPath) {
+                    await supabase.storage
+                        .from('avatars')
+                        .remove([`${session.user.id}/${oldPath}`])
+                }
+            }
+
+            // Upload new photo
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${Date.now()}.${fileExt}`
+            const filePath = `${session.user.id}/${fileName}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                })
+
+            if (uploadError) {
+                throw new Error(`Upload error: ${uploadError.message}`)
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath)
+
+            // Update user profile
+            const { data: updatedUser, error: updateError } = await supabase
+                .from('users')
+                .update({ photo: publicUrl })
+                .eq('id', session.user.id)
+                .select()
+                .single()
+
+            if (updateError) {
+                throw new Error(`Profile update error: ${updateError.message}`)
+            }
+
+            // Update local state
+            if (updatedUser) {
+                setUserData(updatedUser)
+            }
+
+            setShowPhotoEdit(false)
+
+        } catch (error) {
+            console.error('Error updating photo:', error)
+            alert(error instanceof Error ? error.message : 'Error updating photo')
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Handle edit button click
     const handleEditClick = () => {
         setIsEditing(!isEditing);
-        // Reset states ketika menekan tombol edit
-        if (isEditing) {
-            setShowNameEdit(false);
-            setShowPhotoEdit(false);
-        }
+        setShowNameEdit(false);
+        setShowPhotoEdit(false);
     };
 
     //menangani edit name
@@ -53,17 +266,13 @@ export function DashboardUser({ className }: DbUser) {
         setShowNameEdit(false);//tidak menampilkan edit nama
     };
 
-    const handleSaveName = () => {
-        // disini untuk menyimpan nama ke database
-        //sementara edit form ditutup
-        setShowNameEdit(false);
-    };
-
-    const handleSavePhoto = () => {
-        // disini untuk menyimpan photo ke database
-        // sementara edit ditutup
-        setShowPhotoEdit(false);
-    };
+    if (!userData) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#5C8D89]"></div>
+            </div>
+        )
+    }
 
     return (
         <div className={clsx("flex flex-col gap-6", className)}>
@@ -74,7 +283,7 @@ export function DashboardUser({ className }: DbUser) {
                     <div className="flex felx-row gap-5 items-center justify-start w-full">
                         <div className="relative">
                             <Image
-                                src={userData.photo}
+                                src={userData.photo || '/default_photo.png'}
                                 alt="profile"
                                 width={100}
                                 height={100}
@@ -120,10 +329,17 @@ export function DashboardUser({ className }: DbUser) {
                                         </FilledButton>
                                     </div>
                                 ) : (
-                                    <h1 className="text-2xl text-[#5C8D89]">{userData.name}</h1>
+                                    <h1 className="text-2xl text-[#5C8D89]">{userData.full_name}</h1>
                                 )}
-                                <p className="text-[#5C8D89]">Active Member since April 17</p>
-                            </div>
+                                    <p className="text-[#5C8D89]">
+                                        Active Member since{' '}
+                                        {new Date(userData.created_at).toLocaleDateString('en-US', {
+                                            month: 'long',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
                             <div className="inline-flex gap-2">
                                 {isEditing ? (
                                     <>
@@ -176,7 +392,7 @@ export function DashboardUser({ className }: DbUser) {
                 <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                     <MessageSquare color="#74B49B" size={40} />
                     <h3 className="text-lg font-medium text-[#5C8D89]">Pesan</h3>
-                    <p><span>{messageData.length}</span> pesan belum dibaca</p>
+                    <p><span>{messages.length}</span> pesan belum dibaca</p>
                 </Card>
             </div>
 
@@ -184,19 +400,19 @@ export function DashboardUser({ className }: DbUser) {
             <Card width="w-full" padding="p-5" className="h-auto flex flex-col overflow-hidden">
                 <h1 className="text-2xl font-medium text-[#5C8D89]">Laporan Sebelumnya</h1>
                 <div className="flex flex-col gap-4 my-4 overflow-y-auto">
-                    {ReportContentDummy.map(({ id, submitted, status }, index) => (
-                        <div key={index} className="flex flex-row pb-4 justify-between border-b-[#E5E7EB] border-b-[1px]">
+                    {reports.map((report) => (
+                        <div key={report.id} className="flex flex-row pb-4 justify-between border-b-[#E5E7EB] border-b-[1px]">
                             <div className="flex flex-col">
-                                <h3 className="text-[#5C8D89] font-medium text-lg">Report #{id}</h3>
-                                <p>Submitted on {submitted}</p>
+                                <h3 className="text-[#5C8D89] font-medium text-lg">Report <div id={report.id}></div></h3>
+                                <p>Submitted on {new Date(report.created_at).toLocaleDateString()}</p>
                             </div>
-                            {status === "Resolved" ? (
+                            {report.status === "Resolved" ? (
                                 <Tag color="text-[#065F46]" bgColor="bg-[#D1FAE5]">
-                                    {status}
+                                    {report.status}
                                 </Tag>
                             ) : (
                                 <Tag color="text-[#B45309]" bgColor="bg-[#FEF3C7]">
-                                    {status}
+                                    {report.status}
                                 </Tag>
                             )}
                         </div>
@@ -209,32 +425,79 @@ export function DashboardUser({ className }: DbUser) {
 
 // message
 export function DashboardMessage({ className }: DbMessage) {
+    const supabase = createClientComponentClient<Database>()
+    const [messages, setMessages] = useState<Message[]>([])
+
+    useEffect(() => {
+        async function fetchMessages() {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const { data: messagesData, error } = await supabase
+                .from('chats')
+                .select(`
+                    id,
+                    message,
+                    created_at,
+                    sender:sender_id (
+                        id,
+                        full_name
+                    )
+                `)
+                .order('created_at', { ascending: false })
+                .limit(10)
+
+            if (error) {
+                console.error('Error fetching messages:', error)
+                return
+            }
+
+            if (messagesData) {
+                setMessages(messagesData as unknown as Message[])
+            } else {
+                setMessages([])
+            }
+        }
+
+        fetchMessages()
+
+        // Subscribe to new messages
+        const channel = supabase
+            .channel('new_messages')
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'chats'
+            }, payload => {
+                setMessages(current => [payload.new as Message, ...current])
+            })
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [supabase])
+
     return (
         <div className={clsx("", className)}>
             <Card width="w-full" height="h-full" className="flex flex-col overflow-hidden">
                 <h1 className="text-2xl font-medium text-[#5C8D89]">Pesan</h1>
                 <div className="flex flex-col gap-4 my-4 h-auto overflow-y-scroll">
-                    {MessagesContentDummy.map((message, index) => {
-                        const user = DummyUserContent.find(user => user.id === message.userId);
-                        if (!user) return null;
-
-                        return (
-                            <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
-                                <Image
-                                    src={user.photo}
-                                    alt={user.name}
-                                    width={60}
-                                    height={60}
-                                    className="rounded-full object-cover w-[60px] h-[60px] flex-shrink-0"
-                                />
-                                <div className="flex flex-col gap-2">
-                                    <h3 className="text-[#5C8D89] font-medium text-lg">{user.name}</h3>
-                                    <p className="truncate max-w-[230px] overflow-hidden">{message.message}</p>
-                                    <p className="text-[#6B7280]">{message.sent}</p>
-                                </div>
+                    {messages.map((message, index) => (
+                        <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-[#5C8D89] font-medium text-lg">
+                                    {message.sender.full_name}
+                                </h3>
+                                <p className="truncate max-w-[230px] overflow-hidden">
+                                    {message.message}
+                                </p>
+                                <p className="text-[#6B7280]">
+                                    {new Date(message.created_at).toLocaleDateString()}
+                                </p>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
             </Card>
         </div>
