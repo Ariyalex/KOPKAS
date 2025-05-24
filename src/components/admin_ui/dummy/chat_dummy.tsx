@@ -133,6 +133,14 @@ export const ChatMessagesDummy: Record<string, MessageDummy[]> = {
             content: "Terima kasih atas informasinya",
             timestamp: "10:45 AM",
             read: false
+        },
+        {
+            id: "msg-5",
+            chatId: "chat-1",
+            senderId: "user-1",
+            content: "Terima kasih atas informasinya",
+            timestamp: "10:45 AM",
+            read: false
         }
     ],
     "chat-2": [
