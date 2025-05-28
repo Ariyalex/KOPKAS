@@ -1,11 +1,14 @@
-import Link from "next/link";
+'use client'
+
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
 import { ReportContentDummy } from "./dummy/reports_dummy";
 import { ExternalLink } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function ReportListUser() {
     const reports = ReportContentDummy;
+    const router = useRouter();
 
     return (
         <Card
@@ -25,14 +28,15 @@ export function ReportListUser() {
                             </div>
                             <div className="flex flex-col justify-between items-center">
                                 <StatusTag status={report.status} />
-                                <Link href={`/user/report/${report.id}`}>
-                                    <button
-                                        className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
-                                    >
-                                        <ExternalLink size={16} className="mr-1" />
-                                        <span>Detail</span>
-                                    </button>
-                                </Link>
+                                <button
+                                    onClick={() => {
+                                        router.push(`/user/report/${report.id}`)
+                                    }}
+                                    className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
+                                >
+                                    <ExternalLink size={16} className="mr-1" />
+                                    <span>Detail</span>
+                                </button>
                             </div>
                         </div>
                         <div className="w-full h-[1.5px] bg-[#E5E7EB] my-4" />

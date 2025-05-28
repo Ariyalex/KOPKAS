@@ -367,7 +367,7 @@ export function DashboardUser({ className }: DbUser) {
                 {/* rencent report */}
                 <Card width="w-full" padding="p-5" height="h-full" className="flex flex-col overflow-hidden">
                     <h1 className="text-2xl font-medium text-[#5C8D89]">Laporan Sebelumnya</h1>
-                    <div className="flex flex-col gap-4 my-4 overflow-y-auto">
+                    <div className="flex flex-col gap-4 pr-5 my-4 overflow-y-auto">
                         {reports.map((report) => (
                             <div key={report.id} className="flex flex-row pb-4 justify-between border-b-[#E5E7EB] border-b-[1px]">
                                 <div className="flex flex-col">

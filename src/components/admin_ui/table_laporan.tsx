@@ -162,9 +162,9 @@ export function LaporanTable() {
                                     }}
                                 >
                                     {searchQuery ? (
-                                        <X size={16} className="text-red-500 hover:text-red-700" />
+                                        <X size={16} className="text-white" />
                                     ) : (
-                                        <Search size={16} className="text-[#5C8D89]" />
+                                        <Search size={16} className="text-white" />
                                     )}
                                 </InputGroup.Addon>
                             </InputGroup>

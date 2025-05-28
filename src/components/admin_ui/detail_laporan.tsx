@@ -12,6 +12,7 @@ import { StatusTag } from "../common/tag";
 // import keperluan backend
 import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
 
 interface DetailLaporanProps {
     params: { id: string };
@@ -37,6 +38,8 @@ interface Report {
 }
 
 export function DetailLaporan({ params }: DetailLaporanProps) {
+    const router = useRouter();
+
     // supabase
     const supabase = createClientComponentClient<Database>();
 
@@ -113,7 +116,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
 
         return config || { label: 'Tidak diketahui', className: 'bg-gray-100 text-gray-800' };
     };
-    
+
     const handleStatusChange = async (newStatus: 'new' | 'in_progress' | 'completed' | 'rejected') => {
         if (!report) return;
 
@@ -121,7 +124,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
         try {
             const { error } = await supabase
                 .from('reports')
-                .update({ 
+                .update({
                     status: newStatus,
                     updated_at: new Date().toISOString()
                 })
@@ -140,7 +143,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                 notes: `Status diperbarui ke ${label}`
             });
 
-            setReport(prev => prev ? {...prev, status: newStatus} : null);
+            setReport(prev => prev ? { ...prev, status: newStatus } : null);
             showNotification('success', `Status laporan berhasil diperbarui menjadi ${label}`);
             setStatusUpdated(true);
             setLastUpdatedStatus(label);
@@ -168,7 +171,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
     }
 
     return (
-        <div className="h-screen w-screen bg-white flex flex-col gap-4 px-8 py-2">
+        <div className="h-screen w-screen bg-white flex flex-col gap-2 px-8 py-2">
             <div>
                 <h1 className="text-[#1F2937] text-2xl font-semibold">Detail Laporan</h1>
                 <p className="text-[#6B7280]">Lihat detail laporan yang dikirim pelapor</p>
@@ -210,16 +213,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                 <div className="flex flex-col gap-1.5">
                                     <h3 className="text-[#5C8D89] text-base font-medium">Status Laporan</h3>
                                     <div className="flex flex-row gap-5 items-center">
-                                        <div
-                                            className="transition-all duration-300"
-                                            style={{
-                                                transform: statusUpdated ? 'scale(1.05)' : 'scale(1)',
-                                                boxShadow: statusUpdated ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                                                borderRadius: '9999px'
-                                            }}
-                                        >
-                                            <StatusTag status={report.status} />
-                                        </div>
+                                        <StatusTag status={report.status} />
                                         <Dropdown
                                             title={isLoading ? "Memperbarui..." : "Perbarui Status"}
                                             placement="rightStart"
@@ -299,6 +293,12 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                 )}
                             </Card>
                         </div>
+                    </div>
+
+                    <div className='w-fit'>
+                        <FilledButton onClick={router.back} width='w-fit'>
+                            Kembali
+                        </FilledButton>
                     </div>
                 </Card>
                 {/* Kronologi Section */}
