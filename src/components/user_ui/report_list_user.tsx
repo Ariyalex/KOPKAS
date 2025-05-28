@@ -1,0 +1,44 @@
+import Link from "next/link";
+import { Card } from "../common/card";
+import { StatusTag } from "../common/tag";
+import { ReportContentDummy } from "./dummy/reports_dummy";
+import { ExternalLink } from "lucide-react";
+
+export function ReportListUser() {
+    const reports = ReportContentDummy;
+
+    return (
+        <Card
+            className="flex flex-5/6 gap-2 h-full flex-col"
+        >
+            <div>
+                <h1 className="text-[#1F2937] text-2xl font-semibold">Daftar Laporan</h1>
+                <p className="text-[#6B7280]">Daftar laporan yang sudah dikirim</p>
+            </div>
+            <div className="flex flex-col overflow-y-auto pr-4">
+                {reports.map((report) => (
+                    <div key={report.id} className="flex flex-col">
+                        <div className="flex flex-row justify-between">
+                            <div className="flex flex-col">
+                                <h3 className="text-[#5C8D89] font-medium text-lg">Report <span>{report.id}</span></h3>
+                                <p>Submitted on {new Date(report.submitted).toLocaleDateString()}</p>
+                            </div>
+                            <div className="flex flex-col justify-between items-center">
+                                <StatusTag status={report.status} />
+                                <Link href={`/user/report/${report.id}`}>
+                                    <button
+                                        className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
+                                    >
+                                        <ExternalLink size={16} className="mr-1" />
+                                        <span>Detail</span>
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="w-full h-[1.5px] bg-[#E5E7EB] my-4" />
+                    </div>
+                ))}
+            </div>
+        </Card>
+    )
+}

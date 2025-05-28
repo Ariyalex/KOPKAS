@@ -1,6 +1,6 @@
 'use client'
 
-import { House, LogOut, MessageSquare, Plus } from "lucide-react";
+import { ClipboardList, House, LogOut, MessageSquare, Plus } from "lucide-react";
 import { Card } from "../common/card";
 import Link from "next/link";
 import { ClassValue } from "clsx";
@@ -31,6 +31,11 @@ const navContent: NavItem[] = [
         title: "Laporkan Insiden",
         Icon: Plus,
         route: "/user/form"
+    },
+    {
+        title: "Daftar Laporan",
+        Icon: ClipboardList,
+        route: "/user/report"
     },
 
 

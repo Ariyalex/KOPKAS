@@ -45,7 +45,7 @@ export function StatusTag({ status }: StatusTagProps) {
     const { label, className } = getStatusConfig(status);
 
     return (
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${className}`}>
+        <span className={`py-0.5 px-2 w-fit h-fit text-sm rounded-full ${className}`}>
             {label}
         </span>
     );

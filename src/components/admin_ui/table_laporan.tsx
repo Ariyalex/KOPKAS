@@ -59,11 +59,11 @@ export function LaporanTable() {
                     `);
 
                 // Apply search query
-if (searchQuery.trim()) {
-    query = query
-        .filter('id::text', 'ilike', `%${searchQuery}%`)
-        .filter('reporter.full_name', 'ilike', `%${searchQuery}%`);
-}
+                if (searchQuery.trim()) {
+                    query = query
+                        .filter('id::text', 'ilike', `%${searchQuery}%`)
+                        .filter('reporter.full_name', 'ilike', `%${searchQuery}%`);
+                }
 
                 // Apply status filters
                 if (statusFilter.length > 0) {
@@ -71,9 +71,9 @@ if (searchQuery.trim()) {
                 }
 
                 // Apply sorting
-                query = query.order(sortColumn || 'created_at', { 
+                query = query.order(sortColumn || 'created_at', {
                     ascending: sortType === 'asc',
-                    nullsFirst: false 
+                    nullsFirst: false
                 });
 
                 const { data, error } = await query;
@@ -154,7 +154,7 @@ if (searchQuery.trim()) {
                                         }
                                     }}
                                 />
-                                <InputGroup.Addon 
+                                <InputGroup.Addon
                                     className="bg-[#E6FFFA] cursor-pointer hover:bg-[#D1FAE5]"
                                     onClick={() => {
                                         setSearchQuery('');
@@ -377,9 +377,9 @@ if (searchQuery.trim()) {
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                         </HeaderCell>
-                    <Cell>
-                        {(rowData: Report) => rowData.reporter?.full_name || 'Anonymous'}
-                    </Cell>
+                        <Cell>
+                            {(rowData: Report) => rowData.reporter?.full_name || 'Anonymous'}
+                        </Cell>
                     </Column>
                     <Column width={200} flexGrow={1} align="left" sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>

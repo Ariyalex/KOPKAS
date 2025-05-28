@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
-import { Tag } from "../common/tag";
+import { StatusTag, Tag } from "../common/tag";
 
 // import keperluan backend
 import type { Database } from "@/lib/database.types";
@@ -33,7 +33,7 @@ interface UserData {
 interface Report {
     id: string;
     title: string;
-    status: string;
+    status: 'new' | 'in_progress' | 'completed' | 'rejected';
     created_at: string;
 }
 
@@ -365,24 +365,16 @@ export function DashboardUser({ className }: DbUser) {
                 </div>
 
                 {/* rencent report */}
-                <Card width="w-full" padding="p-5" height="h-full" className="h-auto flex flex-col overflow-hidden">
+                <Card width="w-full" padding="p-5" height="h-full" className="flex flex-col overflow-hidden">
                     <h1 className="text-2xl font-medium text-[#5C8D89]">Laporan Sebelumnya</h1>
                     <div className="flex flex-col gap-4 my-4 overflow-y-auto">
                         {reports.map((report) => (
                             <div key={report.id} className="flex flex-row pb-4 justify-between border-b-[#E5E7EB] border-b-[1px]">
                                 <div className="flex flex-col">
-                                    <h3 className="text-[#5C8D89] font-medium text-lg">Report <div id={report.id}></div></h3>
+                                    <h3 className="text-[#5C8D89] font-medium text-lg">Report <span>{report.id}</span></h3>
                                     <p>Submitted on {new Date(report.created_at).toLocaleDateString()}</p>
                                 </div>
-                                {report.status === "Resolved" ? (
-                                    <Tag color="text-[#065F46]" bgColor="bg-[#D1FAE5]">
-                                        {report.status}
-                                    </Tag>
-                                ) : (
-                                    <Tag color="text-[#B45309]" bgColor="bg-[#FEF3C7]">
-                                        {report.status}
-                                    </Tag>
-                                )}
+                                <StatusTag status={report.status} />
                             </div>
                         ))}
                     </div>
