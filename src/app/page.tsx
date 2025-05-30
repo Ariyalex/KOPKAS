@@ -1,17 +1,16 @@
 'use client'
 
+import { Loading } from "@/components/common/loading";
 import { FeatureKopkas } from "@/components/home_ui/feature_home";
-import { HeaderHome } from "../components/home_ui/header_home";
-import { HomeIntro } from "../components/home_ui/home_intro";
-import { PsikologKopkas } from "@/components/home_ui/psikolog_home";
 import { Footer } from "@/components/home_ui/footer";
-import { useEffect, useState } from "react";
+import { PsikologKopkas } from "@/components/home_ui/psikolog_home";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
-import { Loading } from "@/components/common/loading";
+import { useEffect, useState } from "react";
+import { HeaderHome } from "../components/home_ui/header_home";
+import { HomeIntro } from "../components/home_ui/home_intro";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
   const [userData, setUserData] = useState<{
     full_name?: string;
@@ -20,6 +19,9 @@ export default function Home() {
     email?: string;
   } | null>(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Session check and user data fetch
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -53,20 +55,20 @@ export default function Home() {
       } catch (error) {
         console.error("Session check failed:", error);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false);  // Make sure loading is set to false
       }
     };
 
     checkSession();
   }, []);
 
-
-  if (isLoading) {
+  // Show loading state
+  if (isLoading ) {
     return <Loading text="Loading..." fullScreen={true} />;
   }
 
   return (
-    <main className="">
+    <main className="flex flex-col h-full">
       <HeaderHome userData={userData} />
       <div className="p-0">
         <HomeIntro session={session} userData={userData} />

@@ -1,5 +1,7 @@
 'use client'
 
+import { useReportStore } from "@/stores/reportStore"; // Menggunakan store untuk mengambil data
+import { Report } from "@/types"; // Import tipe data Report
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -7,64 +9,32 @@ import { Button, Table } from "rsuite";
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
 
-// import keperluan backend
-import type { Database } from '@/lib/database.types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
-interface Report {
-    id: string;
-    title: string;
-    status: 'new' | 'in_progress' | 'completed' | 'rejected';
-    created_at: string;
-    reporter: {
-        full_name: string;
-    } | null;
-}
-
+// Komponen LaporanTablePreview untuk menampilkan tabel preview laporan di dashboard
 const { Column, HeaderCell, Cell } = Table;
 
-// Komponen LaporanTablePreview untuk menampilkan tabel preview laporan di dashboard
 export function LaporanTablePreview() {
-    const supabase = createClientComponentClient<Database>();
-    const [reports, setReports] = useState<Report[]>([]);
+    const { reports, fetchReports, isLoading } = useReportStore();  // Mengambil data laporan dari store
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        async function fetchReports() {
-            try {
-                const { data, error } = await supabase
-                    .from('reports')
-                    .select(`
-                        id,
-                        title,
-                        status,
-                        created_at,
-                        reporter:reporter_id (
-                            full_name
-                        )
-                    `)
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-
-                if (error) throw error;
-                
-                // Perbaikan type assertion
-                if (data) {
-                    setReports(data as unknown as Report[]);
-                } else {
-                    setReports([]);
-                }
-
-            } catch (error) {
-                console.error('Error fetching reports:', error);
-                setReports([]);
-            } finally {
-                setLoading(false);
-            }
+        async function getReports() {
+            setLoading(true);
+            await fetchReports(); // Mengambil laporan menggunakan fungsi store
+            setLoading(false);
         }
 
-        fetchReports();
-    }, [supabase]);
+        getReports();
+    }, [fetchReports]);
+
+    // Menambahkan pengurutan dan pembatasan langsung pada saat mengambil data di store
+    useEffect(() => {
+        const applySortingAndLimit = () => {
+            fetchReports(); // Mengambil laporan dari store
+            setLoading(false);
+        };
+
+        applySortingAndLimit();
+    }, [fetchReports]);
 
     return (
         <Card shadow="shadow-xs" className="w-full h-auto p-4">
