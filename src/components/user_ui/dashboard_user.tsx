@@ -14,8 +14,7 @@ import { Loading } from "../common/loading"; // Loading state
 import { StatusTag } from "../common/tag";
 
 export function DashboardUser() {
-    const [ userData ] = useState<UserData | null>(null);
-    const { fetchCurrentUser, isLoading: userLoading } = useUserStore();
+    const { currentUser, fetchCurrentUser, isLoading: userLoading, updateUserName, updateUserPhoto } = useUserStore();
     const { reports, fetchReports, isLoading: reportLoading } = useReportStore();
     const { messages, fetchMessages, isLoading: messageLoading } = useMessageStore();
 
@@ -23,6 +22,7 @@ export function DashboardUser() {
     const [showNameEdit, setShowNameEdit] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState<string>("");
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     // Handle the data fetching when the component mounts
     useEffect(() => {
@@ -32,37 +32,60 @@ export function DashboardUser() {
     // Handle edit actions
     const handleEditClick = () => setIsEditing(!isEditing);
     const handleEditName = () => {
+        if (currentUser) {
+            setNewName(currentUser.full_name);
+        }
         setShowNameEdit(true);
         setShowPhotoEdit(false);
     };
     const handleEditPhoto = () => {
         setShowPhotoEdit(true);
         setShowNameEdit(false);
+        setSelectedFile(null);
     };
+
+    //handle file change
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setSelectedFile(file);
+
+            updateUserPhoto(file).then(() => {
+                setShowPhotoEdit(false);
+            }).catch((error) => {
+                console.log("error update photo: ", e);
+            });
+        }
+    }
 
     // Handle save name logic
     const handleSaveName = () => {
         if (newName !== "") {
             setShowNameEdit(false);
+            updateUserName(newName!);
         }
     };
 
     if (userLoading || reportLoading || messageLoading) {
-        return <Loading text="Loading..." fullScreen={false} />;
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <Loading text="Loading..." fullScreen={false} />;
+            </div>
+        )
     }
 
     return (
         <div className="flex flex-row w-full h-full gap-6">
             <div className={clsx("flex h-full flex-col gap-6 flex-4/6")}>
-            {/* lah ui nya? */}
+                {/* lah ui nya? */}
                 {/* profile */}
                 <Card width="w-full">
                     {/* ketika ada user data */}
-                    {userData && (
+                    {currentUser && (
                         <div className="flex flex-row gap-5 items-center justify-start w-full">
                             <div className="relative">
                                 <Image
-                                    src={userData.photo || '/default_photo.png'}
+                                    src={currentUser.photo || '/default_photo.png'}
                                     alt="profile"
                                     width={100}
                                     height={100}
@@ -74,6 +97,7 @@ export function DashboardUser() {
                                         <input
                                             type="file"
                                             accept="image/*"
+                                            onChange={handleFileChange}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         />
                                         <ImageIcon className="text-white" size={30} />
@@ -108,11 +132,11 @@ export function DashboardUser() {
                                             </FilledButton>
                                         </div>
                                     ) : (
-                                        <h1 className="text-2xl text-[#5C8D89]">{userData.full_name}</h1>
+                                        <h1 className="text-2xl text-[#5C8D89]">{currentUser.full_name}</h1>
                                     )}
                                     <p className="text-[#5C8D89]">
                                         Active Member since{' '}
-                                        {new Date(userData.created_at).toLocaleDateString('en-US', {
+                                        {new Date(currentUser.created_at).toLocaleDateString('en-US', {
                                             month: 'long',
                                             day: 'numeric',
                                             year: 'numeric'
