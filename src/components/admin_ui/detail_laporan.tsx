@@ -1,93 +1,39 @@
 'use client'
-
-import CheckIcon from '@rsuite/icons/Check';
-import Image from "next/image";
+import { useReportStore } from "@/stores/reportStore";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
 import { Dropdown, Loader, Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
 
-// import keperluan backend
-import type { Database } from '@/lib/database.types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
-
 interface DetailLaporanProps {
     params: { id: string };
 }
 
-interface Report {
-    id: string;
-    title: string;
-    description: string;
-    location: string;
-    incident_date: string;
-    status: 'new' | 'in_progress' | 'completed' | 'rejected';
-    evidence_files: string[] | null;
-    category_id: string;
-    reporter_id: string;
-    reporter: {
-        id: string;
-        full_name: string;
-        email: string;
-        photo: string | null;
-    } | null;
-    created_at: string;
-}
-
 export function DetailLaporan({ params }: DetailLaporanProps) {
     const router = useRouter();
-
-    // supabase
-    const supabase = createClientComponentClient<Database>();
-
-    //controller
-    const [report, setReport] = useState<Report | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [statusUpdated, setStatusUpdated] = useState<boolean>(false);
-    const [lastUpdatedStatus, setLastUpdatedStatus] = useState<string | null>(null);
-
-    //notifikasi
     const toaster = useToaster();
 
+    const { currentReport: report, isLoading, error, fetchReportById, updateReportStatus, clearError } = useReportStore();
+
     useEffect(() => {
-        async function fetchReport() {
-            try {
-                const { data, error } = await supabase
-                    .from('reports')
-                    .select(`
-                        *,
-                        reporter:users!reports_reporter_id_fkey (
-                            id,
-                            full_name,
-                            email,
-                            photo
-                        )
-                    `)
-                    .eq('id', params.id)
-                    .single();
+        fetchReportById(params.id); // Fetch the report by ID
 
-                if (error) throw error;
-                setReport(data as Report);
-            } catch (error) {
-                console.error('Error fetching report:', error);
-                showNotification('error', 'Gagal memuat data laporan');
-            } finally {
-                setIsLoading(false);
-            }
+        return () => clearError(); // Cleanup the error when the component unmounts
+    }, [params.id, fetchReportById, clearError]);
+
+    useEffect(() => {
+        if (error) {
+            showNotification('error', error);
+            clearError();
         }
-
-        fetchReport();
-    }, [params.id, supabase]);
+    }, [error, clearError]);
 
     const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
         toaster.push(
-            <Notification type={type} header={
-                type === 'success' ? 'Sukses' :
-                    type === 'error' ? 'Error' : 'Informasi'
-            } closable>
+            <Notification type={type} header={type === 'success' ? 'Sukses' : type === 'error' ? 'Error' : 'Informasi'} closable>
                 {message}
             </Notification>,
             { placement: 'topEnd' }
@@ -96,22 +42,10 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
 
     const getStatusConfig = (status: string): { label: string; className: string } => {
         const config = {
-            'new': {
-                label: 'Baru',
-                className: 'bg-blue-100 text-blue-800'
-            },
-            'in_progress': {
-                label: 'Diproses',
-                className: 'bg-yellow-100 text-yellow-800'
-            },
-            'completed': {
-                label: 'Selesai',
-                className: 'bg-green-100 text-green-800'
-            },
-            'rejected': {
-                label: 'Ditolak',
-                className: 'bg-red-100 text-red-800'
-            }
+            'new': { label: 'Baru', className: 'bg-blue-100 text-blue-800' },
+            'in_progress': { label: 'Diproses', className: 'bg-yellow-100 text-yellow-800' },
+            'completed': { label: 'Selesai', className: 'bg-green-100 text-green-800' },
+            'rejected': { label: 'Ditolak', className: 'bg-red-100 text-red-800' }
         }[status];
 
         return config || { label: 'Tidak diketahui', className: 'bg-gray-100 text-gray-800' };
@@ -120,40 +54,12 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
     const handleStatusChange = async (newStatus: 'new' | 'in_progress' | 'completed' | 'rejected') => {
         if (!report) return;
 
-        setIsLoading(true);
         try {
-            const { error } = await supabase
-                .from('reports')
-                .update({
-                    status: newStatus,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', report.id);
-
-            if (error) throw error;
-
-            // Get status label from config
             const { label } = getStatusConfig(newStatus);
-
-            // Create report update record
-            await supabase.from('report_updates').insert({
-                report_id: report.id,
-                old_status: report.status,
-                new_status: newStatus,
-                notes: `Status diperbarui ke ${label}`
-            });
-
-            setReport(prev => prev ? { ...prev, status: newStatus } : null);
+            await updateReportStatus(report.id, newStatus, `Status diperbarui ke ${label}`);
             showNotification('success', `Status laporan berhasil diperbarui menjadi ${label}`);
-            setStatusUpdated(true);
-            setLastUpdatedStatus(label);
-
-            setTimeout(() => setStatusUpdated(false), 3000);
         } catch (error) {
-            console.error('Error updating status:', error);
             showNotification('error', 'Gagal memperbarui status laporan');
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -184,10 +90,9 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                             <div className="flex flex-col items-center gap-1.5 justify-center">
                                 {report.reporter?.photo ? (
                                     <>
-                                        <Image
+                                        <img
                                             src={report.reporter.photo}
                                             alt={report.reporter.full_name || 'Profile'}
-                                            width={100} height={100}
                                             className="w-[70px] h-[70px] rounded-full object-cover"
                                         />
                                         <h3 className="text-[#5C8D89] font-medium">{report.reporter.full_name}</h3>
@@ -227,12 +132,12 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                             <Dropdown.Item onSelect={() => handleStatusChange('rejected')}>Ditolak</Dropdown.Item>
                                         </Dropdown>
                                         {isLoading && <Loader size="sm" />}
-                                        {statusUpdated && (
+                                        {/* {statusUpdated && (
                                             <div className="flex items-center text-green-600">
                                                 <CheckIcon style={{ marginRight: 4 }} />
                                                 <span className="text-xs">Diperbarui ke {lastUpdatedStatus}</span>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             </div>

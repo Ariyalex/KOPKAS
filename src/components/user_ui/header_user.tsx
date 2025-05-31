@@ -47,12 +47,12 @@ export function HeaderUser() {
                     <>
                         <Image
                             alt="profile"
-                            src={userData.photo || '/default_photo.png'}
+                            src={currentUser.photo || '/default_photo.png'}
                             width={40}
                             height={40}
                             className="rounded-full object-cover w-[40px] h-[40px]"
                         />
-                        <h3 className="font-normal text-xl text-[#5C8D89]">{userData.full_name || 'User'}</h3>
+                        <h3 className="font-normal text-xl text-[#5C8D89]">{currentUser.full_name || 'User'}</h3>
                     </>
                 )}
             </div>

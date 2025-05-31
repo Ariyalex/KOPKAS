@@ -1,6 +1,9 @@
 'use client'
 
-import clsx, { ClassValue } from "clsx";
+import { useMessageStore } from "@/stores/messageStore";
+import { useReportStore } from "@/stores/reportStore";
+import { useUserStore } from "@/stores/userStore";
+import clsx from "clsx";
 import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -97,15 +100,16 @@ export function DashboardUser() {
 
     return (
         <div className="flex flex-row w-full h-full gap-6">
-            <div className={clsx("flex h-full flex-col gap-6 flex-4/6", className)}>
+            <div className={clsx("flex h-full flex-col gap-6 flex-4/6")}>
+                {/* lah ui nya? */}
                 {/* profile */}
                 <Card width="w-full" className="overflow-visible">
                     {/* ketika ada user data */}
-                    {userData && (
-                        <div className="flex felx-row gap-5 items-center justify-start w-full">
+                    {currentUser && (
+                        <div className="flex flex-row gap-5 items-center justify-start w-full">
                             <div className="relative">
                                 <Image
-                                    src={userData.photo || '/default_photo.png'}
+                                    src={currentUser.photo || '/default_photo.png'}
                                     alt="profile"
                                     width={100}
                                     height={100}
@@ -117,6 +121,7 @@ export function DashboardUser() {
                                         <input
                                             type="file"
                                             accept="image/*"
+                                            onChange={handleFileChange}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         />
                                         <ImageIcon className="text-white" size={30} />
@@ -143,7 +148,7 @@ export function DashboardUser() {
                                             </FilledButton>
                                         </div>
                                     ) : (
-                                        <h1 className="text-2xl text-[#5C8D89]">{userData.full_name}</h1>
+                                        <h1 className="text-2xl text-[#5C8D89]">{currentUser.full_name}</h1>
                                     )}
                                     <p className="text-[#5C8D89]">
                                         Active Member since
@@ -214,41 +219,41 @@ export function DashboardUser() {
                     </div>
                 </Card>
             </div>
-            <DashboardMessage className="flex-2/6" />
+            {/* <DashboardMessage  className="flex-2/6" /> */}
         </div>
     );
 }
 
+// chatnya ntaran mas
+
 // message
-export function DashboardMessage({ className }: DbMessage) {
-    const supabase = createClientComponentClient<Database>()
-    const [messages, setMessages] = useState<Message[]>([])
+// export function DashboardMessage({ className }: DbMessage) {
+//     const supabase = createClientComponentClient<Database>()
+//     const [messages, setMessages] = useState<Message[]>([])
 
-    // Fetch messages
-
-
-    return (
-        <div className={clsx("", className)}>
-            <Card width="w-full" height="h-full" className="flex flex-col overflow-hidden">
-                <h1 className="text-2xl font-medium text-[#5C8D89]">Pesan</h1>
-                <div className="flex flex-col gap-4 my-4 h-auto overflow-y-scroll">
-                    {messages.map((message, index) => (
-                        <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
-                            <div className="flex flex-col gap-2">
-                                <h3 className="text-[#5C8D89] font-medium text-lg">
-                                    {message.sender.full_name}
-                                </h3>
-                                <p className="truncate max-w-[230px] overflow-hidden">
-                                    {message.message}
-                                </p>
-                                <p className="text-[#6B7280]">
-                                    {new Date(message.created_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </Card>
-        </div>
-    )
-}
+//     // Fetch messages
+//     return (
+//         <div className={clsx("", className)}>
+//             <Card width="w-full" height="h-full" className="flex flex-col overflow-hidden">
+//                 <h1 className="text-2xl font-medium text-[#5C8D89]">Pesan</h1>
+//                 <div className="flex flex-col gap-4 my-4 h-auto overflow-y-scroll">
+//                     {messages.map((message, index) => (
+//                         <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
+//                             <div className="flex flex-col gap-2">
+//                                 <h3 className="text-[#5C8D89] font-medium text-lg">
+//                                     {message.sender.full_name}
+//                                 </h3>
+//                                 <p className="truncate max-w-[230px] overflow-hidden">
+//                                     {message.message}
+//                                 </p>
+//                                 <p className="text-[#6B7280]">
+//                                     {new Date(message.created_at).toLocaleDateString()}
+//                                 </p>
+//                             </div>
+//                         </div>
+//                     ))}
+//                 </div>
+//             </Card>
+//         </div>
+//     )
+// }

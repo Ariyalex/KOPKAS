@@ -1,14 +1,20 @@
-'use client'
+'use client';
 
-import { Card } from "../common/card";
-import { StatusTag } from "../common/tag";
-import { ReportContentDummy } from "./dummy/reports_dummy";
+import { useReportStore } from "@/stores/reportStore";
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { Card } from "../common/card";
+import { StatusTag } from "../common/tag";
 
 export function ReportListUser() {
-    const reports = ReportContentDummy;
+    const { reports, fetchReports } = useReportStore();  // Get reports from the store
     const router = useRouter();
+
+    // Fetch reports when the component mounts
+    useEffect(() => {
+        fetchReports();
+    }, [fetchReports]);
 
     return (
         <Card className="flex flex-5/6 gap-2 py-5 flex-col" height="h-full">
@@ -28,7 +34,7 @@ export function ReportListUser() {
                                 <StatusTag status={report.status} />
                                 <button
                                     onClick={() => {
-                                        router.push(`/user/report/${report.id}`)
+                                        router.push(`/user/report/${report.id}`);
                                     }}
                                     className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
                                 >
@@ -42,5 +48,5 @@ export function ReportListUser() {
                 ))}
             </div>
         </Card>
-    )
+    );
 }
