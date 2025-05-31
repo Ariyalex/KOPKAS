@@ -4,11 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUserStore } from "@/stores/userStore";
 import { FilledButton } from "../common/button";
-import { AlignJustify } from "lucide-react";
+import { AlignJustify, LogOut } from "lucide-react";
 import { Dropdown } from "rsuite";
 import React from "react";
-import { navContent } from "./nav_user";
-import { usePathname } from "next/navigation";
+import { handleLogout, navContent, NavUser } from "./nav_user";
+import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 
 const renderIconButton = (props: any, ref: React.Ref<any>) => {
@@ -29,6 +29,12 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 export function HeaderUser() {
     const { currentUser } = useUserStore();
     const pathname = usePathname();
+    const router = useRouter()
+
+    const onLogout = async () => {
+        await handleLogout();
+        router.push("/");
+    }
 
     return (
         <div className="flex items-center shadow-sm flex-row md:px-20 px-5 py-4 justify-between w-full h-fit z-50 top-0 bg-white">
@@ -62,7 +68,7 @@ export function HeaderUser() {
                         const isActive = pathname == route;
                         return (
                             <Dropdown.Item key={index} as={Link} href={route} icon={<Icon color="#5C8D89" />} className={
-                                "flex felx-col p-2 gap-2 text-[#5C8D89] list"}>
+                                "text-[#5C8D89] list"}>
                                 <h3 className={clsx(
                                     "flex felx-col p-2 gap-2 text-[#5C8D89] rounded-md",
                                     isActive
@@ -71,6 +77,12 @@ export function HeaderUser() {
                                 )}>{title}</h3></Dropdown.Item>
                         )
                     })}
+                    <Dropdown.Item as={"button"} onClick={onLogout} icon={<LogOut className="text-[#DC2626]" />}
+                        className={
+                            "text-[#DC2626] logouthov"}>
+                        <h3 className={clsx(
+                            "flex felx-col p-2 gap-2 text-[#DC2626]",
+                        )}>Log Out</h3></Dropdown.Item>
                 </Dropdown>
             </div>
         </div>

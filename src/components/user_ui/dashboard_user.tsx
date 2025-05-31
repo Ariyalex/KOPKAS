@@ -62,6 +62,7 @@ export function DashboardUser() {
             }).catch((error) => {
                 console.log("error update photo: ", error);
             });
+            setIsEditing(false);
         }
     }
 
