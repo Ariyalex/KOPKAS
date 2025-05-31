@@ -2,7 +2,13 @@ import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { CircleCheckBig, FileText, MessagesSquare, Users } from 'lucide-react';
 import { create } from 'zustand';
-import type { DashboardData } from '../types';
+
+export interface DashboardData {
+  totalReports: number;
+  completedReports: number;
+  totalUsers: number;
+  activeChats: number;
+}
 
 interface DashboardState {
   dashboardData: DashboardData;

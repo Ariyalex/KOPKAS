@@ -1,7 +1,15 @@
 import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
-import type { UserData } from '../types';
+
+export interface UserData {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'admin' | 'user';
+  photo?: string;
+  created_at: string;
+}
 
 interface UserState {
   currentUser: UserData | null;

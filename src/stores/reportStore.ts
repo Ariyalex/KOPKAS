@@ -1,7 +1,6 @@
 import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
-import type { ReportFilters } from '../types';
 
 interface Report {
   id: string;
@@ -41,6 +40,14 @@ interface ReportState {
   resetFilters: () => void;
   clearError: () => void;
 }
+
+export interface ReportFilters {
+  searchQuery: string;
+  statusFilter: string[];
+  sortColumn: string;
+  sortType: 'asc' | 'desc';
+}
+
 
 const defaultFilters: ReportFilters = {
   searchQuery: '',

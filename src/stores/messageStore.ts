@@ -1,7 +1,16 @@
 import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
-import type { Message } from '../types';
+
+export interface Message {
+  id: string;
+  message: string;
+  created_at: string;
+  sender: {
+    id: string;
+    full_name: string | null;
+  };
+}
 
 interface MessageState {
   messages: Message[];
