@@ -33,9 +33,9 @@ const featureContent: FeatureItem[] = [
 
 export function FeatureKopkas() {
     return (
-        <div className="flex flex-col justify-center items-center gap-11 px-48 py-16 bg-white">
-            <h2 className="text-[#1F2937] font-bold text-3xl">Fitur Utama Kopkas</h2>
-            <div className="flex flex-row gap-8">
+        <div className="flex flex-col justify-center items-center gap-11 sm:px-48 px-5 py-16 bg-white">
+            <h2 className="text-[#1F2937] font-bold sm:text-start text-center text-3xl">Fitur Utama Kopkas</h2>
+            <div className="flex sm:flex-row flex-col gap-8">
                 {featureContent.map(({ title, icon, content }, index) => (
                     <CardGesture key={index}
                         clasName="flex flex-col flex-1"

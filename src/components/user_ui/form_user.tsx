@@ -165,7 +165,7 @@ export function FormUser() {
             if (formData.evidence_files) {
                 try {
                     const file = formData.evidence_files
-                    
+
                     // Validate file size (max 5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         toaster.push(
@@ -269,81 +269,80 @@ export function FormUser() {
     }
 
     return (
-        <Card
-            className="flex flex-5/6 h-full flex-col"
-        >
+        <Card className="flex flex-5/6 h-full py-5 overflow-y-scroll flex-col">
             <div className="flex flex-row gap-4 py-3 px-5 w-full items-center border-b-2 border-b-[#E5E7EB]">
                 <h1 className="text-[#5C8D89] font-bold text-2xl">Form Laporan</h1>
             </div>
 
-            <form
-                onSubmit={handleSubmit}
-
-            >
-                <div className="py-4 grid grid-cols-2 gap-3">
-                    {FormContent.map(({ title, placeholder, type, name }, index) => {
-                        if (type == "text") {
+            <form onSubmit={submitHandler}>
+                <div className="py-4 md:grid md:grid-cols-2 flex flex-col h-auto gap-3">
+                    {formContent.map(({ title, placeholder, type, name }, index) => {
+                        if (type === "text") {
                             return (
                                 <TextField
                                     key={index}
                                     title={title}
                                     placeholder={placeholder}
                                     value={formData[name] as string}
-                                    onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
+                                    onChange={(e) => setFormData({ [name]: e.target.value })}
                                 />
-                            );
-                        } else if (type == "datetime") {
+                            )
+                        }
+                        if (type === "datetime") {
                             return (
                                 <DateInput
                                     key={index}
                                     title={title}
                                     placeholder={placeholder}
                                     value={formData[name] as Date}
-                                    onChange={(value) => setFormData({ ...formData, [name]: value })}
+                                    onChange={(value) => setFormData({ [name]: value })}
                                 />
                             )
-                        } else if (type == "textarea") {
+                        }
+                        if (type === "textarea") {
                             return (
                                 <TextArea
                                     key={index}
                                     title={title}
                                     placeholder={placeholder}
                                     value={formData[name] as string}
-                                    onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
+                                    onChange={(e) => setFormData({ [name]: e.target.value })}
                                 />
                             )
-                        } else if (type == "dropdown") {
+                        }
+                        if (type === "dropdown") {
                             return (
                                 <Dropdown
                                     key={index}
                                     title={title}
                                     placeholder={placeholder}
                                     value={formData[name] as string}
-                                    data={categories.map(cat => ({ 
-                                        label: cat.name, 
-                                        value: cat.id 
+                                    data={categories.map((cat) => ({
+                                        label: cat.name,
+                                        value: cat.id,
                                     }))}
-                                    onChange={(value) => setFormData({ ...formData, [name]: value || "" })}
+                                    onChange={(value) => setFormData({ [name]: value || "" })}
                                 />
                             )
-                        } else if (type == "file") {
+                        }
+                        if (type === "file") {
                             return (
                                 <FileInput
                                     key={index}
                                     title={title}
-                                    onChange={(file) => setFormData({ ...formData, [name]: file })}
+                                    onChange={(file) => setFormData({ [name]: file })}
                                 />
                             )
                         }
-
+                        return null
                     })}
                 </div>
                 <div className="w-fit">
-                    <FilledButton type="submit">
-                        Kirim
+                    <FilledButton type="submit" disabled={isLoading}>
+                        {isLoading ? "Mengirim..." : "Kirim"}
                     </FilledButton>
                 </div>
             </form>
-        </Card >
+        </Card>
     )
 }

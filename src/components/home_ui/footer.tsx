@@ -6,9 +6,9 @@ import { ButtonGesture } from "../animation/transition";
 export function Footer() {
     return (
         <footer
-            className="flex flex-col w-full py-12 gap-8 px-20 bg-white"
+            className="flex flex-col w-full py-12 gap-8 sm:px-20 px-10 bg-white"
         >
-            <div className="flex flex-row gap-8">
+            <div className="flex sm:flex-row flex-col gap-8">
                 <div className="flex flex-col gap-6 flex-1">
                     <div className="flex items-center gap-2">
                         <Image

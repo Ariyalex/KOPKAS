@@ -13,11 +13,12 @@ interface DetailLaporanUserProps {
 }
 
 export function DetailLaporanUser({ params }: DetailLaporanUserProps) {
-    const router = useRouter();
+    const router = useRouter()
+    const { id } = params
+    const { currentReport, getReportById } = useReportStore()  // Ambil fungsi dari store untuk mengambil data laporan
+    const [loading, setLoading] = useState(true)
 
-    const [report, setReport] = useState<any>(null);
-
-    // Find report by ID on component mount
+    // Ambil data laporan berdasarkan id
     useEffect(() => {
         const foundReport = ReportContentDummy.find(item => item.id === params.id);
 

@@ -16,7 +16,7 @@ interface HeaderHomeProps {
 export function HeaderHome({ userData }: HeaderHomeProps) {
 
     return (
-        <div className="flex items-center border-[#E5E7EB] border-[1px] flex-row px-20 py-4 justify-between w-full h-fit z-50 top-0 bg-white">
+        <div className="flex items-center border-[#E5E7EB] border-[1px] flex-row sm:px-20 px-3 py-4 justify-between w-full h-fit z-50 top-0 bg-white">
             <div className="flex items-center gap-2">
                 <Image
                     src={"/logo.svg"}

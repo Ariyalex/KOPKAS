@@ -13,3 +13,16 @@ body {
   --rs-btn-default-hover-bg: #74B49B;
   --rs-btn-default-hover-text: #FFFFFF;
 }
+
+
+/* style.css */
+.list {
+  background-color: white;
+  color: black;
+  transition: 0.3s ease;
+}
+
+.list:hover {
+  background-color: #F4F9F4;
+  color: white;
+}

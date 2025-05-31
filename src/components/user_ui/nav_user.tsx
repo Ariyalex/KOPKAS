@@ -15,7 +15,7 @@ interface NavItem {
 }
 
 //nav item
-const navContent: NavItem[] = [
+export const navContent: NavItem[] = [
     {
         title: "Dashboard",
         Icon: House,
@@ -79,7 +79,7 @@ export function NavUser({ className }: NavProps) {
                             )}
                         >
                             <Icon color="#5C8D89" />
-                            <h3 className="">{title}</h3>
+                            <h3 >{title}</h3>
                         </Link>
                     );
                 })}

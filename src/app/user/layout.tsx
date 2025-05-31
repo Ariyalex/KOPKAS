@@ -19,8 +19,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <main>
             <HeaderUser />
-            <div className="p-8 flex flex-row gap-6 w-full h-screen">
-                {!hideNav && <NavUser className="flex-1/6 flex justify-between flex-col" />}
+            <div className="sm:p-8 p-5 flex flex-row gap-6 w-full h-screen">
+                {!hideNav && <NavUser className="flex-1/6 md:flex hidden justify-between flex-col" />}
                 <TransitionFadeIn className={contentClassName}>
                     {children}
                 </TransitionFadeIn>
