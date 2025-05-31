@@ -18,7 +18,7 @@ export function DetailLaporanUser({ params }: DetailLaporanUserProps) {
     const { id } = params
     const { currentReport, getReportById } = useReportStore()  // Ambil fungsi dari store untuk mengambil data laporan
     const [loading, setLoading] = useState(true)
-    
+
     // Ambil data laporan berdasarkan id
     useEffect(() => {
         const fetchReport = async () => {

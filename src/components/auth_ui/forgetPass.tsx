@@ -36,17 +36,17 @@ export function ForgetPass() {
     }
 
     return (
-        <Card width="w-auto" height="h-auto" bgColor="bg-[#E6FFFA]" className="flex flex-col gap-6 p-10 justify-center items-center">
-            <div className="flex flex-col gap-5 items-center">
+        <Card width="w-auto" height="h-auto" bgColor="bg-[#E6FFFA]" className="flex flex-col gap-6 py-10 px-5 sm:px-10 justify-center items-center">
+            <div className="flex flex-col w-auto h-auto gap-5 items-center">
                 <KeyRound width={36} height={36} color="#3CB371" />
                 <h1 className="text-3xl font-semibold text-[#1F2937]">
-                    Pulihkan Kata Sandi
+                    Pulihkan Password
                 </h1>
-                <p className="w-[346px] text-center text-[#4B5563]">Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.</p>
+                <p className="sm:w-[346px] w-[290px] text-center text-[#4B5563]">Masukkan email yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.</p>
             </div>
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col gap-6 w-[400px]"
+                className="flex flex-col gap-6 sm:w-[400px] w-[290px]"
             >
                 <AuthInput
                     title="Email"

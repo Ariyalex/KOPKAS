@@ -151,14 +151,14 @@ export function Register() {
     };
 
     return (
-        <Card width="w-auto" height="h-auto" className="flex flex-col gap-4 px-10 py-5 justify-center items-center">
+        <Card width="w-auto" height="h-auto" className="flex flex-col gap-4 sm:px-10 px-5 py-5 justify-center items-center">
             <div className="flex flex-col gap-3 items-center">
                 <Link href={"/"}>
                     <Image src={"/logo.svg"} alt="logo" width={33} height={33} className="w-[33px] h-[33px]" />
                 </Link>
                 <h1 className="text-3xl font-semibold text-[#1F2937]">Daftar ke KOPKAS</h1>
             </div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-[400px]">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:w-[400px] w-[290px]">
                 <AuthInput
                     title="Email"
                     type="email"

@@ -70,7 +70,7 @@ export function ChatUser({ className }: ChatProps) {
                         return (
                             <div
                                 key={index}
-                                className={`flex flex-row items-start gap-3 max-w-[70%] ${isCurrentUser ? 'self-end' : ''}`}
+                                className={`flex flex-row items-start gap-3 h-fit max-w-[75%] ${isCurrentUser ? 'self-end' : ''}`}
                             >
                                 {!isCurrentUser && (
                                     <Image
@@ -78,7 +78,7 @@ export function ChatUser({ className }: ChatProps) {
                                         alt={user.name}
                                         width={40}
                                         height={40}
-                                        className="rounded-full object-cover w-[40px] h-[40px]"
+                                        className="rounded-full object-cover shrink-0 w-[40px] h-[40px]"
                                     />
                                 )}
                                 <div className="flex flex-col">

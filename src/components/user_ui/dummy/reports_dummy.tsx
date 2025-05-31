@@ -121,4 +121,37 @@ export const ReportContentDummy: ReportsItemDummy[] = [
         submitted: new Date("2025-05-22"),
         status: "in_progress"
     },
+    {
+        id: "2025-011",
+        pelapor: "John Doe",
+        tanggal_kejadian: new Date("2025-05-18"),
+        lokasi: "Kantin Sekolah",
+        kekerasan: "Verbal",
+        kronologi: "Terjadi pertengkaran antara dua siswa saat jam istirahat",
+        bukti: "video-kejadian-001.mp4",
+        submitted: new Date("2025-05-20"),
+        status: "in_progress"
+    },
+    {
+        id: "2025-012",
+        pelapor: "John Doe",
+        tanggal_kejadian: new Date("2025-05-18"),
+        lokasi: "Kantin Sekolah",
+        kekerasan: "Verbal",
+        kronologi: "Terjadi pertengkaran antara dua siswa saat jam istirahat",
+        bukti: "video-kejadian-001.mp4",
+        submitted: new Date("2025-05-20"),
+        status: "in_progress"
+    },
+    {
+        id: "2025-013",
+        pelapor: "John Doe",
+        tanggal_kejadian: new Date("2025-05-18"),
+        lokasi: "Kantin Sekolah",
+        kekerasan: "Verbal",
+        kronologi: "Terjadi pertengkaran antara dua siswa saat jam istirahat",
+        bukti: "video-kejadian-001.mp4",
+        submitted: new Date("2025-05-20"),
+        status: "in_progress"
+    },
 ];

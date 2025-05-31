@@ -3,6 +3,7 @@
 import { ContentTerms } from '@/components/auth_ui/terms'
 import { TransitionFadeIn } from '@/components/animation/transition'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react';
 
 export default function TermsPage() {
   return (
@@ -38,9 +39,9 @@ export default function TermsPage() {
               <div className="flex justify-between items-center">
                 <Link
                   href="/register"
-                  className="text-[#74B49B] hover:text-[#5C8D89] font-medium"
+                  className="text-[#74B49B] flex flex-row justify-center hover:text-[#5C8D89] font-medium"
                 >
-                  ← Kembali ke Pendaftaran
+                  <span><ArrowLeft /></span> Kembali
                 </Link>
                 <button
                   onClick={() => window.print()}

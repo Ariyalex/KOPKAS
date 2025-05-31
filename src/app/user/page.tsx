@@ -1,4 +1,4 @@
-import { DashboardMessage, DashboardUser } from "@/components/user_ui/dashboard_user";
+import { DashboardUser } from "@/components/user_ui/dashboard_user";
 
 export default function Page() {
     return (

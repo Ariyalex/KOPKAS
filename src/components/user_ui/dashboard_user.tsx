@@ -11,6 +11,7 @@ import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { Loading } from "../common/loading"; // Loading state
 import { StatusTag } from "../common/tag";
+import { Dropdown } from "rsuite";
 
 export function DashboardUser() {
     const { currentUser, fetchCurrentUser, isLoading: userLoading, updateUserName, updateUserPhoto } = useUserStore();
@@ -29,18 +30,25 @@ export function DashboardUser() {
     }, [fetchCurrentUser, fetchReports, fetchMessages]);
 
     // Handle edit actions
-    const handleEditClick = () => setIsEditing(!isEditing);
+    const handleEditFalse = () => {
+        setIsEditing(false);
+        setShowNameEdit(false);
+        setShowPhotoEdit(false);
+    };
     const handleEditName = () => {
         if (currentUser) {
             setNewName(currentUser.full_name);
         }
         setShowNameEdit(true);
         setShowPhotoEdit(false);
+        setIsEditing(true);
+
     };
     const handleEditPhoto = () => {
         setShowPhotoEdit(true);
         setShowNameEdit(false);
         setSelectedFile(null);
+        setIsEditing(true);
     };
 
     //handle file change
@@ -52,7 +60,7 @@ export function DashboardUser() {
             updateUserPhoto(file).then(() => {
                 setShowPhotoEdit(false);
             }).catch((error) => {
-                console.log("error update photo: ", e);
+                console.log("error update photo: ", error);
             });
         }
     }
@@ -65,10 +73,27 @@ export function DashboardUser() {
         }
     };
 
+    const renderIconButton = (props: any, ref: React.Ref<any>) => {
+        return (
+            <FilledButton
+                {...props}
+                ref={ref}
+                width="w-fit"
+                paddingx="px-3"
+                paddingy="py-1"
+            >
+                <div className="flex flex-row items-center gap-3">
+                    <Edit size={16} />
+                    Edit Profile
+                </div>
+            </FilledButton>
+        );
+    };
+
     if (userLoading || reportLoading || messageLoading) {
         return (
             <div className="w-full h-full flex items-center justify-center">
-                <Loading text="Loading..." fullScreen={false} />;
+                <Loading text="Loading..." fullScreen={false} />
             </div>
         )
     }
@@ -78,7 +103,7 @@ export function DashboardUser() {
             <div className={clsx("flex h-full flex-col gap-6 flex-4/6")}>
                 {/* lah ui nya? */}
                 {/* profile */}
-                <Card width="w-full">
+                <Card width="w-full" className="overflow-visible">
                     {/* ketika ada user data */}
                     {currentUser && (
                         <div className="flex flex-row gap-5 items-center justify-start w-full">
@@ -88,7 +113,7 @@ export function DashboardUser() {
                                     alt="profile"
                                     width={100}
                                     height={100}
-                                    className="rounded-full object-cover w-[100px] h-[100px]"
+                                    className="rounded-full object-cover sm:w-[100px] shrink-0 sm:h-[100px] w-[80px] h-[80px]"
                                 />
                                 {/* ketika controller true */}
                                 {showPhotoEdit && (
@@ -103,7 +128,7 @@ export function DashboardUser() {
                                     </div>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-2 h-full w-auto">
+                            <div className="flex flex-col gap-2 h-full sm:w-auto w-fit">
                                 <div>
                                     {/* ketika controller true */}
                                     {showNameEdit ? (
@@ -112,7 +137,7 @@ export function DashboardUser() {
                                                 type="text"
                                                 value={newName}
                                                 onChange={(e) => setNewName(e.target.value)}
-                                                className="text-xl text-[#5C8D89] border-[#5C8D89] border-b-2 outline-none bg-transparent"
+                                                className="text-xl text-[#5C8D89] border-[#5C8D89] sm:w-[200] w-[100px] border-b-2 outline-none bg-transparent"
                                             />
                                             <FilledButton
                                                 onClick={handleSaveName}
@@ -121,20 +146,14 @@ export function DashboardUser() {
                                             >
                                                 Save
                                             </FilledButton>
-                                            <FilledButton
-                                                onClick={() => setShowNameEdit(false)}
-                                                bgColor="bg-gray-300"
-                                                paddingy="py-1"
-                                                paddingx="px-3"
-                                            >
-                                                <X size={16} />
-                                            </FilledButton>
                                         </div>
                                     ) : (
                                         <h1 className="text-2xl text-[#5C8D89]">{currentUser.full_name}</h1>
                                     )}
                                     <p className="text-[#5C8D89]">
-                                        Active Member since{' '}
+                                        Active Member since
+                                    </p>
+                                    <p className="text-[#5C8D89]">
                                         {new Date(currentUser.created_at).toLocaleDateString('en-US', {
                                             month: 'long',
                                             day: 'numeric',
@@ -143,41 +162,27 @@ export function DashboardUser() {
                                     </p>
                                 </div>
                                 <div className="inline-flex gap-2">
-                                    {isEditing ? (
-                                        <>
-                                            <FilledButton
-                                                onClick={handleEditName}
-                                                bgColor={showNameEdit ? "bg-[#5C8D89]" : "bg-[#74B49B]"}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <Edit size={16} />
-                                                    Edit Name
-                                                </div>
-                                            </FilledButton>
-                                            <FilledButton
-                                                onClick={handleEditPhoto}
-                                                bgColor={showPhotoEdit ? "bg-[#5C8D89]" : "bg-[#74B49B]"}
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <ImageIcon size={16} />
-                                                    Edit Photo
-                                                </div>
-                                            </FilledButton>
-                                            <FilledButton
-                                                onClick={handleEditClick}
-                                                bgColor="bg-gray-400"
-                                            >
-                                                Cancel
-                                            </FilledButton>
-                                        </>
-                                    ) : (
-                                        <FilledButton onClick={handleEditClick}>
-                                            <div className="flex items-center gap-2">
-                                                <Edit size={16} />
-                                                Edit Profile
-                                            </div>
-                                        </FilledButton>
-                                    )}
+                                    {isEditing ? (<FilledButton
+                                        width="w-fit"
+                                        paddingx="px-3"
+                                        paddingy="py-1"
+                                        onClick={handleEditFalse}
+                                        bgColor="bg-gray-400"
+                                    >
+                                        Cancel
+                                    </FilledButton>) :
+                                        (<Dropdown renderToggle={renderIconButton} noCaret placement="bottomEnd">
+                                            <Dropdown.Item as={"button"} onClick={handleEditName} icon={<Edit color="#5C8D89" />} className={
+                                                "flex felx-col p-2 gap-2 text-[#5C8D89] list"}>
+                                                <h3 className={
+                                                    "flex felx-col p-2 gap-2 text-[#5C8D89] rounded-md"}>Edit Name</h3></Dropdown.Item>
+                                            <Dropdown.Item as={"button"} onClick={handleEditPhoto} icon={<ImageIcon color="#5C8D89" />} className={
+                                                "flex felx-col p-2 gap-2 text-[#5C8D89] list"}>
+                                                <h3 className={
+                                                    "flex felx-col p-2 gap-2 text-[#5C8D89] rounded-md"}>Edit Photo</h3></Dropdown.Item>
+                                        </Dropdown>)
+                                    }
+
                                 </div>
                             </div>
                         </div>

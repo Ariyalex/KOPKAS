@@ -31,10 +31,10 @@ export function HomeIntro({ session, userData }: HomeIntroProps) {
     }
 
     return (
-        <div className="flex flex-row gap-20 px-48 py-10 bg-[#F5FFFA]">
-            <div className="flex flex-col py-8 gap-12 items-start">
-                <div className="flex gap-16 flex-col">
-                    <h1 className="text-5xl/tight font-bold text-left text-[#1F2937]">Berani Bicara, Kami Siap Mendengarkan</h1>
+        <div className="flex flex-row sm:gap-20 gap-5 sm:px-48 px-5 sm:py-10 py-10 bg-[#F5FFFA]">
+            <div className="flex flex-col sm:py-8 py-2 sm:gap-12 gap-5 items-start">
+                <div className="flex sm:gap-16 gap-5 flex-col">
+                    <h1 className="sm:text-5xl/tight text-4xl/tight font-bold text-left text-[#1F2937]">Berani Bicara, Kami Siap Mendengarkan</h1>
                     <p className="text-left text-lg text-[#4B5563]">KOPKAS hadir sebagai ruang aman untuk melaporkan dan mendapatkan pendampingan profesional terkait kekerasan seksual.</p>
                 </div>
                 <FilledButton
@@ -52,7 +52,7 @@ export function HomeIntro({ session, userData }: HomeIntroProps) {
                 src="/welcome.png"
                 width={625}
                 height={625}
-                className="h-auto max-h-[594px] w-auto object-contain"
+                className="h-auto sm:block hidden max-h-[594px] w-auto object-contain"
             />
         </div>
     );
