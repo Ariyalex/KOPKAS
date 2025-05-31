@@ -18,11 +18,18 @@ body {
 /* style.css */
 .list {
   background-color: white;
-  color: black;
   transition: 0.3s ease;
 }
 
 .list:hover {
   background-color: #F4F9F4;
-  color: white;
+}
+
+.logouthov {
+  background-color: white;
+  transition: 0.3s ease;
+}
+
+.logouthov:hover {
+  background-color: var(--color-red-50);
 }
