@@ -1,16 +1,3 @@
-export interface AuthState {
-  user: UserData | null;
-  session: any;
-  isLoading: boolean;
-  error: string | null;
-  
-  // Actions
-  initializeAuth: () => Promise<void>;
-  signOut: () => Promise<void>;
-  getCurrentUser: () => Promise<UserData | null>;
-  clearError: () => void;
-}
-
 export interface UserData {
   id: string;
   email: string;
@@ -18,26 +5,6 @@ export interface UserData {
   role: 'admin' | 'user';
   photo?: string;
   created_at: string;
-}
-
-export interface Report {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  incident_date: string;
-  status: 'new' | 'in_progress' | 'completed' | 'rejected';
-  evidence_files: string[] | null;
-  category_id: string;
-  reporter_id: string;
-  reporter?: {
-    id: string;
-    full_name: string;
-    email: string;
-    photo?: string;
-  };
-  created_at: string;
-  updated_at?: string;
 }
 
 export interface Message {

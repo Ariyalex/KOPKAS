@@ -1,7 +1,6 @@
 'use client'
 
 import { useReportStore } from "@/stores/reportStore"; // Menggunakan store untuk mengambil data
-import { Report } from "@/types"; // Import tipe data Report
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -69,7 +68,7 @@ export function LaporanTablePreview() {
                         <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                     </HeaderCell>
                     <Cell>
-                        {(rowData: Report) => rowData.reporter?.full_name || 'Unknown'}
+                        {(rowData) => rowData.reporter?.full_name || 'Unknown'}
                     </Cell>
                 </Column>
                 <Column width={200} flexGrow={1} align="left">
@@ -77,7 +76,7 @@ export function LaporanTablePreview() {
                         <h3 className="text-[#6B7280] font-medium text-base">Tanggal Masuk</h3>
                     </HeaderCell>
                     <Cell>
-                        {(rowData: Report) => {
+                        {(rowData) => {
                             const date = new Date(rowData.created_at);
                             return date.toLocaleDateString('id-ID', {
                                 day: 'numeric',

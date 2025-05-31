@@ -3,7 +3,6 @@
 import { useMessageStore } from "@/stores/messageStore";
 import { useReportStore } from "@/stores/reportStore";
 import { useUserStore } from "@/stores/userStore";
-import type { UserData } from "@/types";
 import clsx from "clsx";
 import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
 import Image from "next/image";

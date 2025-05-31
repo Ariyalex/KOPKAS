@@ -1,7 +1,28 @@
 import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
-import type { Report, ReportFilters } from '../types';
+import type { ReportFilters } from '../types';
+
+interface Report {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  incident_date: string;
+  status: 'new' | 'in_progress' | 'completed' | 'rejected';
+  evidence_files: string[] | null;
+  category_id: string;
+  reporter_id: string;
+  reporter?: {
+    id: string;
+    full_name: string;
+    email: string;
+    photo?: string;
+  };
+  created_at: string;
+  updated_at?: string;
+}
+
 
 interface ReportState {
   reports: Report[];

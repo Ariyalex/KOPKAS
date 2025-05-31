@@ -1,7 +1,7 @@
 'use client'
 
+
 import { useReportStore } from "@/stores/reportStore"; // Importing the store
-import { Report } from "@/types";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ExternalLink, Filter, SortAsc, SortDesc } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import { Button, Checkbox, CheckboxGroup, IconButton, Table } from "rsuite";
 import { Cell, HeaderCell } from "rsuite-table";
 import Column from "rsuite/esm/Table/TableColumn";
 import { StatusTag } from "../common/tag";
+
 
 export function LaporanTable() {
     const router = useRouter();
@@ -254,7 +255,7 @@ export function LaporanTable() {
                             <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                         </HeaderCell>
                         <Cell>
-                            {(rowData: Report) => rowData.reporter?.full_name || 'Anonymous'}
+                            {(rowData) => rowData.reporter?.full_name || 'Anonymous'}
                         </Cell>
                     </Column>
 
@@ -263,7 +264,7 @@ export function LaporanTable() {
                             <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
                         </HeaderCell>
                         <Cell>
-                            {(rowData: Report) => {
+                            {(rowData) => {
                                 const date = new Date(rowData.created_at);
                                 return date.toLocaleDateString('id-ID', {
                                     day: 'numeric',
