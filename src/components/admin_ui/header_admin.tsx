@@ -37,13 +37,13 @@ export function HeaderAdmin() {
 
     return (
         <div className="flex items-center flex-row sm:px-10 px-5 py-4 justify-between w-full h-fit z-50 top-0 bg-white border-b-2 border-[#E5E7EB]">
-            <div className="flex  items-center gap-2">
+            <div className="flex items-center gap-2">
                 <Image
                     src={"/logo.svg"}
                     alt="logo"
                     width={24}
                     height={24}
-                    className="w-[24px] h-[24px] block sm:hidden"
+                    className="w-[24px] h-[24px]"
                 />
                 <Link className="font-bold sm:block hidden text-2xl text-[#5C8D89]" href="/">KOPKAS</Link>
                 <Link href={"/admin"} className="text-[#6B7280]">Admin Panel</Link>

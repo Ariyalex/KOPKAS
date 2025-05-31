@@ -4,6 +4,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { useEffect } from "react";
 import { Card } from "../common/card";
 import { LaporanTablePreview } from "./table_preview_admin";
+import { Loading } from "../common/loading";
 
 export function DashboardAdmin() {
   // Destructuring the state and actions from the store
@@ -20,7 +21,11 @@ export function DashboardAdmin() {
 
   // Jika masih loading, tampilkan loading state
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <Loading text="Loading..." fullScreen={false} />
+      </div>
+    )
   }
 
   const DashboardItems = dashboardContent();  // Get dashboard content from store

@@ -7,6 +7,7 @@ import { Dropdown, Loader, Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
+import { Loading } from "../common/loading";
 
 interface DetailLaporanProps {
     params: { id: string };
@@ -64,9 +65,11 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
     };
 
     if (isLoading) {
-        return <div className="h-screen w-screen bg-white flex items-center justify-center">
-            <Loader size="lg" />
-        </div>;
+        return (
+            <div className="w-screen h-screen flex items-center justify-center">
+                <Loading text="Loading..." fullScreen={true} />
+            </div>
+        )
     }
 
     if (!report) {

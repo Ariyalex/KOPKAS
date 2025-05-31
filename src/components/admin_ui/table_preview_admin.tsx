@@ -70,7 +70,7 @@ export function LaporanTablePreview() {
                         {(rowData) => rowData.reporter?.full_name || 'Unknown'}
                     </Cell>
                 </Column>
-                <Column width={200} align="left">
+                <Column width={200} flexGrow={1} align="left">
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Tanggal Masuk</h3>
                     </HeaderCell>
