@@ -1,6 +1,6 @@
 'use client'
 
-import { ChartLine, ClipboardList, LogOut, MessagesSquare, } from "lucide-react";
+import { ChartLine, ClipboardList, LogOut, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 //nav item
-const navContent: NavItem[] = [
+export const navContentAdmin: NavItem[] = [
     {
         title: "Dashboard",
         Icon: ChartLine,
@@ -49,9 +49,9 @@ export function NavAdmin() {
     }
 
     return (
-        <div className="w-full h-auto flex-1/6 flex justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
+        <div className="w-full h-auto flex-1/6 md:flex hidden justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
             <div className="flex flex-col gap-4">
-                {navContent.map(({ title, Icon, route }, index) => {
+                {navContentAdmin.map(({ title, Icon, route }, index) => {
                     const isActive = pathname === route;
                     return (
                         <Link

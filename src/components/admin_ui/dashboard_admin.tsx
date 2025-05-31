@@ -7,7 +7,7 @@ import { LaporanTablePreview } from "./table_preview_admin";
 
 export function DashboardAdmin() {
   // Destructuring the state and actions from the store
-  const { isLoading, startRealTimeUpdates, stopRealTimeUpdates, dashboardContent, fetchDashboardData} = useDashboardStore();
+  const { isLoading, startRealTimeUpdates, stopRealTimeUpdates, dashboardContent, fetchDashboardData } = useDashboardStore();
 
   useEffect(() => {
     fetchDashboardData(); // ini seharusnya memanggil data dashboard awal, tapi masih belom mudeng
@@ -31,7 +31,7 @@ export function DashboardAdmin() {
         <h1 className="text-[#1F2937] text-2xl font-semibold">Dashboard</h1>
         <p className="text-[#6B7280]">Overview data terkini</p>
       </div>
-      <div className="flex flex-row gap-5 w-full">
+      <div className="md:flex md:flex-row grid grid-cols-2 gap-5 w-full">
         {DashboardItems.map(({ title, Icon, jumlah }, index) => (
           <Card key={index} shadow="shadow-xs" className="flex flex-row justify-between items-center flex-1">
             <div className="flex flex-col">

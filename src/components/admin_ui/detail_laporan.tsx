@@ -88,21 +88,21 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                     <div className="flex flex-col gap-4 justify-around h-full">
                         <Card bgColor="bg-white" className="flex flex-row gap-14" padding="py-4 px-10" overflow="overflow-visible">
                             <div className="flex flex-col items-center gap-1.5 justify-center">
-                                {report.reporter?.photo ? (
+                                {report.reporter_photo ? (
                                     <>
                                         <img
-                                            src={report.reporter.photo}
-                                            alt={report.reporter.full_name || 'Profile'}
+                                            src={report.reporter_photo}
+                                            alt={report.reporter_full_name || 'Profile'}
                                             className="w-[70px] h-[70px] rounded-full object-cover"
                                         />
-                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter.full_name}</h3>
+                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter_full_name}</h3>
                                     </>
                                 ) : (
                                     <>
                                         <div className="w-[70px] h-[70px] rounded-full bg-gray-200 flex items-center justify-center">
                                             <span className="text-gray-400">No Photo</span>
                                         </div>
-                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter?.full_name || 'Unknown'}</h3>
+                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter_full_name || 'Unknown'}</h3>
                                     </>
                                 )}
                             </div>

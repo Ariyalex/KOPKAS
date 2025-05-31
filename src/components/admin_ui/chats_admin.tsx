@@ -33,8 +33,15 @@ export function ChatsAdmin({ onSelectChat, activeChatId = "chat-1" }: ChatsAdmin
         setSearchQuery('');
     };
 
+    // Handle chat selection with additional functionality for responsive design
+    const handleChatSelect = (chatId: string) => {
+        if (onSelectChat) {
+            onSelectChat(chatId);
+        }
+    };
+
     return (
-        <div className="flex flex-col h-full flex-2/6 gap-4 bg-white px-5 py-3 border-l border-gray-200">
+        <div className="flex flex-col h-full w-full gap-4 bg-white px-5 py-3 border-l border-gray-200">
             <div className="flex flex-col gap-3">
                 <h1 className="text-2xl text-black font-medium">Chats</h1>
                 <InputGroup className="w-full">
@@ -61,34 +68,33 @@ export function ChatsAdmin({ onSelectChat, activeChatId = "chat-1" }: ChatsAdmin
                     const user = DummyUsers.find(u => u.id === chat.userId);
                     if (!user) return null;
 
-                    return (
-                        <div
-                            key={chat.id}
-                            className={`flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#F4F9F4] cursor-pointer transition-colors ${chat.id === activeChatId ? 'bg-[#F4F9F4]' : ''}`}
-                            onClick={() => onSelectChat && onSelectChat(chat.id)}
-                        >
-                            <div className="relative">
-                                <Image
-                                    src={user.photo}
-                                    alt={user.name}
-                                    width={50}
-                                    height={50}
-                                    className="rounded-full object-cover w-[50px] h-[50px]"
-                                />
-                                {chat.unread > 0 && (
-                                    <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                        {chat.unread}
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between">
-                                    <h3 className="font-medium text-gray-800">{user.name}</h3>
-                                    <span className="text-xs text-gray-500">{chat.timestamp}</span>
+                    return (<div
+                        key={chat.id}
+                        className={`flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#F4F9F4] cursor-pointer transition-colors ${chat.id === activeChatId ? 'bg-[#F4F9F4]' : ''}`}
+                        onClick={() => handleChatSelect(chat.id)}
+                    >
+                        <div className="relative">
+                            <Image
+                                src={user.photo}
+                                alt={user.name}
+                                width={50}
+                                height={50}
+                                className="rounded-full object-cover w-[50px] h-[50px]"
+                            />
+                            {chat.unread > 0 && (
+                                <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                                    {chat.unread}
                                 </div>
-                                <p className="text-sm max-w-[200px] text-gray-600 truncate">{chat.lastMessage}</p>
-                            </div>
+                            )}
                         </div>
+                        <div className="flex-1">
+                            <div className="flex justify-between">
+                                <h3 className="font-medium text-gray-800">{user.name}</h3>
+                                <span className="text-xs text-gray-500">{chat.timestamp}</span>
+                            </div>
+                            <p className="text-sm max-w-[200px] text-gray-600 truncate">{chat.lastMessage}</p>
+                        </div>
+                    </div>
                     );
                 })}
             </div>

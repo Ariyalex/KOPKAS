@@ -52,7 +52,6 @@ export function LaporanTablePreview() {
                 data={reports}
                 height={300}
                 hover={true}
-                rowClassName={(rowData) => "hover:bg-[#F4F9F4]"}
                 loading={loading}
                 className="custom-sortable-table"
             >
@@ -63,7 +62,7 @@ export function LaporanTablePreview() {
                     <Cell dataKey="id" />
                 </Column>
 
-                <Column width={200} flexGrow={2} align="left">
+                <Column width={200} align="left">
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                     </HeaderCell>
@@ -71,7 +70,7 @@ export function LaporanTablePreview() {
                         {(rowData) => rowData.reporter?.full_name || 'Unknown'}
                     </Cell>
                 </Column>
-                <Column width={200} flexGrow={1} align="left">
+                <Column width={200} align="left">
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Tanggal Masuk</h3>
                     </HeaderCell>
@@ -86,7 +85,7 @@ export function LaporanTablePreview() {
                         }}
                     </Cell>
                 </Column>
-                <Column width={120} flexGrow={1} align="center">
+                <Column width={120} align="center">
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
                     </HeaderCell>
@@ -94,7 +93,7 @@ export function LaporanTablePreview() {
                         {(rowData) => <StatusTag status={rowData.status} />}
                     </Cell>
                 </Column>
-                <Column width={100} align="center" flexGrow={1}>
+                <Column width={100} align="center" >
                     <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                         <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
                     </HeaderCell>

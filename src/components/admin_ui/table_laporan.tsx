@@ -3,13 +3,14 @@
 
 import { useReportStore } from "@/stores/reportStore"; // Importing the store
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { ExternalLink, Filter, SortAsc, SortDesc } from "lucide-react";
+import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button, Checkbox, CheckboxGroup, IconButton, Table } from "rsuite";
+import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table } from "rsuite";
 import { Cell, HeaderCell } from "rsuite-table";
 import Column from "rsuite/esm/Table/TableColumn";
 import { StatusTag } from "../common/tag";
+import { debounce } from 'lodash';
 
 
 export function LaporanTable() {
@@ -28,38 +29,35 @@ export function LaporanTable() {
 
     useEffect(() => {
         // Fetch reports based on filters and sorting
-        setLoading(true);
-        fetchReports();
-        setLoading(false);
+        const applyFilters = async () => {
+            setLoading(true);
+            try {
+                await fetchReports();
+            } catch (error) {
+                console.error("error fetching reports:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        applyFilters();
     }, [searchQuery, statusFilter, sortColumn, sortType, fetchReports]);
 
-    const handleSortColumn = (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
-        setLoading(true);
+    const handleSortColumn = async (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
         setSortColumn(sortColumn);
         setSortType(sortType || 'asc');
-        setFilters({ sortColumn, sortType });
+
+        await setFilters({ sortColumn, sortType: sortType || 'asc' });
     };
 
-    const sortByDate = () => {
+    const debouncedSetFilters = debounce((query) => {
+        setFilters({ searchQuery: query });
         setLoading(true);
-        if (sortColumn === 'created_at' && sortType === 'asc') {
-            setSortType('desc');
-        } else {
-            setSortColumn('created_at');
-            setSortType('asc');
-        }
-        setFilters({ sortColumn: 'created_at', sortType: sortType === 'asc' ? 'desc' : 'asc' });
-    };
+    }, 300);
 
-    const sortByStatus = () => {
-        setLoading(true);
-        if (sortColumn === 'status' && sortType === 'asc') {
-            setSortType('desc');
-        } else {
-            setSortColumn('status');
-            setSortType('asc');
-        }
-        setFilters({ sortColumn: 'status', sortType: sortType === 'asc' ? 'desc' : 'asc' });
+    const handleSearchChange = (value: string) => {
+        const sanitizedValue = value.replace(/[^\w\s]/gi, '');
+        setSearchQuery(sanitizedValue); // Update UI immediately
+        debouncedSetFilters(sanitizedValue); // Debounce the API call
     };
 
     const routingId = (id: string) => {
@@ -68,11 +66,33 @@ export function LaporanTable() {
 
     return (
         <LayoutGroup>
-            <div>
+            <div className="w-full">
                 <div className="flex flex-col gap-4 mb-4">
-                    <div className="flex justify-between items-center">
+                    <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
                         <h2 className="text-xl font-semibold">Laporan Masuk</h2>
                         <div className="flex items-center gap-2">
+                            <InputGroup className="w-64">
+                                <Input
+                                    placeholder="Cari laporan..."
+                                    value={searchQuery}
+                                    onChange={(value) => {
+                                        handleSearchChange(value);
+                                    }}
+                                />
+                                <InputGroup.Addon
+                                    className="bg-[#E6FFFA] cursor-pointer hover:bg-[#D1FAE5]"
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setLoading(true);
+                                    }}
+                                >
+                                    {searchQuery ? (
+                                        <X size={16} className="text-white" />
+                                    ) : (
+                                        <Search size={16} className="text-white" />
+                                    )}
+                                </InputGroup.Addon>
+                            </InputGroup>
                             {/* Tombol Filter */}
                             <motion.div
                                 whileHover={{ scale: 1.05 }}
@@ -83,7 +103,6 @@ export function LaporanTable() {
                                     appearance={showFilters ? "primary" : "subtle"}
                                     color={showFilters ? "green" : undefined}
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className={showFilters ? "bg-[#3CB371]" : ""}
                                 />
                             </motion.div>
                         </div>
@@ -194,76 +213,39 @@ export function LaporanTable() {
                     </AnimatePresence>
                 </div>
 
-                {/* Sorting buttons */}
-                <div className="flex items-center mb-4">
-                    <p className="text-sm text-[#6B7280] mr-2">Urutkan:</p>
-                    <div className="flex space-x-2">
-                        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                            <Button
-                                appearance="ghost"
-                                onClick={sortByDate} // Call sortByDate function
-                                className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'created_at'
-                                    ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                    : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'}`
-                                }
-                            >
-                                <span>Tanggal Masuk</span>
-                                {sortColumn === 'created_at' ? (
-                                    sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                ) : null}
-                            </Button>
-                        </motion.div>
-                        <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                            <Button
-                                appearance="ghost"
-                                onClick={sortByStatus} // Call sortByStatus function
-                                className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'status'
-                                    ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                    : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'}`
-                                }
-                            >
-                                <span>Status</span>
-                                {sortColumn === 'status' ? (
-                                    sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                ) : null}
-                            </Button>
-                        </motion.div>
-                    </div>
-                </div>
-
                 {/* Table Displaying Reports */}
                 <Table
                     data={reports}
-                    height={700}
+                    autoHeight
                     hover={true}
-                    rowClassName={"hover:bg-[#F4F9F4]"}
+                    rowClassName={"list"}
                     loading={loading}
                     sortColumn={sortColumn}
                     sortType={sortType}
                     onSortColumn={handleSortColumn}
                     className="custom-sortable-table"
                 >
-                    <Column width={150} align="left" fixed sortable>
+                    <Column align="left" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">ID Laporan</h3>
                         </HeaderCell>
                         <Cell dataKey="id" />
                     </Column>
 
-                    <Column width={200} flexGrow={2} align="left" sortable>
+                    <Column align="left" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                         </HeaderCell>
-                        <Cell>
-                            {(rowData) => rowData.reporter?.full_name || 'Anonymous'}
+                        <Cell dataKey="reporter_full_name">
+                            {(rowData) => rowData.reporter_full_name || 'Anonymous'}
                         </Cell>
                     </Column>
 
-                    <Column width={200} flexGrow={1} align="left" sortable>
+                    <Column align="left" flexGrow={3} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
                         </HeaderCell>
-                        <Cell>
+                        <Cell dataKey="created_at">
                             {(rowData) => {
                                 const date = new Date(rowData.created_at);
                                 return date.toLocaleDateString('id-ID', {
@@ -275,7 +257,7 @@ export function LaporanTable() {
                         </Cell>
                     </Column>
 
-                    <Column width={120} flexGrow={1} align="center" sortable>
+                    <Column align="center" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
                         </HeaderCell>
@@ -284,7 +266,7 @@ export function LaporanTable() {
                         </Cell>
                     </Column>
 
-                    <Column width={100} align="center" flexGrow={1}>
+                    <Column flexGrow={1} align="center" >
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
                         </HeaderCell>
@@ -305,6 +287,6 @@ export function LaporanTable() {
                     </Column>
                 </Table>
             </div>
-        </LayoutGroup>
+        </LayoutGroup >
     );
 }

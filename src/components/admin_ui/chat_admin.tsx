@@ -1,6 +1,6 @@
 'use client'
 
-import { DummyUsers, ChatMessagesDummy } from "./dummy/chat_dummy";
+import { DummyUsers, ChatMessagesDummy, AdminChatsDummy } from "./dummy/chat_dummy";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FilledButton } from "../common/button";
@@ -63,14 +63,39 @@ export function ChatAdmin({ activeChatId = "chat-1" }: ChatProps) {
         }
     }; if (isLoading) {
         return (
-            <div className="flex flex-col overflow-hidden items-center justify-center h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
+            <div className="flex flex-col overflow-hidden items-center justify-center h-full w-full border-r-[#E5E7EB] border-r-[1px]">
                 <Loading text="Loading..." fullScreen={false} />
             </div>
         );
-    }
+    }    // Find the user for the current chat
+    const currentUser = activeChatId ?
+        DummyUsers.find(user => {
+            const chat = AdminChatsDummy.find(c => c.id === activeChatId);
+            return chat ? user.id === chat.userId : false;
+        }) : null;
 
     return (
-        <div className="flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
+        <div className="flex flex-col overflow-hidden h-full w-full border-r-[#E5E7EB] border-r-[1px]">            {/* User info header with profile on the right side */}
+            {currentUser && (
+                <div className="flex items-center justify-between p-3 bg-white border-b border-gray-200">
+                    <div className="w-10">
+                        {/* Empty space for back button - will be added in parent component */}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="text-right">
+                            <h3 className="font-medium text-gray-800">{currentUser.name}</h3>
+                            <p className="text-sm text-gray-500">{currentUser.role}</p>
+                        </div>
+                        <Image
+                            src={currentUser.photo}
+                            alt={currentUser.name}
+                            width={40}
+                            height={40}
+                            className="rounded-full object-cover w-[40px] h-[40px]"
+                        />
+                    </div>
+                </div>
+            )}
             <div className="overflow-y-auto p-5 flex-1 flex flex-col gap-4 bg-[#F4F9F4]">
                 {messages.map((message, index) => {
                     const user = DummyUsers.find(user => user.id === message.userId);
@@ -90,7 +115,7 @@ export function ChatAdmin({ activeChatId = "chat-1" }: ChatProps) {
                                     alt={user.name}
                                     width={40}
                                     height={40}
-                                    className="rounded-full object-cover w-[40px] h-[40px]"
+                                    className="rounded-full shrink-0 object-cover w-[40px] h-[40px]"
                                 />
                             )}
                             <div className="flex flex-col">

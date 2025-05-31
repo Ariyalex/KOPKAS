@@ -12,12 +12,9 @@ interface Report {
   evidence_files: string[] | null;
   category_id: string;
   reporter_id: string;
-  reporter?: {
-    id: string;
-    full_name: string;
-    email: string;
-    photo?: string;
-  };
+  reporter_full_name: string;
+  reporter_email: string;
+  reporter_photo?: string;
   created_at: string;
   updated_at?: string;
 }
@@ -106,14 +103,42 @@ export const useReportStore = create<ReportState>((set, get) => ({
         query = query.in('status', filters.statusFilter);
       }
 
-      // Apply sorting
-        query = query.order('created_at', { ascending: false }).limit(5);
+      // Apply sorting with special case for reporter_full_name
+      if (filters.sortColumn === 'reporter_full_name') {
+        // Sort by the full_name in the reporter relation
+        query = query.order('reporter(full_name)', { ascending: filters.sortType === 'asc' });
+      } else {
+        // Regular column sorting
+        query = query.order(filters.sortColumn, { ascending: filters.sortType === 'asc' });
+      }
 
       const { data, error } = await query;
 
       if (error) throw error;
 
-      set({ reports: data as unknown as Report[], error: null });
+      const transformedData = data?.map(item => {
+        // Get the reporter data - access the first element if it's an array
+        const reporterData = Array.isArray(item.reporter) ? item.reporter[0] : item.reporter;
+
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          location: item.location,
+          incident_date: item.incident_date,
+          status: item.status,
+          evidence_files: item.evidence_files,
+          category_id: item.category_id,
+          reporter_id: item.reporter_id,
+          reporter_full_name: reporterData?.full_name || '',
+          reporter_email: reporterData?.email || '',
+          reporter_photo: reporterData?.photo,
+          created_at: item.created_at,
+          updated_at: item.updated_at
+        };
+      }) || [];
+
+      set({ reports: transformedData, error: null });
 
     } catch (error: any) {
       set({ error: error.message });
@@ -131,7 +156,17 @@ export const useReportStore = create<ReportState>((set, get) => ({
       const { data, error } = await supabase
         .from('reports')
         .select(`
-          *,
+          id,
+          title,
+          description,
+          location,
+          incident_date,
+          status,
+          evidence_files,
+          category_id,
+          reporter_id,
+          created_at,
+          updated_at,
           reporter:users!reports_reporter_id_fkey (
             id,
             full_name,
@@ -144,7 +179,27 @@ export const useReportStore = create<ReportState>((set, get) => ({
 
       if (error) throw error;
 
-      set({ currentReport: data as Report, error: null });
+      // Transform the data to match the Report interface
+      const reporterData = Array.isArray(data.reporter) ? data.reporter[0] : data.reporter;
+
+      const transformedReport: Report = {
+        id: data.id,
+        title: data.title,
+        description: data.description,
+        location: data.location,
+        incident_date: data.incident_date,
+        status: data.status,
+        evidence_files: data.evidence_files,
+        category_id: data.category_id,
+        reporter_id: data.reporter_id,
+        reporter_full_name: reporterData?.full_name || '',
+        reporter_email: reporterData?.email || '',
+        reporter_photo: reporterData?.photo,
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
+
+      set({ currentReport: transformedReport, error: null });
 
     } catch (error: any) {
       set({ error: error.message });
@@ -175,10 +230,34 @@ export const useReportStore = create<ReportState>((set, get) => ({
 
       if (error) throw error;
 
-      set({ recentReports: data as unknown as Report[] });
+      // Transform the data to match the Report interface
+      const transformedData = data?.map(item => {
+        // Get the reporter data - access the first element if it's an array
+        const reporterData = Array.isArray(item.reporter) ? item.reporter[0] : item.reporter;
+
+        return {
+          id: item.id,
+          title: item.title,
+          description: '', // Default value for missing fields
+          location: '',
+          incident_date: '',
+          status: item.status,
+          evidence_files: null,
+          category_id: '',
+          reporter_id: reporterData?.id || '',
+          reporter_full_name: reporterData?.full_name || '',
+          reporter_email: '',
+          created_at: item.created_at,
+          updated_at: undefined
+        } as Report;
+      }) || [];
+
+      set({ recentReports: transformedData });
 
     } catch (error: any) {
       console.error('Error fetching recent reports:', error);
+      // Consider updating the error state here
+      // set({ error: error.message });
     }
   },
 
