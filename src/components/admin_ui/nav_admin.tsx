@@ -1,10 +1,10 @@
 'use client'
 
-import { ChartLine, ClipboardList, LogOut, MessagesSquare, } from "lucide-react";
+import { ChartLine, ClipboardList, LogOut, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
-import { supabase } from "@/lib/supabase";
+import { handleLogout } from "@/utils/auth";
 
 interface NavItem {
     title: string;
@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 //nav item
-const navContent: NavItem[] = [
+export const navContentAdmin: NavItem[] = [
     {
         title: "Dashboard",
         Icon: ChartLine,
@@ -32,26 +32,18 @@ const navContent: NavItem[] = [
     },
 ]
 
-export const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.log(error.message)
-    }
-}
-
 export function NavAdmin() {
     const pathname = usePathname();
-    const router = useRouter();
-
-    const onLogout = async () => {
+    const router = useRouter(); const onLogout = async () => {
         await handleLogout();
         router.push("/");
+        router.refresh(); // Force refresh to ensure all state is cleared
     }
 
     return (
-        <div className="w-full h-auto flex-1/6 flex justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
+        <div className="w-full h-auto flex-1/6 md:flex hidden justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
             <div className="flex flex-col gap-4">
-                {navContent.map(({ title, Icon, route }, index) => {
+                {navContentAdmin.map(({ title, Icon, route }, index) => {
                     const isActive = pathname === route;
                     return (
                         <Link

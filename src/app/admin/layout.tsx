@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     // Menentukan className berdasarkan halaman saat ini
     const contentClassName = isReportDetailPage || isChatPage
         ? "flex-5/6 flex" // Tidak ada className pada halaman detail report atau halaman chat
-        : "flex flex-col h-full gap-5 flex-5/6 px-8 py-5 bg-[#F5FFFA]"; // Class biasa untuk halaman lain
+        : "flex flex-col h-full gap-5 flex-5/6 sm:px-8 px-3 py-5 bg-[#F5FFFA]"; // Class biasa untuk halaman lain
 
     return (
         <main>

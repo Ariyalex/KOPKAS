@@ -13,3 +13,32 @@ body {
   --rs-btn-default-hover-bg: #74B49B;
   --rs-btn-default-hover-text: #FFFFFF;
 }
+
+
+/* style.css */
+.list {
+  background-color: white;
+  transition: 0.3s ease;
+}
+
+.list:hover {
+  background-color: #F4F9F4;
+}
+
+.logouthov {
+  background-color: white;
+  transition: 0.3s ease;
+}
+
+.logouthov:hover {
+  background-color: var(--color-red-50);
+}
+
+.logouthov {
+  background-color: white;
+  transition: 0.3s ease;
+}
+
+.logouthov:hover {
+  background-color: var(--color-red-50);
+}

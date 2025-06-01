@@ -1,33 +1,32 @@
 'use client'
 
+import { Loading } from "@/components/common/loading";
 import { FeatureKopkas } from "@/components/home_ui/feature_home";
+import { Footer } from "@/components/home_ui/footer";
+import { PsikologKopkas } from "@/components/home_ui/psikolog_home";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Session } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
 import { HeaderHome } from "../components/home_ui/header_home";
 import { HomeIntro } from "../components/home_ui/home_intro";
-import { PsikologKopkas } from "@/components/home_ui/psikolog_home";
-import { Footer } from "@/components/home_ui/footer";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import { Loading } from "@/components/common/loading";
+import { useUserStore } from "@/stores/userStore";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
   const [session, setSession] = useState<Session | null>(null);
-  const [userData, setUserData] = useState<{
-    full_name?: string;
-    role?: string;
-    id?: string;
-    email?: string;
-  } | null>(null);
+  const { currentUser, isLoading: userLoading, fetchCurrentUser } = useUserStore();
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Session check and user data fetch
   useEffect(() => {
     const checkSession = async () => {
       try {
         // Simulate a minimal delay to prevent flickering
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Check for session
+        // Check for session using Supabase client
+        const supabase = createClientComponentClient();
         const { data, error } = await supabase.auth.getSession();
+
         if (error) {
           console.error("Error checking session:", error);
           setIsLoading(false);
@@ -36,40 +35,29 @@ export default function Home() {
 
         setSession(data.session);
 
-        // If session exists, get user data
+        // If session exists, fetch user data from store
         if (data.session?.user?.id) {
-          const { data: userInfo, error: userError } = await supabase
-            .from('users')
-            .select('full_name, role, id, email')
-            .eq('id', data.session.user.id)
-            .single();
-
-          if (userError) {
-            console.error("Error fetching user data:", userError);
-          } else {
-            setUserData(userInfo);
-          }
+          await fetchCurrentUser();
         }
       } catch (error) {
         console.error("Session check failed:", error);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false);  // Make sure loading is set to false
       }
     };
 
     checkSession();
-  }, []);
-
-
-  if (isLoading) {
+  }, [fetchCurrentUser]);
+  // Show loading state
+  if (isLoading || userLoading) {
     return <Loading text="Loading..." fullScreen={true} />;
   }
 
   return (
-    <main className="">
-      <HeaderHome userData={userData} />
+    <main className="flex flex-col h-full">
+      <HeaderHome userData={currentUser} />
       <div className="p-0">
-        <HomeIntro session={session} userData={userData} />
+        <HomeIntro session={session} userData={currentUser} />
         <FeatureKopkas />
         <PsikologKopkas />
       </div>

@@ -1,12 +1,13 @@
 'use client'
 
-import { House, LogOut, MessageSquare, Plus } from "lucide-react";
+import { ClipboardList, House, LogOut, MessageSquare, Plus } from "lucide-react";
 import { Card } from "../common/card";
 import Link from "next/link";
 import { ClassValue } from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
-import { supabase } from "@/lib/supabase";
+import { UserData } from "@/stores/userStore";
+import { handleLogout } from "@/utils/auth";
 
 interface NavItem {
     title: string;
@@ -15,7 +16,7 @@ interface NavItem {
 }
 
 //nav item
-const navContent: NavItem[] = [
+export const navContent: NavItem[] = [
     {
         title: "Dashboard",
         Icon: House,
@@ -32,6 +33,11 @@ const navContent: NavItem[] = [
         Icon: Plus,
         route: "/user/form"
     },
+    {
+        title: "Daftar Laporan",
+        Icon: ClipboardList,
+        route: "/user/report"
+    },
 
 
 ]
@@ -40,21 +46,15 @@ interface NavProps {
     className?: ClassValue;
 }
 
-export const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.log(error.message)
-    }
-}
+
 
 
 export function NavUser({ className }: NavProps) {
     const pathname = usePathname();
-    const router = useRouter()
-
-    const onLogout = async () => {
+    const router = useRouter(); const onLogout = async () => {
         await handleLogout();
         router.push("/");
+        router.refresh(); // Force refresh to ensure all state is cleared
     }
 
     return (
@@ -74,7 +74,7 @@ export function NavUser({ className }: NavProps) {
                             )}
                         >
                             <Icon color="#5C8D89" />
-                            <h3 className="">{title}</h3>
+                            <h3 >{title}</h3>
                         </Link>
                     );
                 })}

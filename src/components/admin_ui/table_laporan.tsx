@@ -1,5 +1,7 @@
 'use client'
 
+
+import { useReportStore } from "@/stores/reportStore"; // Importing the store
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,166 +10,95 @@ import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table }
 import { Cell, HeaderCell } from "rsuite-table";
 import Column from "rsuite/esm/Table/TableColumn";
 import { StatusTag } from "../common/tag";
+import { debounce } from 'lodash';
 
-// import keperluan backend
-import type { Database } from '@/lib/database.types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-
-interface Report {
-    id: string;
-    title: string;
-    status: 'new' | 'in_progress' | 'completed' | 'rejected';
-    created_at: string;
-    reporter: {
-        id: string;
-        full_name: string;
-    };
-}
 
 export function LaporanTable() {
     const router = useRouter();
-    const supabase = createClientComponentClient<Database>();
+    const { reports, fetchReports, filters, setFilters } = useReportStore();  // Using the store
 
     // State for sorting
-    const [sortColumn, setSortColumn] = useState<string>('');
-    const [sortType, setSortType] = useState<'asc' | 'desc' | undefined>('asc');
+    const [sortColumn, setSortColumn] = useState<string>(filters.sortColumn);
+    const [sortType, setSortType] = useState<'asc' | 'desc' | undefined>(filters.sortType);
     const [loading, setLoading] = useState<boolean>(false);
 
     // State for search and filter
-    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState<string>(filters.searchQuery);
     const [showFilters, setShowFilters] = useState<boolean>(false);
-    const [statusFilter, setStatusFilter] = useState<string[]>([]);
+    const [statusFilter, setStatusFilter] = useState<string[]>(filters.statusFilter);
 
-    // State for reports
-    const [reports, setReports] = useState<Report[]>([]);
-
-    // Add useEffect to update table when any filter or sort changes
     useEffect(() => {
-        async function fetchReports() {
+        // Fetch reports based on filters and sorting
+        const applyFilters = async () => {
+            setLoading(true);
             try {
-                let query = supabase
-                    .from('reports')
-                    .select(`
-                        id,
-                        title,
-                        status,
-                        created_at,
-                        reporter:users!reports_reporter_id_fkey (
-                            id,
-                            full_name
-                        )
-                    `);
-
-                // Apply search query
-if (searchQuery.trim()) {
-    query = query
-        .filter('id::text', 'ilike', `%${searchQuery}%`)
-        .filter('reporter.full_name', 'ilike', `%${searchQuery}%`);
-}
-
-                // Apply status filters
-                if (statusFilter.length > 0) {
-                    query = query.in('status', statusFilter);
-                }
-
-                // Apply sorting
-                query = query.order(sortColumn || 'created_at', { 
-                    ascending: sortType === 'asc',
-                    nullsFirst: false 
-                });
-
-                const { data, error } = await query;
-
-                if (error) {
-                    throw new Error(error.message);
-                }
-
-                setReports(data as unknown as Report[]);
+                await fetchReports();
             } catch (error) {
-                console.error('Error fetching reports:', error);
+                console.error("error fetching reports:", error);
             } finally {
                 setLoading(false);
             }
         }
+        applyFilters();
+    }, [filters.searchQuery, statusFilter, sortColumn, sortType, fetchReports]);
 
-        setLoading(true);
-        const timer = setTimeout(() => {
-            fetchReports();
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [supabase, searchQuery, statusFilter, sortColumn, sortType]);
-
-    // Handle sort change
-    const handleSortColumn = (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
-        setLoading(true);
+    const handleSortColumn = async (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
         setSortColumn(sortColumn);
         setSortType(sortType || 'asc');
+
+        await setFilters({ sortColumn, sortType: sortType || 'asc' });
+    };
+    const handleSearchChange = (value: string) => {
+        // Hapus sanitasi yang terlalu ketat agar karakter khusus seperti '-' pada ID bisa dicari
+        setSearchQuery(value); // Update UI immediately
     };
 
-    // Direct sort functions
-    const sortByDate = () => {
-        setLoading(true);
-        if (sortColumn === 'created_at' && sortType === 'asc') {
-            setSortType('desc');
-        } else {
-            setSortColumn('created_at');
-            setSortType('asc');
-        }
+    const handleSearchSubmit = () => {
+        setFilters({ searchQuery: searchQuery });
     };
 
-    const sortByStatus = () => {
-        setLoading(true);
-        if (sortColumn === 'status' && sortType === 'asc') {
-            setSortType('desc');
-        } else {
-            setSortColumn('status');
-            setSortType('asc');
-        }
-    };
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        setFilters({ searchQuery: '' });
+    }
 
-    // Handle routing by id
     const routingId = (id: string) => {
         router.push(`/admin/report/${id}`);
     };
 
     return (
-        <LayoutGroup
-        >
-            <div>
+        <LayoutGroup>
+            <div className="w-full">
                 <div className="flex flex-col gap-4 mb-4">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>
-                        <div className="flex items-center gap-2">
-                            <InputGroup className="w-64">
+                    <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
+                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>                        <div className="flex items-center gap-2">
+                            <div className="relative w-64">
                                 <Input
                                     placeholder="Cari laporan..."
                                     value={searchQuery}
                                     onChange={(value) => {
-                                        try {
-                                            // Sanitasi input pencarian
-                                            const sanitizedValue = value.replace(/[^\w\s]/gi, '');
-                                            setSearchQuery(sanitizedValue);
-                                            setLoading(true);
-                                        } catch (error) {
-                                            console.error('Error in search input:', error);
-                                        }
+                                        handleSearchChange(value);
                                     }}
+                                    onPressEnter={handleSearchSubmit}
+                                    className="pr-8"
                                 />
-                                <InputGroup.Addon 
-                                    className="bg-[#E6FFFA] cursor-pointer hover:bg-[#D1FAE5]"
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setLoading(true);
-                                    }}
-                                >
-                                    {searchQuery ? (
-                                        <X size={16} className="text-red-500 hover:text-red-700" />
-                                    ) : (
-                                        <Search size={16} className="text-[#5C8D89]" />
-                                    )}
-                                </InputGroup.Addon>
-                            </InputGroup>
+                                {searchQuery && (
+                                    <button
+                                        onClick={handleClearSearch}
+                                        className="absolute right-2 top-2"
+                                    >
+                                        <X size={16} className="text-gray-400 hover:text-gray-600" />
+                                    </button>
+                                )}
+                            </div>
+                            <IconButton
+                                icon={<Search size={16} />}
+                                appearance="primary"
+                                color="green"
+                                onClick={handleSearchSubmit}
+                                className="bg-[#E6FFFA] text-[#10B981] hover:bg-[#D1FAE5]"
+                            />
+                            {/* Tombol Filter */}
                             <motion.div
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -177,7 +108,6 @@ if (searchQuery.trim()) {
                                     appearance={showFilters ? "primary" : "subtle"}
                                     color={showFilters ? "green" : undefined}
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className={showFilters ? "bg-[#3CB371]" : ""}
                                 />
                             </motion.div>
                         </div>
@@ -193,12 +123,13 @@ if (searchQuery.trim()) {
                                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
                                 className="p-3 bg-white rounded-md border border-[#E6FFFA] shadow-md origin-top"
-                            >                        <motion.h3
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.1 }}
-                                className="text-sm text-[#3CB371] font-medium mb-2"
                             >
+                                <motion.h3
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.1 }}
+                                    className="text-sm text-[#3CB371] font-medium mb-2"
+                                >
                                     Filter Status:
                                 </motion.h3>
                                 <CheckboxGroup
@@ -206,10 +137,9 @@ if (searchQuery.trim()) {
                                     name="statusFilter"
                                     value={statusFilter}
                                     onChange={(value) => {
-                                        // Convert ValueType[] to string[]
                                         setStatusFilter(value.map(item => String(item)));
                                         setLoading(true);
-                                        setTimeout(() => setLoading(false), 300);
+                                        setFilters({ statusFilter: value.map(item => String(item)) });
                                     }}
                                 >
                                     <motion.div
@@ -217,7 +147,7 @@ if (searchQuery.trim()) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.15 }}
                                     >
-                                        <Checkbox value="baru">
+                                        <Checkbox value="new">
                                             <span className="text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full text-xs">
                                                 Baru
                                             </span>
@@ -228,7 +158,7 @@ if (searchQuery.trim()) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 }}
                                     >
-                                        <Checkbox value="diproses">
+                                        <Checkbox value="in_progress">
                                             <span className="text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full text-xs">
                                                 Diproses
                                             </span>
@@ -239,7 +169,7 @@ if (searchQuery.trim()) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.25 }}
                                     >
-                                        <Checkbox value="selesai">
+                                        <Checkbox value="completed">
                                             <span className="text-[#047857] bg-[#D1FAE5] px-2 py-0.5 rounded-full text-xs">
                                                 Selesai
                                             </span>
@@ -250,7 +180,7 @@ if (searchQuery.trim()) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.3 }}
                                     >
-                                        <Checkbox value="ditolak">
+                                        <Checkbox value="rejected">
                                             <span className="text-red-700 bg-red-100 px-2 py-0.5 rounded-full text-xs">
                                                 Ditolak
                                             </span>
@@ -274,119 +204,54 @@ if (searchQuery.trim()) {
                                                 onClick={() => {
                                                     setStatusFilter([]);
                                                     setLoading(true);
-                                                    setTimeout(() => setLoading(false), 300);
+                                                    setFilters({ statusFilter: [] });
                                                 }}
-                                                className="text-[#6B7280] hover:text-[#3CB371]">Reset Filter</Button>
+                                                className="text-[#6B7280] hover:text-[#3CB371]"
+                                            >
+                                                Reset Filter
+                                            </Button>
                                         </motion.div>
                                     </motion.div>
                                 )}
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <div className="flex items-center">
-                        <p className="text-sm text-[#6B7280] mr-2">Urutkan:</p>
-                        <div className="flex space-x-2">
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                                <Button
-                                    appearance="ghost"
-                                    onClick={sortByDate}
-                                    className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'tanggal'
-                                        ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                        : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'
-                                        }`}
-                                >
-                                    <span>Tanggal Masuk</span>
-                                    {sortColumn === 'tanggal' ? (
-                                        sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                    ) : null}
-                                </Button>
-                            </motion.div>
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                                <Button
-                                    appearance="ghost"
-                                    onClick={sortByStatus}
-                                    className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'status'
-                                        ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                        : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'
-                                        }`}
-                                >
-                                    <span>Status</span>
-                                    {sortColumn === 'status' ? (
-                                        sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                    ) : null}
-                                </Button>
-                            </motion.div>
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                                <Button
-                                    appearance="ghost"
-                                    onClick={() => {
-                                        setSortColumn('pelapor');
-                                        setSortType(sortColumn === 'pelapor' && sortType === 'asc' ? 'desc' : 'asc');
-                                    }}
-                                    className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'pelapor'
-                                        ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                        : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'
-                                        }`}
-                                >
-                                    <span>Pelapor</span>
-                                    {sortColumn === 'pelapor' ? (
-                                        sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                    ) : null}
-                                </Button>
-                            </motion.div>
-                            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                                <Button
-                                    appearance="ghost"
-                                    onClick={() => {
-                                        setSortColumn('id');
-                                        setSortType(sortColumn === 'id' && sortType === 'asc' ? 'desc' : 'asc');
-                                    }}
-                                    className={`text-sm py-1 px-3 rounded-md flex items-center gap-1.5 transition-colors ${sortColumn === 'id'
-                                        ? 'bg-[#E6FFFA] text-[#3CB371] font-medium border border-[#3CB371]/30'
-                                        : 'bg-[#F4F9F4] text-[#6B7280] hover:bg-[#E6FFFA] hover:text-[#3CB371]'
-                                        }`}
-                                >
-                                    <span>ID</span>                            {sortColumn === 'id' ? (
-                                        sortType === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />
-                                    ) : null}
-                                </Button>
-                            </motion.div>
-                        </div>
-                    </div>
                 </div>
 
+                {/* Table Displaying Reports */}
                 <Table
                     data={reports}
-                    height={700}
+                    autoHeight
                     hover={true}
-                    rowClassName={"hover:bg-[#F4F9F4]"}
+                    rowClassName={"list"}
                     loading={loading}
                     sortColumn={sortColumn}
                     sortType={sortType}
                     onSortColumn={handleSortColumn}
                     className="custom-sortable-table"
                 >
-                    <Column width={150} align="left" fixed sortable>
+                    <Column align="left" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">ID Laporan</h3>
                         </HeaderCell>
                         <Cell dataKey="id" />
                     </Column>
 
-                    <Column width={200} flexGrow={2} align="left" sortable>
+                    <Column align="left" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                         </HeaderCell>
-                    <Cell>
-                        {(rowData: Report) => rowData.reporter?.full_name || 'Anonymous'}
-                    </Cell>
+                        <Cell dataKey="reporter_full_name">
+                            {(rowData) => rowData.reporter_full_name || 'Anonymous'}
+                        </Cell>
                     </Column>
-                    <Column width={200} flexGrow={1} align="left" sortable>
+
+                    <Column align="left" flexGrow={3} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
                         </HeaderCell>
-                        <Cell>
-                            {(rowData: Report) => {
+                        <Cell dataKey="created_at">
+                            {(rowData) => {
                                 const date = new Date(rowData.created_at);
                                 return date.toLocaleDateString('id-ID', {
                                     day: 'numeric',
@@ -396,7 +261,8 @@ if (searchQuery.trim()) {
                             }}
                         </Cell>
                     </Column>
-                    <Column width={120} flexGrow={1} align="center" sortable>
+
+                    <Column align="center" flexGrow={2} sortable>
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
                         </HeaderCell>
@@ -404,7 +270,8 @@ if (searchQuery.trim()) {
                             {(rowData) => <StatusTag status={rowData.status} />}
                         </Cell>
                     </Column>
-                    <Column width={100} align="center" flexGrow={1}>
+
+                    <Column flexGrow={1} align="center" >
                         <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
                             <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
                         </HeaderCell>
@@ -425,6 +292,6 @@ if (searchQuery.trim()) {
                     </Column>
                 </Table>
             </div>
-        </LayoutGroup>
+        </LayoutGroup >
     );
 }

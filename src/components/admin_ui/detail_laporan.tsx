@@ -1,90 +1,40 @@
 'use client'
-
-import CheckIcon from '@rsuite/icons/Check';
-import Image from "next/image";
+import { useReportStore } from "@/stores/reportStore";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
 import { Dropdown, Loader, Notification, useToaster } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
-
-// import keperluan backend
-import type { Database } from '@/lib/database.types';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Loading } from "../common/loading";
 
 interface DetailLaporanProps {
     params: { id: string };
 }
 
-interface Report {
-    id: string;
-    title: string;
-    description: string;
-    location: string;
-    incident_date: string;
-    status: 'new' | 'in_progress' | 'completed' | 'rejected';
-    evidence_files: string[] | null;
-    category_id: string;
-    reporter_id: string;
-    reporter: {
-        id: string;
-        full_name: string;
-        email: string;
-        photo: string | null;
-    } | null;
-    created_at: string;
-}
-
 export function DetailLaporan({ params }: DetailLaporanProps) {
-    // supabase
-    const supabase = createClientComponentClient<Database>();
-
-    //controller
-    const [report, setReport] = useState<Report | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [statusUpdated, setStatusUpdated] = useState<boolean>(false);
-    const [lastUpdatedStatus, setLastUpdatedStatus] = useState<string | null>(null);
-
-    //notifikasi
+    const router = useRouter();
     const toaster = useToaster();
 
+    const { currentReport: report, isLoading, error, fetchReportById, updateReportStatus, clearError } = useReportStore();
+
     useEffect(() => {
-        async function fetchReport() {
-            try {
-                const { data, error } = await supabase
-                    .from('reports')
-                    .select(`
-                        *,
-                        reporter:users!reports_reporter_id_fkey (
-                            id,
-                            full_name,
-                            email,
-                            photo
-                        )
-                    `)
-                    .eq('id', params.id)
-                    .single();
+        fetchReportById(params.id); // Fetch the report by ID
 
-                if (error) throw error;
-                setReport(data as Report);
-            } catch (error) {
-                console.error('Error fetching report:', error);
-                showNotification('error', 'Gagal memuat data laporan');
-            } finally {
-                setIsLoading(false);
-            }
+        return () => clearError(); // Cleanup the error when the component unmounts
+    }, [params.id, fetchReportById, clearError]);
+
+    useEffect(() => {
+        if (error) {
+            showNotification('error', error);
+            clearError();
         }
-
-        fetchReport();
-    }, [params.id, supabase]);
+    }, [error, clearError]);
 
     const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
         toaster.push(
-            <Notification type={type} header={
-                type === 'success' ? 'Sukses' :
-                    type === 'error' ? 'Error' : 'Informasi'
-            } closable>
+            <Notification type={type} header={type === 'success' ? 'Sukses' : type === 'error' ? 'Error' : 'Informasi'} closable>
                 {message}
             </Notification>,
             { placement: 'topEnd' }
@@ -93,71 +43,33 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
 
     const getStatusConfig = (status: string): { label: string; className: string } => {
         const config = {
-            'new': {
-                label: 'Baru',
-                className: 'bg-blue-100 text-blue-800'
-            },
-            'in_progress': {
-                label: 'Diproses',
-                className: 'bg-yellow-100 text-yellow-800'
-            },
-            'completed': {
-                label: 'Selesai',
-                className: 'bg-green-100 text-green-800'
-            },
-            'rejected': {
-                label: 'Ditolak',
-                className: 'bg-red-100 text-red-800'
-            }
+            'new': { label: 'Baru', className: 'bg-blue-100 text-blue-800' },
+            'in_progress': { label: 'Diproses', className: 'bg-yellow-100 text-yellow-800' },
+            'completed': { label: 'Selesai', className: 'bg-green-100 text-green-800' },
+            'rejected': { label: 'Ditolak', className: 'bg-red-100 text-red-800' }
         }[status];
 
         return config || { label: 'Tidak diketahui', className: 'bg-gray-100 text-gray-800' };
     };
-    
+
     const handleStatusChange = async (newStatus: 'new' | 'in_progress' | 'completed' | 'rejected') => {
         if (!report) return;
 
-        setIsLoading(true);
         try {
-            const { error } = await supabase
-                .from('reports')
-                .update({ 
-                    status: newStatus,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', report.id);
-
-            if (error) throw error;
-
-            // Get status label from config
             const { label } = getStatusConfig(newStatus);
-
-            // Create report update record
-            await supabase.from('report_updates').insert({
-                report_id: report.id,
-                old_status: report.status,
-                new_status: newStatus,
-                notes: `Status diperbarui ke ${label}`
-            });
-
-            setReport(prev => prev ? {...prev, status: newStatus} : null);
+            await updateReportStatus(report.id, newStatus, `Status diperbarui ke ${label}`);
             showNotification('success', `Status laporan berhasil diperbarui menjadi ${label}`);
-            setStatusUpdated(true);
-            setLastUpdatedStatus(label);
-
-            setTimeout(() => setStatusUpdated(false), 3000);
         } catch (error) {
-            console.error('Error updating status:', error);
             showNotification('error', 'Gagal memperbarui status laporan');
-        } finally {
-            setIsLoading(false);
         }
     };
 
     if (isLoading) {
-        return <div className="h-screen w-screen bg-white flex items-center justify-center">
-            <Loader size="lg" />
-        </div>;
+        return (
+            <div className="w-screen h-screen flex items-center justify-center">
+                <Loading text="Loading..." fullScreen={true} />
+            </div>
+        )
     }
 
     if (!report) {
@@ -168,33 +80,32 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
     }
 
     return (
-        <div className="h-screen w-screen bg-white flex flex-col gap-4 px-8 py-2">
+        <div className="h-fit w-screen bg-white flex flex-col gap-2 md:px-8 px-2 py-2">
             <div>
                 <h1 className="text-[#1F2937] text-2xl font-semibold">Detail Laporan</h1>
                 <p className="text-[#6B7280]">Lihat detail laporan yang dikirim pelapor</p>
             </div>
-            <div className="flex flex-row gap-5 w-full h-full py-4">
-                <Card bgColor="bg-[#F4F9F4]" padding="px-5 py-3" className="flex flex-col gap-4 flex-4/6" overflow="overflow-visible">
+            <div className="flex md:flex-row flex-col gap-5 w-full md:h-full h-fit py-4">
+                <Card bgColor="bg-[#F4F9F4]" padding="md:px-5 px-4 py-3" className="flex flex-col gap-4 flex-4/6" overflow="overflow-visible">
                     <h1 className="font-semibold text-[#5C8D89] text-2xl">Laporan #{report.id.substring(0, 8).toUpperCase()}</h1>
                     <div className="flex flex-col gap-4 justify-around h-full">
-                        <Card bgColor="bg-white" className="flex flex-row gap-14" padding="py-4 px-10" overflow="overflow-visible">
+                        <Card bgColor="bg-white" className="flex md:flex-row flex-col md:gap-14 gap-2" padding="py-4 px-10" overflow="overflow-visible">
                             <div className="flex flex-col items-center gap-1.5 justify-center">
-                                {report.reporter?.photo ? (
+                                {report.reporter_photo ? (
                                     <>
-                                        <Image
-                                            src={report.reporter.photo}
-                                            alt={report.reporter.full_name || 'Profile'}
-                                            width={100} height={100}
+                                        <img
+                                            src={report.reporter_photo}
+                                            alt={report.reporter_full_name || 'Profile'}
                                             className="w-[70px] h-[70px] rounded-full object-cover"
                                         />
-                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter.full_name}</h3>
+                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter_full_name}</h3>
                                     </>
                                 ) : (
                                     <>
                                         <div className="w-[70px] h-[70px] rounded-full bg-gray-200 flex items-center justify-center">
                                             <span className="text-gray-400">No Photo</span>
                                         </div>
-                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter?.full_name || 'Unknown'}</h3>
+                                        <h3 className="text-[#5C8D89] font-medium">{report.reporter_full_name || 'Unknown'}</h3>
                                     </>
                                 )}
                             </div>
@@ -210,16 +121,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                 <div className="flex flex-col gap-1.5">
                                     <h3 className="text-[#5C8D89] text-base font-medium">Status Laporan</h3>
                                     <div className="flex flex-row gap-5 items-center">
-                                        <div
-                                            className="transition-all duration-300"
-                                            style={{
-                                                transform: statusUpdated ? 'scale(1.05)' : 'scale(1)',
-                                                boxShadow: statusUpdated ? '0 0 8px rgba(16, 185, 129, 0.5)' : 'none',
-                                                borderRadius: '9999px'
-                                            }}
-                                        >
-                                            <StatusTag status={report.status} />
-                                        </div>
+                                        <StatusTag status={report.status} />
                                         <Dropdown
                                             title={isLoading ? "Memperbarui..." : "Perbarui Status"}
                                             placement="rightStart"
@@ -233,17 +135,17 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                             <Dropdown.Item onSelect={() => handleStatusChange('rejected')}>Ditolak</Dropdown.Item>
                                         </Dropdown>
                                         {isLoading && <Loader size="sm" />}
-                                        {statusUpdated && (
+                                        {/* {statusUpdated && (
                                             <div className="flex items-center text-green-600">
                                                 <CheckIcon style={{ marginRight: 4 }} />
                                                 <span className="text-xs">Diperbarui ke {lastUpdatedStatus}</span>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </div>
                             </div>
                         </Card>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
                             <Card bgColor="bg-white" padding="px-5 py-2" width="w-full">
                                 <h2 className="text-[#5C8D89] font-bold text-sm">Tanggal dan Waktu Kejadian</h2>
                                 <div className="bg-[#A7D7C5] rounded-md flex flex-row px-4 my-6 py-2">
@@ -300,14 +202,20 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                             </Card>
                         </div>
                     </div>
+
                 </Card>
                 {/* Kronologi Section */}
-                <Card bgColor="bg-[#F4F9F4]" className="flex-2/6 flex flex-col gap-4" height="h-full" padding="px-5 py-4">
+                <Card bgColor="bg-[#F4F9F4]" className="flex-2/6 flex flex-col gap-4" height="h-full" padding="px-5 py-4" width="w-full">
                     <h1 className="font-semibold text-[#5C8D89] text-2xl">Kronologi Kejadian</h1>
                     <div className="bg-white rounded-md p-4 text-black text-sm overflow-auto max-h-[calc(100vh-200px)]">
                         {report.description || 'Tidak ada kronologi kejadian yang dilaporkan'}
                     </div>
                 </Card>
+            </div>
+            <div className='w-fit mb-3'>
+                <FilledButton onClick={router.back} width='w-fit'>
+                    Kembali
+                </FilledButton>
             </div>
         </div>
     )
