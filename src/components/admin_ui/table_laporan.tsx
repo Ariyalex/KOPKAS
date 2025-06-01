@@ -1,31 +1,58 @@
 'use client'
 
-
 import { useReportStore } from "@/stores/reportStore"; // Importing the store
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { ExternalLink, Filter, Search, SortAsc, SortDesc, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ExternalLink, Filter, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button, Checkbox, CheckboxGroup, IconButton, Input, InputGroup, Table } from "rsuite";
-import { Cell, HeaderCell } from "rsuite-table";
-import Column from "rsuite/esm/Table/TableColumn";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Checkbox, CheckboxGroup, IconButton, Input } from "rsuite";
 import { StatusTag } from "../common/tag";
-import { debounce } from 'lodash';
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    SortingState,
+    flexRender,
+    createColumnHelper,
+    ColumnDef
+} from '@tanstack/react-table';
+import { Loading } from "../common/loading";
 
+
+// Define report data type for TanStack Table
+type Report = {
+    id: string;
+    reporter_full_name: string;
+    created_at: string;
+    status: string; // We'll cast it to the proper type in the StatusTag component
+    title?: string;
+    description?: string;
+}
 
 export function LaporanTable() {
     const router = useRouter();
     const { reports, fetchReports, filters, setFilters } = useReportStore();  // Using the store
 
-    // State for sorting
-    const [sortColumn, setSortColumn] = useState<string>(filters.sortColumn);
-    const [sortType, setSortType] = useState<'asc' | 'desc' | undefined>(filters.sortType);
+    // State for sorting with TanStack Table
+    const [sorting, setSorting] = useState<SortingState>([
+        { id: filters.sortColumn, desc: filters.sortType === 'desc' }
+    ]);
     const [loading, setLoading] = useState<boolean>(false);
 
     // State for search and filter
     const [searchQuery, setSearchQuery] = useState<string>(filters.searchQuery);
     const [showFilters, setShowFilters] = useState<boolean>(false);
     const [statusFilter, setStatusFilter] = useState<string[]>(filters.statusFilter);
+
+    // Effect to sync TanStack sorting state with reportStore filters
+    useEffect(() => {
+        if (sorting.length > 0) {
+            const sortColumn = sorting[0].id;
+            const sortType = sorting[0].desc ? 'desc' : 'asc';
+
+            setFilters({ sortColumn, sortType });
+        }
+    }, [sorting, setFilters]);
 
     useEffect(() => {
         // Fetch reports based on filters and sorting
@@ -40,14 +67,94 @@ export function LaporanTable() {
             }
         }
         applyFilters();
-    }, [filters.searchQuery, statusFilter, sortColumn, sortType, fetchReports]);
+    }, [filters.searchQuery, statusFilter, filters.sortColumn, filters.sortType, fetchReports]);
 
-    const handleSortColumn = async (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
-        setSortColumn(sortColumn);
-        setSortType(sortType || 'asc');
+    // Column definition for TanStack Table
+    const columns = useMemo<ColumnDef<Report, any>[]>(
+        () => [
+            {
+                id: 'id',
+                accessorKey: 'id',
+                header: () => (
+                    <div className="text-[#6B7280] font-medium text-base">ID Laporan</div>
+                ),
+                cell: info => <div>{info.getValue() as string}</div>,
+            },
+            {
+                id: 'reporter_full_name',
+                accessorKey: 'reporter_full_name',
+                header: () => (
+                    <div className="text-[#6B7280] font-medium text-base">Pelapor</div>
+                ),
+                cell: info => <div>{(info.getValue() as string) || 'Anonymous'}</div>,
+            },
+            {
+                id: 'created_at',
+                accessorKey: 'created_at',
+                header: () => (
+                    <div className="text-[#6B7280] font-medium text-base">Tanggal</div>
+                ),
+                cell: info => {
+                    const date = new Date(info.getValue() as string);
+                    return (
+                        <div>
+                            {date.toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                            })}
+                        </div>
+                    );
+                },
+            },
+            {
+                id: 'status',
+                accessorKey: 'status',
+                header: () => (
+                    <div className="text-center text-[#6B7280] font-medium text-base">Status</div>
+                ),
+                cell: info => (
+                    <div className="text-center">
+                        <StatusTag status={info.getValue() as 'new' | 'in_progress' | 'completed' | 'rejected'} />
+                    </div>
+                ),
+            },
+            {
+                id: 'action',
+                header: () => (
+                    <div className="text-center text-[#6B7280] font-medium text-base">Aksi</div>
+                ),
+                cell: info => {
+                    const id = info.row.original.id;
+                    return (
+                        <div className="flex items-center justify-center">
+                            <button
+                                onClick={() => routingId(id)}
+                                className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
+                            >
+                                <ExternalLink size={16} className="mr-1" />
+                                <span>Detail</span>
+                            </button>
+                        </div>
+                    );
+                },
+            },
+        ],
+        []
+    );
 
-        await setFilters({ sortColumn, sortType: sortType || 'asc' });
-    };
+    // Create table instance
+    const table = useReactTable({
+        data: reports,
+        columns,
+        state: {
+            sorting,
+        },
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+    });
+
     const handleSearchChange = (value: string) => {
         // Hapus sanitasi yang terlalu ketat agar karakter khusus seperti '-' pada ID bisa dicari
         setSearchQuery(value); // Update UI immediately
@@ -55,12 +162,10 @@ export function LaporanTable() {
 
     const handleSearchSubmit = () => {
         setFilters({ searchQuery: searchQuery });
-    };
-
-    const handleClearSearch = () => {
+    }; const handleClearSearch = () => {
         setSearchQuery('');
         setFilters({ searchQuery: '' });
-    }
+    };
 
     const routingId = (id: string) => {
         router.push(`/admin/report/${id}`);
@@ -68,12 +173,12 @@ export function LaporanTable() {
 
     return (
         <LayoutGroup>
-            <div className="w-full md:h-screen h-fit">
+            <div className="w-full sm:h-full h-fit">
                 <div className="flex flex-col gap-4 mb-4">
                     <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
                         <h2 className="text-xl font-semibold">Laporan Masuk</h2>
                         <div className="flex items-center gap-2">
-                            <div className="relative w-64">
+                            <div className="relative w-fit">
                                 <Input
                                     placeholder="Cari laporan..."
                                     value={searchQuery}
@@ -123,7 +228,7 @@ export function LaporanTable() {
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
-                                className="p-3 bg-white rounded-md border border-[#E6FFFA] shadow-md origin-top"
+                                className="p-3 w-[91vw] overflow-x-scroll bg-white rounded-md border border-[#E6FFFA] shadow-md origin-top"
                             >
                                 <motion.h3
                                     initial={{ opacity: 0 }}
@@ -190,7 +295,7 @@ export function LaporanTable() {
                                 </CheckboxGroup>
                                 {statusFilter.length > 0 && (
                                     <motion.div
-                                        className="mt-2 flex items-center justify-end"
+                                        className="mt-2 flex items-center justify-start"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.35 }}
@@ -218,80 +323,68 @@ export function LaporanTable() {
                         )}
                     </AnimatePresence>
                 </div>
-
                 {/* Table Displaying Reports */}
-                <Table
-                    data={reports}
-                    autoHeight
-                    hover={true}
-                    rowClassName={"list"}
-                    loading={loading}
-                    sortColumn={sortColumn}
-                    sortType={sortType}
-                    onSortColumn={handleSortColumn}
-                    className="custom-sortable-table"
-                >
-                    <Column align="left" flexGrow={2} sortable>
-                        <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                            <h3 className="text-[#6B7280] font-medium text-base">ID Laporan</h3>
-                        </HeaderCell>
-                        <Cell dataKey="id" />
-                    </Column>
+                <div className="w-[93vw] sm:w-full overflow-x-scroll sm:h-[75vh] h-[70vh] rounded-md border border-gray-200 bg-white">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-[#E6FFFA] text-[#6B7280] sticky top-0 z-10">
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th
+                                            key={header.id}
+                                            className="px-6 py-3 font-medium text-base"
+                                            style={{
+                                                cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                                            }}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
 
-                    <Column align="left" flexGrow={2} sortable>
-                        <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                            <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
-                        </HeaderCell>
-                        <Cell dataKey="reporter_full_name">
-                            {(rowData) => rowData.reporter_full_name || 'Anonymous'}
-                        </Cell>
-                    </Column>
-
-                    <Column align="left" flexGrow={3} sortable>
-                        <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                            <h3 className="text-[#6B7280] font-medium text-base">Tanggal</h3>
-                        </HeaderCell>
-                        <Cell dataKey="created_at">
-                            {(rowData) => {
-                                const date = new Date(rowData.created_at);
-                                return date.toLocaleDateString('id-ID', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric',
-                                });
-                            }}
-                        </Cell>
-                    </Column>
-
-                    <Column align="center" flexGrow={2} sortable>
-                        <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                            <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
-                        </HeaderCell>
-                        <Cell dataKey="status">
-                            {(rowData) => <StatusTag status={rowData.status} />}
-                        </Cell>
-                    </Column>
-
-                    <Column flexGrow={1} align="center" >
-                        <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
-                            <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
-                        </HeaderCell>
-                        <Cell dataKey="id">
-                            {(rowdata) => {
-                                const id = rowdata.id;
-                                return (
-                                    <button
-                                        onClick={() => routingId(id)}
-                                        className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
+                                                {/* Sorting indicators */}
+                                                {header.column.getIsSorted() === 'asc' && (
+                                                    <ChevronUp size={16} className="text-[#3CB371]" />
+                                                )}
+                                                {header.column.getIsSorted() === 'desc' && (
+                                                    <ChevronDown size={16} className="text-[#3CB371]" />
+                                                )}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody className="overflow-y-scroll">
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={table.getAllColumns().length} className="px-6 py-8  text-center text-gray-400">
+                                        <Loading text="load data..." fullScreen={false} />
+                                    </td>
+                                </tr>
+                            ) : (
+                                table.getRowModel().rows.map(row => (
+                                    <tr
+                                        key={row.id}
+                                        className="border-t border-gray-200 hover:bg-gray-50"
                                     >
-                                        <ExternalLink size={16} className="mr-1" />
-                                        <span>Detail</span>
-                                    </button>
-                                )
-                            }}
-                        </Cell>
-                    </Column>
-                </Table>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} className="px-6 py-4">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+
+                    {/* Empty state */}
+                    {reports.length === 0 && !loading && (
+                        <div className="text-center py-8 text-gray-500">
+                            Tidak ada laporan yang ditemukan
+                        </div>
+                    )}
+                </div>
             </div>
         </LayoutGroup >
     );

@@ -66,7 +66,7 @@ export function HeaderAdmin() {
                 </>
             </div>
             <div className="md:hidden block">
-                <Dropdown renderToggle={renderIconButton} noCaret placement="bottomEnd">
+                <Dropdown renderToggle={renderIconButton} noCaret placement="bottomEnd" className="z-20">
                     {navContentAdmin.map(({ title, Icon, route }, index) => {
                         const isActive = pathname == route;
                         return (

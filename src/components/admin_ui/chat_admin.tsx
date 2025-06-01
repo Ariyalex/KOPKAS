@@ -461,7 +461,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     // Loading state untuk admin authentication
     if (isLoadingAdmin) {
         return (
-            <div className="flex flex-col overflow-hidden items-center justify-center h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
+            <div className="flex flex-col overflow-hidden items-center justify-center h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
                 <Loading text="Memuat..." fullScreen={false} />
             </div>
         );
@@ -470,7 +470,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     // Error state untuk admin authentication
     if (error && !currentUser) {
         return (
-            <div className="flex flex-col overflow-hidden items-center justify-center h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
+            <div className="flex flex-col overflow-hidden items-center justify-center h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]">
                 <div className="text-center">
                     <p className="text-red-500 mb-2">{error}</p>
                     <button
@@ -487,7 +487,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     // DEFAULT STATE - Show placeholder when no valid chat is selected
     if (!hasValidChatId) {
         return (
-            <div className={clsx("flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
+            <div className={clsx("flex flex-col overflow-hidden h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
 
                 {/* Empty State */}
                 <div className="flex-1 flex flex-col items-center justify-center bg-[#F4F9F4] p-8">
@@ -514,7 +514,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     // Loading state untuk chat data
     if (isLoadingChat) {
         return (
-            <div className={clsx("flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
+            <div className={clsx("flex flex-col overflow-hidden h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
                 {/* Header */}
                 <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
                     <div className="flex items-center gap-3">
@@ -537,7 +537,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     // Error state untuk chat data
     if (error && hasValidChatId) {
         return (
-            <div className={clsx("flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
+            <div className={clsx("flex flex-col overflow-hidden h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
                 {/* Header */}
                 <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
                     <h3 className="font-medium text-gray-800">Error</h3>
@@ -566,7 +566,7 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
 
     // MAIN CHAT INTERFACE - Only shows when we have valid chat and all data loaded
     return (
-        <div className={clsx("flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
+        <div className={clsx("flex flex-col overflow-hidden h-[90vh] flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
             {/* Header Chat */}
             <div className="flex items-center  gap-3 p-4 border-b border-gray-200 bg-white">
                 {targetUser && (

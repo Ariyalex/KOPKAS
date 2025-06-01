@@ -41,7 +41,7 @@ export function NavAdmin() {
     }
 
     return (
-        <div className="w-full h-auto flex-1/6 md:flex hidden justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
+        <div className="w-full h-[90vh] flex-1/6 md:flex hidden justify-between flex-col bg-white border-r-[#E5E7EB] border-r-2 p-5">
             <div className="flex flex-col gap-4">
                 {navContentAdmin.map(({ title, Icon, route }, index) => {
                     const isActive = pathname === route;

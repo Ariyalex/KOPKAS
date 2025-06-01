@@ -32,7 +32,7 @@ export default function Page() {
     }, []);
 
     return (
-        <div className="flex flex-row w-full h-screen">
+        <div className="flex flex-row w-full h-[90vh]">
             <div className={`flex-1 ${showChat ? 'block' : 'hidden'} sm:block sm:flex-3 sm:border-r border-gray-200 relative`}>
                 <div className="absolute top-5 right-3 sm:hidden">
                     {showChat && (
