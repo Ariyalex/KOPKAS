@@ -2,36 +2,33 @@
 
 import { useReportStore } from "@/stores/reportStore"; // Importing the store
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { ChevronDown, ChevronUp, ExternalLink, Filter, Search, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Filter, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Button, Checkbox, CheckboxGroup, IconButton, Input } from "rsuite";
-import { StatusTag } from "../common/tag";
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
     SortingState,
-    flexRender,
-    createColumnHelper,
-    ColumnDef
+    flexRender
 } from '@tanstack/react-table';
 import { Loading } from "../common/loading";
-
-
-// Define report data type for TanStack Table
-type Report = {
-    id: string;
-    reporter_full_name: string;
-    created_at: string;
-    status: string; // We'll cast it to the proper type in the StatusTag component
-    title?: string;
-    description?: string;
-}
+import { createReportColumns } from "./report_columns";
 
 export function LaporanTable() {
     const router = useRouter();
-    const { reports, fetchReports, filters, setFilters } = useReportStore();  // Using the store
+    const { reports: rawReports, fetchReports, filters, setFilters } = useReportStore();  // Using the store
+
+    // Transform reports to ensure the correct data structure
+    const reports = useMemo(() => {
+        return rawReports.map(report => {
+            return {
+                ...report,
+                reporter_full_name: report.reporter_full_name || 'Anonymous'
+            };
+        });
+    }, [rawReports]);
 
     // State for sorting with TanStack Table
     const [sorting, setSorting] = useState<SortingState>([
@@ -56,94 +53,31 @@ export function LaporanTable() {
 
     useEffect(() => {
         // Fetch reports based on filters and sorting
+        let isMounted = true; // Track if component is mounted
+
         const applyFilters = async () => {
-            setLoading(true);
+            if (isMounted) setLoading(true);
             try {
                 await fetchReports();
             } catch (error) {
                 console.error("error fetching reports:", error);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         }
+
         applyFilters();
-    }, [filters.searchQuery, statusFilter, filters.sortColumn, filters.sortType, fetchReports]);
 
-    // Column definition for TanStack Table
-    const columns = useMemo<ColumnDef<Report, any>[]>(
-        () => [
-            {
-                id: 'id',
-                accessorKey: 'id',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">ID Laporan</div>
-                ),
-                cell: info => <div>{info.getValue() as string}</div>,
-            },
-            {
-                id: 'reporter_full_name',
-                accessorKey: 'reporter_full_name',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">Pelapor</div>
-                ),
-                cell: info => <div>{(info.getValue() as string) || 'Anonymous'}</div>,
-            },
-            {
-                id: 'created_at',
-                accessorKey: 'created_at',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">Tanggal</div>
-                ),
-                cell: info => {
-                    const date = new Date(info.getValue() as string);
-                    return (
-                        <div>
-                            {date.toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                            })}
-                        </div>
-                    );
-                },
-            },
-            {
-                id: 'status',
-                accessorKey: 'status',
-                header: () => (
-                    <div className="text-center text-[#6B7280] font-medium text-base">Status</div>
-                ),
-                cell: info => (
-                    <div className="text-center">
-                        <StatusTag status={info.getValue() as 'new' | 'in_progress' | 'completed' | 'rejected'} />
-                    </div>
-                ),
-            },
-            {
-                id: 'action',
-                header: () => (
-                    <div className="text-center text-[#6B7280] font-medium text-base">Aksi</div>
-                ),
-                cell: info => {
-                    const id = info.row.original.id;
-                    return (
-                        <div className="flex items-center justify-center">
-                            <button
-                                onClick={() => routingId(id)}
-                                className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
-                            >
-                                <ExternalLink size={16} className="mr-1" />
-                                <span>Detail</span>
-                            </button>
-                        </div>
-                    );
-                },
-            },
-        ],
-        []
-    );
+        return () => {
+            isMounted = false; // Prevent state updates after unmount
+        };
+    }, [filters.searchQuery, statusFilter, filters.sortColumn, filters.sortType, fetchReports]);// Use the reusable column definitions with a custom navigation handler
+    const routingId = (id: string) => {
+        router.push(`/admin/report/${id}`);
+    };
 
-    // Create table instance
+    // Column definition for TanStack Table using the exported columns
+    const columns = useMemo(() => createReportColumns(routingId), []);    // Create table instance
     const table = useReactTable({
         data: reports,
         columns,
@@ -158,17 +92,13 @@ export function LaporanTable() {
     const handleSearchChange = (value: string) => {
         // Hapus sanitasi yang terlalu ketat agar karakter khusus seperti '-' pada ID bisa dicari
         setSearchQuery(value); // Update UI immediately
+    }; const handleSearchSubmit = () => {
+        setFilters({ searchQuery: searchQuery });
     };
 
-    const handleSearchSubmit = () => {
-        setFilters({ searchQuery: searchQuery });
-    }; const handleClearSearch = () => {
+    const handleClearSearch = () => {
         setSearchQuery('');
         setFilters({ searchQuery: '' });
-    };
-
-    const routingId = (id: string) => {
-        router.push(`/admin/report/${id}`);
     };
 
     return (

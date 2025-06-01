@@ -1,39 +1,21 @@
 'use client'
 
 import { useReportStore } from "@/stores/reportStore"; // Menggunakan store untuk mengambil data
-import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "rsuite";
+import { useEffect, useState } from "react";
+import { Button, Table } from "rsuite";
 import { Card } from "../common/card";
 import { StatusTag } from "../common/tag";
-import { Loading } from "../common/loading";
-import {
-    useReactTable,
-    getCoreRowModel,
-    getSortedRowModel,
-    SortingState,
-    flexRender,
-    createColumnHelper,
-    ColumnDef
-} from '@tanstack/react-table';
 
-// Define report data type for TanStack Table
-type Report = {
-    id: string;
-    reporter_full_name: string;
-    created_at: string;
-    status: string; // We'll cast it to the proper type in the StatusTag component
-    title?: string;
-    description?: string;
-}
+// Komponen LaporanTablePreview untuk menampilkan tabel preview laporan di dashboard
+const { Column, HeaderCell, Cell } = Table;
 
 export function LaporanTablePreview() {
     const { reports, fetchReports, isLoading } = useReportStore();  // Mengambil data laporan dari store
     const [loading, setLoading] = useState<boolean>(false);
-    const [sorting, setSorting] = useState<SortingState>([
-        { id: 'created_at', desc: true }
-    ]); useEffect(() => {
+
+    useEffect(() => {
         async function getReports() {
             setLoading(true);
             await fetchReports(); // Mengambil laporan menggunakan fungsi store
@@ -43,92 +25,15 @@ export function LaporanTablePreview() {
         getReports();
     }, [fetchReports]);
 
-    // Column definition for TanStack Table
-    const columns = useMemo<ColumnDef<Report, any>[]>(
-        () => [
-            {
-                id: 'id',
-                accessorKey: 'id',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">ID Laporan</div>
-                ),
-                cell: info => <div>{info.getValue() as string}</div>,
-            },
-            {
-                id: 'reporter_full_name',
-                accessorKey: 'reporter_full_name',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">Pelapor</div>
-                ),
-                cell: info => <div>{(info.getValue() as string) || 'Anonymous'}</div>,
-            },
-            {
-                id: 'created_at',
-                accessorKey: 'created_at',
-                header: () => (
-                    <div className="text-[#6B7280] font-medium text-base">Tanggal</div>
-                ),
-                cell: info => {
-                    const date = new Date(info.getValue() as string);
-                    return (
-                        <div>
-                            {date.toLocaleDateString('id-ID', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric',
-                            })}
-                        </div>
-                    );
-                },
-            },
-            {
-                id: 'status',
-                accessorKey: 'status',
-                header: () => (
-                    <div className="text-center text-[#6B7280] font-medium text-base">Status</div>
-                ),
-                cell: info => (
-                    <div className="text-center">
-                        <StatusTag status={info.getValue() as 'new' | 'in_progress' | 'completed' | 'rejected'} />
-                    </div>
-                ),
-            },
-            {
-                id: 'action',
-                header: () => (
-                    <div className="text-center text-[#6B7280] font-medium text-base">Aksi</div>
-                ),
-                cell: info => {
-                    const id = info.row.original.id;
-                    return (
-                        <div className="flex items-center justify-center">
-                            <Link href={`/admin/report/${id}`}>
-                                <button
-                                    className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
-                                >
-                                    <ExternalLink size={16} className="mr-1" />
-                                    <span>Detail</span>
-                                </button>
-                            </Link>
-                        </div>
-                    );
-                },
-            },
-        ],
-        []
-    );
+    // Menambahkan pengurutan dan pembatasan langsung pada saat mengambil data di store
+    useEffect(() => {
+        const applySortingAndLimit = () => {
+            fetchReports(); // Mengambil laporan dari store
+            setLoading(false);
+        };
 
-    // Create table instance
-    const table = useReactTable({
-        data: reports.slice(0, 5), // Show only the latest 5 reports
-        columns,
-        state: {
-            sorting,
-        },
-        onSortingChange: setSorting,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-    });
+        applySortingAndLimit();
+    }, [fetchReports]);
 
     return (
         <Card shadow="shadow-xs" className="w-full h-auto p-4">
@@ -143,61 +48,69 @@ export function LaporanTablePreview() {
                 </div>
             </div>
 
-            {/* Table with Fixed Header and Scrollable Body */}
-            <div className="w-[84vw] sm:w-full overflow-x-scroll rounded-md border border-gray-200 bg-white">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-[#E6FFFA] text-[#6B7280] sticky top-0 z-10">
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <th
-                                        key={header.id}
-                                        className="px-6 py-3 font-medium text-base"
-                                        style={{
-                                            cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                                        }}
-                                        onClick={header.column.getToggleSortingHandler()}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {flexRender(header.column.columnDef.header, header.getContext())}
+            <Table
+                data={reports}
+                height={300}
+                hover={true}
+                loading={loading}
+                className="custom-sortable-table"
+            >
+                <Column width={150} align="left" fixed>
+                    <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
+                        <h3 className="text-[#6B7280] font-medium text-base">ID Laporan</h3>
+                    </HeaderCell>
+                    <Cell dataKey="id" />
+                </Column>
 
-                                            {/* Sorting indicators */}
-                                            {header.column.getIsSorted() === 'asc' && (
-                                                <ChevronUp size={16} className="text-[#3CB371]" />
-                                            )}
-                                            {header.column.getIsSorted() === 'desc' && (
-                                                <ChevronDown size={16} className="text-[#3CB371]" />
-                                            )}
-                                        </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={table.getAllColumns().length} className="px-6 py-8  text-center text-gray-400">
-                                    <Loading text="load data..." fullScreen={false} />
-                                </td>
-                            </tr>
-                        ) : (
-                            table.getRowModel().rows.map(row => (
-                                <tr
-                                    key={row.id}
-                                    className="border-t border-gray-200 hover:bg-gray-50"
+                <Column width={200} align="left">
+                    <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
+                        <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
+                    </HeaderCell>
+                    <Cell>
+                        {(rowData) => rowData.reporter_full_name || 'Unknown'}
+                    </Cell>
+                </Column>
+                <Column width={200} flexGrow={1} align="left">
+                    <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
+                        <h3 className="text-[#6B7280] font-medium text-base">Tanggal Masuk</h3>
+                    </HeaderCell>
+                    <Cell>
+                        {(rowData) => {
+                            const date = new Date(rowData.created_at);
+                            return date.toLocaleDateString('id-ID', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                            });
+                        }}
+                    </Cell>
+                </Column>
+                <Column width={120} align="center">
+                    <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
+                        <h3 className="text-[#6B7280] font-medium text-base">Status</h3>
+                    </HeaderCell>
+                    <Cell dataKey="status">
+                        {(rowData) => <StatusTag status={rowData.status} />}
+                    </Cell>
+                </Column>
+                <Column width={100} align="center" >
+                    <HeaderCell style={{ backgroundColor: '#E6FFFA' }}>
+                        <h3 className="text-[#6B7280] font-medium text-base">Aksi</h3>
+                    </HeaderCell>
+                    <Cell>
+                        {(rowData) => (
+                            <Link href={`/admin/report/${rowData.id}`}>
+                                <button
+                                    className="flex items-center justify-center text-green-600 hover:text-green-800 cursor-pointer"
                                 >
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id} className="px-6 py-4">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                            )
-                            ))}
-                    </tbody>
-                </table>
-            </div>
+                                    <ExternalLink size={16} className="mr-1" />
+                                    <span>Detail</span>
+                                </button>
+                            </Link>
+                        )}
+                    </Cell>
+                </Column>
+            </Table>
         </Card>
     );
 }

@@ -2,7 +2,7 @@ import type { Database } from '@/lib/database.types';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { create } from 'zustand';
 
-interface Report {
+export interface Report {
   id: string;
   title: string;
   description: string;
