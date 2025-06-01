@@ -23,6 +23,18 @@ body {
 
 .list:hover {
   background-color: #F4F9F4;
+<<<<<<< HEAD
+}
+
+.logouthov {
+  background-color: white;
+  transition: 0.3s ease;
+}
+
+.logouthov:hover {
+  background-color: var(--color-red-50);
+=======
+>>>>>>> backend
 }
 
 .logouthov {

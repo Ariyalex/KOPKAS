@@ -28,12 +28,20 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 
 export function HeaderUser() {
     const { currentUser } = useUserStore();
+<<<<<<< HEAD
     const pathname = usePathname(); const router = useRouter();
+=======
+    const pathname = usePathname();
+    const router = useRouter()
+>>>>>>> backend
 
     const onLogout = async () => {
         await handleLogout();
         router.push("/");
+<<<<<<< HEAD
         router.refresh(); // Force refresh to ensure all state is cleared
+=======
+>>>>>>> backend
     }
 
     return (
