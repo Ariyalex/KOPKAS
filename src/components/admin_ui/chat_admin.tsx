@@ -568,25 +568,27 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
     return (
         <div className={clsx("flex flex-col overflow-hidden h-full flex-4/6 w-full border-r-[#E5E7EB] border-r-[1px]", className)}>
             {/* Header Chat */}
-            <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
+            <div className="flex items-center  gap-3 p-4 border-b border-gray-200 bg-white">
                 {targetUser && (
-                    <>
-                        <Image
-                            src={targetUser.photo || '/default-avatar.png'}
-                            alt={targetUser.full_name}
-                            width={40}
-                            height={40}
-                            className="rounded-full object-cover w-[40px] h-[40px]"
-                        />
-                        <div className="flex-1">
-                            <h3 className="font-medium text-gray-800">{targetUser.full_name}</h3>
-                            <p className="text-sm text-gray-500">{targetUser.email}</p>
+                    <div className='flex flex-row w-full'>
+                        <div className='flex w-full flex-row gap-3'>
+                            <Image
+                                src={targetUser.photo || '/default-avatar.png'}
+                                alt={targetUser.full_name}
+                                width={40}
+                                height={40}
+                                className="rounded-full object-cover w-[40px] h-[40px]"
+                            />
+                            <div className="flex-1">
+                                <h3 className="font-medium text-gray-800">{targetUser.full_name}</h3>
+                                <p className="text-sm text-gray-500">{targetUser.email}</p>
+                            </div>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right sm:block hidden">
                             <p className="text-sm text-gray-600">Support Chat</p>
                             <p className="text-xs text-gray-500">Sebagai: {currentUser?.full_name}</p>
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
 
@@ -624,10 +626,10 @@ export function ChatAdmin({ activeChatId, className }: ChatProps) {
                                 )}
                                 <div className="flex flex-col">
                                     <div className={`px-3 py-1 rounded-lg shadow-sm ${isCurrentUser
-                                            ? 'bg-[#74B49B] text-white'
-                                            : isFromAdmin
-                                                ? 'bg-blue-100 text-blue-900'
-                                                : 'bg-white'
+                                        ? 'bg-[#74B49B] text-white'
+                                        : isFromAdmin
+                                            ? 'bg-blue-100 text-blue-900'
+                                            : 'bg-white'
                                         }`}>
                                         {!isCurrentUser && (
                                             <h3 className={`font-medium text-lg ${isFromAdmin ? 'text-blue-700' : 'text-[#5C8D89]'

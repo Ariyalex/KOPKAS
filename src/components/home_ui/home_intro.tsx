@@ -3,15 +3,11 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FilledButton } from "../common/button";
 import { ArrowRight } from "lucide-react";
+import { UserData } from "@/stores/userStore";
 
 interface HomeIntroProps {
     session?: Session | null;
-    userData?: {
-        full_name?: string;
-        role?: string;
-        id?: string;
-        email?: string;
-    } | null;
+    userData?: UserData | null;
 }
 
 export function HomeIntro({ session, userData }: HomeIntroProps) {

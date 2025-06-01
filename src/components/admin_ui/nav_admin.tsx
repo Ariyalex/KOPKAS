@@ -4,7 +4,7 @@ import { ChartLine, ClipboardList, LogOut, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
-import { supabase } from "@/lib/supabase";
+import { handleLogout } from "@/utils/auth";
 
 interface NavItem {
     title: string;
@@ -32,20 +32,12 @@ export const navContentAdmin: NavItem[] = [
     },
 ]
 
-export const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.log(error.message)
-    }
-}
-
 export function NavAdmin() {
     const pathname = usePathname();
-    const router = useRouter();
-
-    const onLogout = async () => {
+    const router = useRouter(); const onLogout = async () => {
         await handleLogout();
         router.push("/");
+        router.refresh(); // Force refresh to ensure all state is cleared
     }
 
     return (

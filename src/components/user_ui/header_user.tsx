@@ -7,7 +7,8 @@ import { FilledButton } from "../common/button";
 import { AlignJustify, LogOut } from "lucide-react";
 import { Dropdown } from "rsuite";
 import React from "react";
-import { handleLogout, navContent, NavUser } from "./nav_user";
+import { navContent, NavUser } from "./nav_user";
+import { handleLogout } from "@/utils/auth";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 
@@ -28,20 +29,12 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 
 export function HeaderUser() {
     const { currentUser } = useUserStore();
-<<<<<<< HEAD
     const pathname = usePathname(); const router = useRouter();
-=======
-    const pathname = usePathname();
-    const router = useRouter()
->>>>>>> backend
 
     const onLogout = async () => {
         await handleLogout();
         router.push("/");
-<<<<<<< HEAD
         router.refresh(); // Force refresh to ensure all state is cleared
-=======
->>>>>>> backend
     }
 
     return (

@@ -23,7 +23,6 @@ body {
 
 .list:hover {
   background-color: #F4F9F4;
-<<<<<<< HEAD
 }
 
 .logouthov {
@@ -33,8 +32,6 @@ body {
 
 .logouthov:hover {
   background-color: var(--color-red-50);
-=======
->>>>>>> backend
 }
 
 .logouthov {

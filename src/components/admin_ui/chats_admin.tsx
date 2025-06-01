@@ -45,7 +45,7 @@ interface ChatSummary {
 
 export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
     const supabase = createClientComponentClient();
-    
+
     // State management
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [chats, setChats] = useState<ChatSummary[]>([]);
@@ -58,8 +58,8 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
         if (!searchQuery) return true;
         const query = searchQuery.toLowerCase();
         return chat.user.full_name.toLowerCase().includes(query) ||
-               chat.user.email.toLowerCase().includes(query) ||
-               chat.lastMessage.toLowerCase().includes(query);
+            chat.user.email.toLowerCase().includes(query) ||
+            chat.lastMessage.toLowerCase().includes(query);
     });
 
     // Handle search input change
@@ -72,20 +72,11 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
         setSearchQuery('');
     };
 
-<<<<<<< HEAD
-    // Handle chat selection with additional functionality for responsive design
-    const handleChatSelect = (chatId: string) => {
-        if (onSelectChat) {
-            onSelectChat(chatId);
-        }
-    };
-
-=======
     // Get current admin user
     const getCurrentAdmin = async () => {
         try {
             const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-            
+
             if (authError || !authUser) {
                 setError('Admin tidak terautentikasi');
                 return null;
@@ -120,7 +111,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
     const fetchConversations = async () => {
         try {
             setError(null);
-            
+
             if (!currentAdmin) {
                 setChats([]);
                 setIsLoading(false);
@@ -188,7 +179,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
 
                 // Count unread messages (messages from user after current admin's last message)
                 let unreadCount = 0;
-                
+
                 // Get current admin's last message in this conversation
                 const { data: adminLastMessage, error: adminLastError } = await supabase
                     .from('chats')
@@ -239,13 +230,13 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
             }
 
             // Sort by last message time (most recent first)
-            chatSummaries.sort((a, b) => 
+            chatSummaries.sort((a, b) =>
                 new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
             );
 
             console.log('Processed chat summaries:', chatSummaries.length);
             setChats(chatSummaries);
-            
+
         } catch (error) {
             console.error('Error in fetchConversations:', error);
             setError('Gagal memuat daftar percakapan');
@@ -266,10 +257,10 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
             return `${diffInMinutes}m`;
         }
         if (diffInHours < 24) return `${diffInHours}h`;
-        
+
         const diffInDays = Math.floor(diffInHours / 24);
         if (diffInDays < 7) return `${diffInDays}d`;
-        
+
         return date.toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'short'
@@ -282,7 +273,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
             setIsLoading(true);
             await getCurrentAdmin();
         };
-        
+
         initialize();
     }, []);
 
@@ -310,12 +301,12 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                 },
                 (payload) => {
                     const newMessage = payload.new as any;
-                    
+
                     // Only process messages from general conversations (admin_id = null)
                     if (newMessage.admin_id !== null) return;
-                    
+
                     console.log('New message received in general conversation:', newMessage);
-                    
+
                     // Refresh conversations to update last message and unread count
                     fetchConversations();
                 }
@@ -329,12 +320,12 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                 },
                 (payload) => {
                     const newConversation = payload.new as any;
-                    
+
                     // Only process new general conversations (admin_id = null)
                     if (newConversation.admin_id !== null) return;
-                    
+
                     console.log('New general conversation created:', newConversation);
-                    
+
                     // Refresh conversations list
                     fetchConversations();
                 }
@@ -362,8 +353,8 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                 <div className="flex items-center justify-center flex-1">
                     <div className="text-center">
                         <p className="text-red-500 mb-2">{error}</p>
-                        <button 
-                            onClick={() => window.location.reload()} 
+                        <button
+                            onClick={() => window.location.reload()}
                             className="px-4 py-2 bg-[#74B49B] text-white rounded-lg"
                         >
                             Refresh
@@ -386,7 +377,6 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
         );
     }
 
->>>>>>> backend
     return (
         <div className="flex flex-col h-full w-full gap-4 bg-white px-5 py-3 border-l border-gray-200">
             <div className="flex flex-col gap-3">
@@ -402,51 +392,16 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                             <X
                                 size={16}
                                 onClick={handleClearSearch}
-                                className="text-gray-600 hover:text-gray-800"
+                                className="text-white"
                             />
                         ) : (
-                            <Search size={16} className="text-gray-600" />
+                            <Search size={16} className="text-white" />
                         )}
                     </InputGroup.Addon>
                 </InputGroup>
             </div>
-            
-            <div className="flex flex-col overflow-y-auto">
-<<<<<<< HEAD
-                {filteredChats.map(chat => {
-                    const user = DummyUsers.find(u => u.id === chat.userId);
-                    if (!user) return null;
 
-                    return (<div
-                        key={chat.id}
-                        className={`flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#F4F9F4] cursor-pointer transition-colors ${chat.id === activeChatId ? 'bg-[#F4F9F4]' : ''}`}
-                        onClick={() => handleChatSelect(chat.id)}
-                    >
-                        <div className="relative">
-                            <Image
-                                src={user.photo}
-                                alt={user.name}
-                                width={50}
-                                height={50}
-                                className="rounded-full object-cover w-[50px] h-[50px]"
-                            />
-                            {chat.unread > 0 && (
-                                <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                    {chat.unread}
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex-1">
-                            <div className="flex justify-between">
-                                <h3 className="font-medium text-gray-800">{user.name}</h3>
-                                <span className="text-xs text-gray-500">{chat.timestamp}</span>
-                            </div>
-                            <p className="text-sm max-w-[200px] text-gray-600 truncate">{chat.lastMessage}</p>
-                        </div>
-                    </div>
-                    );
-                })}
-=======
+            <div className="flex flex-col overflow-y-auto">
                 {filteredChats.length === 0 ? (
                     <div className="flex items-center justify-center py-8">
                         <p className="text-gray-500">
@@ -457,9 +412,8 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                     filteredChats.map(chat => (
                         <div
                             key={chat.conversationId}
-                            className={`flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#F4F9F4] cursor-pointer transition-colors ${
-                                chat.conversationId === activeChatId ? 'bg-[#F4F9F4]' : ''
-                            }`}
+                            className={`flex items-center gap-3 p-3 border-b border-gray-100 hover:bg-[#F4F9F4] cursor-pointer transition-colors ${chat.conversationId === activeChatId ? 'bg-[#F4F9F4]' : ''
+                                }`}
                             onClick={() => handleChatSelect(chat.conversationId)}
                         >
                             <div className="relative">
@@ -489,9 +443,8 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                                     {chat.isLastMessageFromAdmin && chat.lastAdminName && (
                                         <span className="text-xs text-[#74B49B]">{chat.lastAdminName}: </span>
                                     )}
-                                    <p className={`text-sm text-gray-600 truncate ${
-                                        chat.unreadCount > 0 && !chat.isLastMessageFromAdmin ? 'font-semibold' : ''
-                                    }`}>
+                                    <p className={`text-sm text-gray-600 truncate ${chat.unreadCount > 0 && !chat.isLastMessageFromAdmin ? 'font-semibold' : ''
+                                        }`}>
                                         {chat.lastMessage}
                                     </p>
                                 </div>
@@ -504,7 +457,6 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                         </div>
                     ))
                 )}
->>>>>>> backend
             </div>
         </div>
     );

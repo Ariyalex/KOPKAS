@@ -16,10 +16,11 @@ interface UserState {
   isLoading: boolean;
   error: string | null;
 
-// Actions
+  // Actions
   fetchCurrentUser: () => Promise<void>;
   updateUserName: (newName: string) => Promise<void>;
   updateUserPhoto: (file: File) => Promise<void>;
+  clearUser: () => void;  // Added method to clear user data
   clearError: () => void;
 }
 
@@ -33,7 +34,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       const supabase = createClientComponentClient<Database>();
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) throw new Error('No session found');
 
       const { data: userData, error } = await supabase
@@ -58,7 +59,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       const supabase = createClientComponentClient<Database>();
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) throw new Error('No session found');
 
       const { error } = await supabase
@@ -70,9 +71,9 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       const { currentUser } = get();
       if (currentUser) {
-        set({ 
+        set({
           currentUser: { ...currentUser, full_name: newName },
-          error: null 
+          error: null
         });
       }
 
@@ -88,14 +89,14 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       const supabase = createClientComponentClient<Database>();
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) throw new Error('No session found');
 
       // Validate file
       if (file.size > 2 * 1024 * 1024) {
         throw new Error('File size too large (max 2MB)');
       }
-      
+
       if (!file.type.startsWith('image/')) {
         throw new Error('File must be an image');
       }
@@ -140,9 +141,9 @@ export const useUserStore = create<UserState>((set, get) => ({
       if (updateError) throw updateError;
 
       if (currentUser) {
-        set({ 
+        set({
           currentUser: { ...currentUser, photo: publicUrl },
-          error: null 
+          error: null
         });
       }
 
@@ -151,6 +152,15 @@ export const useUserStore = create<UserState>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+
+  // Clear user data from store
+  clearUser: () => {
+    set({
+      currentUser: null,
+      isLoading: false,
+      error: null
+    });
   },
 
   clearError: () => set({ error: null })

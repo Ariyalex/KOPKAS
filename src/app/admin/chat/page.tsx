@@ -4,6 +4,7 @@ import { ChatAdmin } from "@/components/admin_ui/chat_admin";
 import { ChatsAdmin } from "@/components/admin_ui/chats_admin";
 import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
+import { FilledButton } from "@/components/common/button";
 
 export default function Page() {
     const [activeChatId, setActiveChatId] = useState<string>("chat-1");
@@ -33,15 +34,16 @@ export default function Page() {
     return (
         <div className="flex flex-row w-full h-screen">
             <div className={`flex-1 ${showChat ? 'block' : 'hidden'} sm:block sm:flex-3 sm:border-r border-gray-200 relative`}>
-                <div className="absolute top-3 left-3 z-10 sm:hidden">
+                <div className="absolute top-5 right-3 sm:hidden">
                     {showChat && (
-                        <button
+                        <FilledButton
                             onClick={() => setShowChat(false)}
-                            className="p-2 bg-white h-full"
                             aria-label="Back to chats"
+                            paddingx="px-3"
+                            paddingy="py-2"
                         >
-                            <ArrowLeft size={25} />
-                        </button>
+                            Back
+                        </FilledButton>
                     )}
                 </div>
                 <ChatAdmin activeChatId={activeChatId} />

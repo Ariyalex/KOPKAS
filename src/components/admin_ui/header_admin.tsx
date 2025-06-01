@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { DummyUsers } from "../admin_ui/dummy/chat_dummy";
 import { Badge, Dropdown } from "rsuite";
 import { AlignJustify, Bell, ChartLine, ClipboardList, LogOut, MessagesSquare } from "lucide-react";
 import { FilledButton } from "../common/button";
-import { handleLogout, navContentAdmin } from "./nav_admin";
+import { navContentAdmin } from "./nav_admin";
+import { handleLogout } from "@/utils/auth";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
+import { useUserStore } from "@/stores/userStore";
+import { useEffect } from "react";
 
 const renderIconButton = (props: any, ref: React.Ref<any>) => {
     return (
@@ -25,14 +27,18 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 
 export function HeaderAdmin() {
     const pathname = usePathname();
-    const router = useRouter(); const onLogout = async () => {
+    const router = useRouter();
+    const { currentUser, fetchCurrentUser } = useUserStore();
+
+    useEffect(() => {
+        fetchCurrentUser();
+    }, [fetchCurrentUser]);
+
+    const onLogout = async () => {
         await handleLogout();
         router.push("/");
         router.refresh(); // Force refresh to ensure all state is cleared
     }
-
-    // Mengambil data user dari DummyUsers
-    const adminData = DummyUsers.find(admin => admin.role === "admin");
 
     return (
         <div className="flex items-center flex-row sm:px-10 px-5 py-4 justify-between w-full h-fit z-50 top-0 bg-white border-b-2 border-[#E5E7EB]">
@@ -48,23 +54,16 @@ export function HeaderAdmin() {
                 <Link href={"/admin"} className="text-[#6B7280]">Admin Panel</Link>
             </div>
             <div className="md:flex hidden felx-row gap-2 items-center justify-center">
-                {adminData && (
-                    <>
-                        <Badge content={3} className="mr-5">
-                            <button >
-                                <Bell />
-                            </button>
-                        </Badge>
-                        <Image
-                            alt="profile"
-                            src={adminData.photo}
-                            width={40}
-                            height={40}
-                            className="rounded-full object-cover w-[40px] h-[40px]"
-                        />
-                        <h3 className="font-normal text-xl text-[#5C8D89]">{adminData.name}</h3>
-                    </>
-                )}
+                <>
+                    <Image
+                        alt="profile"
+                        src={currentUser?.photo || '/default_photo.png'}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover w-[40px] h-[40px]"
+                    />
+                    <h3 className="font-normal text-xl text-[#5C8D89]">{currentUser?.full_name}</h3>
+                </>
             </div>
             <div className="md:hidden block">
                 <Dropdown renderToggle={renderIconButton} noCaret placement="bottomEnd">

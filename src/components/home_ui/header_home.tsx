@@ -3,14 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonGesture } from "../animation/transition";
+import { useUserStore } from "@/stores/userStore";
+
+import { UserData } from "@/stores/userStore";
 
 interface HeaderHomeProps {
-    userData?: {
-        full_name?: string;
-        role?: string;
-        id?: string;
-        email?: string;
-    } | null;
+    userData?: UserData | null;
 }
 
 export function HeaderHome({ userData }: HeaderHomeProps) {
@@ -26,13 +24,12 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                     className="w-[24px] h-[24px]"
                 />
                 <Link className="font-bold sm:text-2xl text-xl text-[#5C8D89]" href="/">KOPKAS</Link>
-            </div>
-            <div className="flex felx-row gap-2 items-center justify-center">
+            </div>            <div className="flex felx-row gap-2 items-center justify-center">
                 {userData ? (
                     <div className="flex flex-row gap-2 justify-center items-center">
                         <Image
                             alt="profile"
-                            src={"/dummy.jpg"}
+                            src={userData.photo || '/default_photo.png'}
                             width={40}
                             height={40}
                             className="rounded-full object-cover w-[40px] h-[40px]"
