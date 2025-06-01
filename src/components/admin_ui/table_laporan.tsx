@@ -71,7 +71,8 @@ export function LaporanTable() {
             <div className="w-full">
                 <div className="flex flex-col gap-4 mb-4">
                     <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
-                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>                        <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>
+                        <div className="flex items-center gap-2">
                             <div className="relative w-64">
                                 <Input
                                     placeholder="Cari laporan..."

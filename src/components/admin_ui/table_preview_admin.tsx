@@ -67,7 +67,7 @@ export function LaporanTablePreview() {
                         <h3 className="text-[#6B7280] font-medium text-base">Pelapor</h3>
                     </HeaderCell>
                     <Cell>
-                        {(rowData) => rowData.reporter?.full_name || 'Unknown'}
+                        {(rowData) => rowData.reporter_full_name || 'Unknown'}
                     </Cell>
                 </Column>
                 <Column width={200} flexGrow={1} align="left">
