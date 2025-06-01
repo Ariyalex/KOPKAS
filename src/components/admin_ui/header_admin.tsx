@@ -25,11 +25,10 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 
 export function HeaderAdmin() {
     const pathname = usePathname();
-    const router = useRouter();
-
-    const onLogout = async () => {
+    const router = useRouter(); const onLogout = async () => {
         await handleLogout();
         router.push("/");
+        router.refresh(); // Force refresh to ensure all state is cleared
     }
 
     // Mengambil data user dari DummyUsers

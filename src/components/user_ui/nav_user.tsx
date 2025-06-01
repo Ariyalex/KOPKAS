@@ -7,6 +7,7 @@ import { ClassValue } from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 import { supabase } from "@/lib/supabase";
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface NavItem {
     title: string;
@@ -46,20 +47,37 @@ interface NavProps {
 }
 
 export const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-        console.log(error.message)
+    try {
+        // Create a fresh client instance for logout
+        const supabaseClient = createClientComponentClient();
+
+        // Proceed with logout
+        const { error } = await supabaseClient.auth.signOut({ scope: 'local' });
+
+        if (error) {
+            console.error("Logout error:", error.message);
+        }
+
+        // Clear any local storage items if needed
+        if (typeof window !== 'undefined') {
+            // Clear potential auth-related items
+            localStorage.removeItem('supabase.auth.token');
+        }
+    } catch (error: any) {
+        console.error("Logout failed:", error.message);
     }
 }
 
 
 export function NavUser({ className }: NavProps) {
     const pathname = usePathname();
-    const router = useRouter()
+    const router = useRouter();
 
     const onLogout = async () => {
         await handleLogout();
         router.push("/");
+        router.refresh(); // Force refresh to ensure all state is cleared
+        router.refresh(); // Force refresh to ensure all state is cleared
     }
 
     return (

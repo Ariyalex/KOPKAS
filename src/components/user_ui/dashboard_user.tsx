@@ -71,6 +71,7 @@ export function DashboardUser() {
         if (newName !== "") {
             setShowNameEdit(false);
             updateUserName(newName!);
+            setIsEditing(false);
         }
     };
 

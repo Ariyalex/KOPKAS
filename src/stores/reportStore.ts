@@ -86,16 +86,161 @@ export const useReportStore = create<ReportState>((set, get) => ({
           email,
           photo
         )
-      `);
-
-      // Apply user ID filter if provided
+      `);      // Apply user ID filter if provided
       if (userId) {
         query = query.eq('reporter_id', userId);
-      }
-
-      // Apply search filter
+      }      // Apply search filter
       if (filters.searchQuery.trim()) {
-        query = query.or(`id.ilike.%${filters.searchQuery}%,reporter.full_name.ilike.%${filters.searchQuery}%`);
+        const searchTerm = `%${filters.searchQuery}%`;
+
+        console.log("Searching for:", filters.searchQuery);        // Dua pendekatan pencarian: 1) Langsung di tabel reports, 2) Via relasi user
+
+        // Pendekatan 1: Pencarian langsung di kolom tabel reports
+        // Buat query baru alih-alih clone
+        let directSearchQuery = supabase.from('reports').select(`
+          id,
+          title,
+          description,
+          location,
+          incident_date,
+          status,
+          evidence_files,
+          category_id,
+          reporter_id,
+          created_at,
+          updated_at,
+          reporter:users!reports_reporter_id_fkey (
+            id,
+            full_name,
+            email,
+            photo
+          )
+        `);
+
+        // Tambahkan kembali filter user ID jika ada
+        if (userId) {
+          directSearchQuery = directSearchQuery.eq('reporter_id', userId);
+        }
+
+        // Tambahkan pencarian OR untuk kolom-kolom langsung
+        directSearchQuery = directSearchQuery.or(
+          `id.ilike.${searchTerm},title.ilike.${searchTerm},description.ilike.${searchTerm},location.ilike.${searchTerm}`
+        );
+
+        // Pendekatan 2: Pencarian terpisah untuk nama pelapor di tabel users
+        const { data: userMatches, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .ilike('full_name', `%${filters.searchQuery}%`);
+
+        // Jika ditemukan user yang cocok, buat query untuk mencari berdasarkan reporter_id
+        // Buat query baru alih-alih clone
+        let userBasedSearchQuery = null;
+        if (!userError && userMatches && userMatches.length > 0) {
+          const userIds = userMatches.map(user => user.id);
+
+          // Log untuk debugging
+          console.log("Found user IDs for name search:", userIds);
+
+          // Buat query baru untuk pencarian berdasarkan reporter_id
+          userBasedSearchQuery = supabase.from('reports').select(`
+            id,
+            title,
+            description,
+            location,
+            incident_date,
+            status,
+            evidence_files,
+            category_id,
+            reporter_id,
+            created_at,
+            updated_at,
+            reporter:users!reports_reporter_id_fkey (
+              id,
+              full_name,
+              email,
+              photo
+            )
+          `);
+
+          // Tambahkan kembali filter user ID jika ada
+          if (userId) {
+            userBasedSearchQuery = userBasedSearchQuery.eq('reporter_id', userId);
+          }
+
+          // Gunakan query terpisah untuk mencari berdasarkan reporter_id
+          userBasedSearchQuery = userBasedSearchQuery.in('reporter_id', userIds);
+        } else {
+          console.log("No users found with name:", filters.searchQuery);
+          // Jika tidak ada user yang cocok, set userBasedSearchQuery = null
+          userBasedSearchQuery = null;
+        }
+
+        // Gabungkan hasil kedua pendekatan jika kedua query valid
+        if (userBasedSearchQuery) {
+          // Ambil data dari kedua query
+          const [directResults, userBasedResults] = await Promise.all([
+            directSearchQuery,
+            userBasedSearchQuery
+          ]);          // Gabungkan hasil kedua query dan hapus duplikasi
+          const directData = directResults.data || [];
+          const userBasedData = userBasedResults.data || [];
+
+          console.log("Direct search results:", directData.length);
+          console.log("User-based search results:", userBasedData.length);
+
+          // Gabungkan data dan hapus duplikasi
+          const allIds = new Set<string>();
+          const combinedData = [...directData];
+
+          directData.forEach((item: any) => allIds.add(item.id));
+
+          userBasedData.forEach((item: any) => {
+            if (!allIds.has(item.id)) {
+              combinedData.push(item);
+              allIds.add(item.id);
+            }
+          });
+
+          console.log("Combined results:", combinedData.length);
+
+          // PERBAIKAN: Jangan mencoba mengganti objek query itu sendiri
+          // Namun simpan data langsung untuk dikembalikan
+          // Set data hasil pencarian
+          const { error } = directResults;
+          if (error) throw error;          // Simpan data gabungan sebagai variabel
+          const tempData = combinedData;
+
+          // PERBAIKAN: Ubah formatnya sama seperti transformasi yang ada di bagian akhir fungsi
+          const transformedResults = tempData.map(item => {
+            // Get the reporter data - access the first element if it's an array
+            const reporterData = Array.isArray(item.reporter) ? item.reporter[0] : item.reporter;
+
+            return {
+              id: item.id,
+              title: item.title,
+              description: item.description,
+              location: item.location,
+              incident_date: item.incident_date,
+              status: item.status,
+              evidence_files: item.evidence_files,
+              category_id: item.category_id,
+              reporter_id: item.reporter_id,
+              reporter_full_name: reporterData?.full_name || '',
+              reporter_email: reporterData?.email || '',
+              reporter_photo: reporterData?.photo,
+              created_at: item.created_at,
+              updated_at: item.updated_at
+            };
+          });
+
+          // PERBAIKAN: Set hasil ke reports daripada return
+          set({ reports: transformedResults, error: null });
+          return;
+        } else {
+          // Jika hanya ada pencarian langsung, gunakan itu saja
+          query = directSearchQuery;
+        }
       }
 
       // Apply status filters
@@ -110,11 +255,22 @@ export const useReportStore = create<ReportState>((set, get) => ({
       } else {
         // Regular column sorting
         query = query.order(filters.sortColumn, { ascending: filters.sortType === 'asc' });
-      }
+      }      // Log untuk debugging query final yang dijalankan
+      console.log("Final query:", query);
 
       const { data, error } = await query;
 
-      if (error) throw error;
+      if (error) {
+        console.error("Query error:", error);
+        throw error;
+      }
+
+      console.log("Query result:", data && data.length ? data.length : 0, "reports found");
+      if (data && data.length > 0 && data[0].reporter) {
+        console.log("Reporter data format check:",
+          Array.isArray(data[0].reporter) ? "Array" : "Object",
+          data[0].reporter);
+      }
 
       const transformedData = data?.map(item => {
         // Get the reporter data - access the first element if it's an array

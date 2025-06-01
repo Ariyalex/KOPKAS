@@ -40,7 +40,7 @@ export function LaporanTable() {
             }
         }
         applyFilters();
-    }, [searchQuery, statusFilter, sortColumn, sortType, fetchReports]);
+    }, [filters.searchQuery, statusFilter, sortColumn, sortType, fetchReports]);
 
     const handleSortColumn = async (sortColumn: string, sortType: 'asc' | 'desc' | undefined) => {
         setSortColumn(sortColumn);
@@ -48,17 +48,19 @@ export function LaporanTable() {
 
         await setFilters({ sortColumn, sortType: sortType || 'asc' });
     };
-
-    const debouncedSetFilters = debounce((query) => {
-        setFilters({ searchQuery: query });
-        setLoading(true);
-    }, 300);
-
     const handleSearchChange = (value: string) => {
-        const sanitizedValue = value.replace(/[^\w\s]/gi, '');
-        setSearchQuery(sanitizedValue); // Update UI immediately
-        debouncedSetFilters(sanitizedValue); // Debounce the API call
+        // Hapus sanitasi yang terlalu ketat agar karakter khusus seperti '-' pada ID bisa dicari
+        setSearchQuery(value); // Update UI immediately
     };
+
+    const handleSearchSubmit = () => {
+        setFilters({ searchQuery: searchQuery });
+    };
+
+    const handleClearSearch = () => {
+        setSearchQuery('');
+        setFilters({ searchQuery: '' });
+    }
 
     const routingId = (id: string) => {
         router.push(`/admin/report/${id}`);
@@ -69,30 +71,33 @@ export function LaporanTable() {
             <div className="w-full">
                 <div className="flex flex-col gap-4 mb-4">
                     <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
-                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>
-                        <div className="flex items-center gap-2">
-                            <InputGroup className="w-64">
+                        <h2 className="text-xl font-semibold">Laporan Masuk</h2>                        <div className="flex items-center gap-2">
+                            <div className="relative w-64">
                                 <Input
                                     placeholder="Cari laporan..."
                                     value={searchQuery}
                                     onChange={(value) => {
                                         handleSearchChange(value);
                                     }}
+                                    onPressEnter={handleSearchSubmit}
+                                    className="pr-8"
                                 />
-                                <InputGroup.Addon
-                                    className="bg-[#E6FFFA] cursor-pointer hover:bg-[#D1FAE5]"
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setLoading(true);
-                                    }}
-                                >
-                                    {searchQuery ? (
-                                        <X size={16} className="text-white" />
-                                    ) : (
-                                        <Search size={16} className="text-white" />
-                                    )}
-                                </InputGroup.Addon>
-                            </InputGroup>
+                                {searchQuery && (
+                                    <button
+                                        onClick={handleClearSearch}
+                                        className="absolute right-2 top-2"
+                                    >
+                                        <X size={16} className="text-gray-400 hover:text-gray-600" />
+                                    </button>
+                                )}
+                            </div>
+                            <IconButton
+                                icon={<Search size={16} />}
+                                appearance="primary"
+                                color="green"
+                                onClick={handleSearchSubmit}
+                                className="bg-[#E6FFFA] text-[#10B981] hover:bg-[#D1FAE5]"
+                            />
                             {/* Tombol Filter */}
                             <motion.div
                                 whileHover={{ scale: 1.05 }}

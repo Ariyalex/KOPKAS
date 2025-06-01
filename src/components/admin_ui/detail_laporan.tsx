@@ -80,16 +80,16 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
     }
 
     return (
-        <div className="h-screen w-screen bg-white flex flex-col gap-2 px-8 py-2">
+        <div className="h-fit w-screen bg-white flex flex-col gap-2 md:px-8 px-2 py-2">
             <div>
                 <h1 className="text-[#1F2937] text-2xl font-semibold">Detail Laporan</h1>
                 <p className="text-[#6B7280]">Lihat detail laporan yang dikirim pelapor</p>
             </div>
-            <div className="flex flex-row gap-5 w-full h-full py-4">
-                <Card bgColor="bg-[#F4F9F4]" padding="px-5 py-3" className="flex flex-col gap-4 flex-4/6" overflow="overflow-visible">
+            <div className="flex md:flex-row flex-col gap-5 w-full md:h-full h-fit py-4">
+                <Card bgColor="bg-[#F4F9F4]" padding="md:px-5 px-4 py-3" className="flex flex-col gap-4 flex-4/6" overflow="overflow-visible">
                     <h1 className="font-semibold text-[#5C8D89] text-2xl">Laporan #{report.id.substring(0, 8).toUpperCase()}</h1>
                     <div className="flex flex-col gap-4 justify-around h-full">
-                        <Card bgColor="bg-white" className="flex flex-row gap-14" padding="py-4 px-10" overflow="overflow-visible">
+                        <Card bgColor="bg-white" className="flex md:flex-row flex-col md:gap-14 gap-2" padding="py-4 px-10" overflow="overflow-visible">
                             <div className="flex flex-col items-center gap-1.5 justify-center">
                                 {report.reporter_photo ? (
                                     <>
@@ -145,7 +145,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                                 </div>
                             </div>
                         </Card>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
                             <Card bgColor="bg-white" padding="px-5 py-2" width="w-full">
                                 <h2 className="text-[#5C8D89] font-bold text-sm">Tanggal dan Waktu Kejadian</h2>
                                 <div className="bg-[#A7D7C5] rounded-md flex flex-row px-4 my-6 py-2">
@@ -203,19 +203,19 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                         </div>
                     </div>
 
-                    <div className='w-fit'>
-                        <FilledButton onClick={router.back} width='w-fit'>
-                            Kembali
-                        </FilledButton>
-                    </div>
                 </Card>
                 {/* Kronologi Section */}
-                <Card bgColor="bg-[#F4F9F4]" className="flex-2/6 flex flex-col gap-4" height="h-full" padding="px-5 py-4">
+                <Card bgColor="bg-[#F4F9F4]" className="flex-2/6 flex flex-col gap-4" height="h-full" padding="px-5 py-4" width="w-full">
                     <h1 className="font-semibold text-[#5C8D89] text-2xl">Kronologi Kejadian</h1>
                     <div className="bg-white rounded-md p-4 text-black text-sm overflow-auto max-h-[calc(100vh-200px)]">
                         {report.description || 'Tidak ada kronologi kejadian yang dilaporkan'}
                     </div>
                 </Card>
+            </div>
+            <div className='w-fit mb-3'>
+                <FilledButton onClick={router.back} width='w-fit'>
+                    Kembali
+                </FilledButton>
             </div>
         </div>
     )

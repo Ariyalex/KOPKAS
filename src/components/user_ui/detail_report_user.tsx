@@ -48,7 +48,7 @@ export function DetailLaporanUser({ params }: DetailLaporanUserProps) {
     }
 
     return (
-        <div className="w-full rounded-lg bg-white flex flex-col gap-4 px-7 py-7">
+        <div className="w-full h-fit rounded-lg bg-white flex flex-col gap-4 px-7 py-7">
             <div className="flex flex-col">
                 <h1 className="text-[#1F2937] text-2xl font-semibold">Detail Laporan</h1>
                 <p className="text-[#6B7280]">Lihat detail laporan yang dikirim pelapor</p>
@@ -137,11 +137,6 @@ export function DetailLaporanUser({ params }: DetailLaporanUserProps) {
                             </Card>
                         </div>
                     </div>
-                    <div className='mt-auto w-fit'>
-                        <FilledButton onClick={router.back} width='w-fit'>
-                            Kembali
-                        </FilledButton>
-                    </div>
                 </Card>
                 {/* Kronologi Section */}
                 <Card bgColor="bg-[#F4F9F4]" className="flex-1 md:flex-[0.6] flex flex-col gap-4" padding="px-5 py-4">
@@ -150,6 +145,11 @@ export function DetailLaporanUser({ params }: DetailLaporanUserProps) {
                         {currentReport.description || 'Tidak ada kronologi kejadian yang dilaporkan'}
                     </div>
                 </Card>
+            </div>
+            <div className='mt-auto w-fit'>
+                <FilledButton onClick={router.back} width='w-fit'>
+                    Kembali
+                </FilledButton>
             </div>
         </div>
     )

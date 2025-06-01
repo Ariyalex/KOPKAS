@@ -25,7 +25,7 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                     height={24}
                     className="w-[24px] h-[24px]"
                 />
-                <Link className="font-bold text-2xl text-[#5C8D89]" href="/">KOPKAS</Link>
+                <Link className="font-bold sm:text-2xl text-xl text-[#5C8D89]" href="/">KOPKAS</Link>
             </div>
             <div className="flex felx-row gap-2 items-center justify-center">
                 {userData ? (
@@ -42,10 +42,9 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                 ) : (
                     <div className="flex flex-row gap-2 justify-center items-center">
                         <ButtonGesture>
-
                             <Link
                                 href={"/login"}
-                                className="font-normal text-[#3CB371] px-6 py-2"
+                                className="font-normal text-[#3CB371] sm:px-6 px-3 py-2"
                             >
                                 Masuk
                             </Link>
@@ -53,7 +52,7 @@ export function HeaderHome({ userData }: HeaderHomeProps) {
                         <ButtonGesture>
                             <Link
                                 href={"/register"}
-                                className="font-white rounded-md text-white bg-[#5C8D89] px-6 py-2"
+                                className="font-white rounded-md text-white bg-[#5C8D89] sm:px-6 px-3 py-2"
                             >
                                 Daftar
                             </Link>
