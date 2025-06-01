@@ -1,22 +1,20 @@
 'use client'
 
-import { useMessageStore } from "@/stores/messageStore";
 import { useReportStore } from "@/stores/reportStore";
 import { useUserStore } from "@/stores/userStore";
 import clsx from "clsx";
-import { Edit, ImageIcon, MessageSquare, TriangleAlert, X } from "lucide-react";
+import { Edit, ImageIcon, MessageSquare, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { Dropdown } from "rsuite";
 import { FilledButton } from "../common/button";
 import { Card } from "../common/card";
 import { Loading } from "../common/loading"; // Loading state
 import { StatusTag } from "../common/tag";
-import { Dropdown } from "rsuite";
 
 export function DashboardUser() {
     const { currentUser, fetchCurrentUser, isLoading: userLoading, updateUserName, updateUserPhoto } = useUserStore();
     const { reports, fetchReports, isLoading: reportLoading } = useReportStore();
-    const { messages, fetchMessages, isLoading: messageLoading } = useMessageStore();
 
     const [showPhotoEdit, setShowPhotoEdit] = useState(false);
     const [showNameEdit, setShowNameEdit] = useState(false);
@@ -26,8 +24,8 @@ export function DashboardUser() {
 
     // Handle the data fetching when the component mounts
     useEffect(() => {
-        fetchCurrentUser(); fetchReports(); fetchMessages();
-    }, [fetchCurrentUser, fetchReports, fetchMessages]);
+        fetchCurrentUser(); fetchReports();
+    }, [fetchCurrentUser, fetchReports]);
 
     // Handle edit actions
     const handleEditFalse = () => {
@@ -91,7 +89,7 @@ export function DashboardUser() {
         );
     };
 
-    if (userLoading || reportLoading || messageLoading) {
+    if (userLoading || reportLoading ) {
         return (
             <div className="w-full h-full flex items-center justify-center">
                 <Loading text="Loading..." fullScreen={false} />
@@ -200,7 +198,7 @@ export function DashboardUser() {
                     <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                         <MessageSquare color="#74B49B" size={40} />
                         <h3 className="text-lg font-medium text-[#5C8D89]">Pesan</h3>
-                        <p><span>{messages.length}</span> pesan belum dibaca</p>
+                        <p><span></span> Pesan belum dibaca</p>
                     </Card>
                 </div>
 
