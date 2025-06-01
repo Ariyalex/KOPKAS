@@ -68,7 +68,7 @@ export function LaporanTable() {
 
     return (
         <LayoutGroup>
-            <div className="w-full">
+            <div className="w-full md:h-screen h-fit">
                 <div className="flex flex-col gap-4 mb-4">
                     <div className="flex sm:justify-between  sm:flex-row flex-col sm:gap-0 gap-4 items-start">
                         <h2 className="text-xl font-semibold">Laporan Masuk</h2>
