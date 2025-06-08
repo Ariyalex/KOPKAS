@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Badge, Dropdown } from "rsuite";
+import { Badge, Dropdown, Modal } from "rsuite";
 import { AlignJustify, Bell, ChartLine, ClipboardList, LogOut, MessagesSquare } from "lucide-react";
 import { FilledButton } from "../common/button";
 import { navContentAdmin } from "./nav_admin";
@@ -8,7 +8,7 @@ import { handleLogout } from "@/utils/auth";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
 const renderIconButton = (props: any, ref: React.Ref<any>) => {
     return (
@@ -26,6 +26,13 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 };
 
 export function HeaderAdmin() {
+
+    //state dialog
+    const [openD, setOpenD] = React.useState(false);
+    const handleOpenD = () => setOpenD(true);
+    const handleCloseD = () => setOpenD(false);
+
+
     const pathname = usePathname();
     const router = useRouter();
     const { currentUser, fetchCurrentUser } = useUserStore();
@@ -84,7 +91,7 @@ export function HeaderAdmin() {
                             </Dropdown.Item>
                         )
                     })}
-                    <Dropdown.Item as={"button"} onClick={onLogout} icon={<LogOut className="text-[#DC2626]" />}
+                    <Dropdown.Item as={"button"} onClick={handleOpenD} icon={<LogOut className="text-[#DC2626]" />}
                         className={
                             "text-[#DC2626] logouthov"}>
                         <h3 className={clsx(
@@ -92,6 +99,24 @@ export function HeaderAdmin() {
                         )}>Log Out</h3></Dropdown.Item>
                 </Dropdown>
             </div>
+            <Modal open={openD} onClose={handleCloseD} backdrop="static" role="alertdialog">
+                <Modal.Header>
+                    <Modal.Title>
+                        Yakin LogOut?
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Kamu yakin logout dari Kopkas?
+                </Modal.Body>
+                <Modal.Footer className="flex flex-row justify-end gap-5">
+                    <FilledButton onClick={onLogout} bgColor="bg-red-100" color="text-[#DC2626]" paddingy="py-2" paddingx="px-3">
+                        Log Out
+                    </FilledButton>
+                    <FilledButton onClick={handleCloseD} bgColor="bg-gray-50" color="text-black" paddingy="py-2" paddingx="px-3">
+                        Cancel
+                    </FilledButton>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

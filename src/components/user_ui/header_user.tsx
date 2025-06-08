@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useUserStore } from "@/stores/userStore";
 import { FilledButton } from "../common/button";
 import { AlignJustify, LogOut } from "lucide-react";
-import { Dropdown } from "rsuite";
+import { Dropdown, Modal } from "rsuite";
 import React from "react";
 import { navContent, NavUser } from "./nav_user";
 import { handleLogout } from "@/utils/auth";
@@ -28,6 +28,12 @@ const renderIconButton = (props: any, ref: React.Ref<any>) => {
 };
 
 export function HeaderUser() {
+    //state dialog
+    const [openD, setOpenD] = React.useState(false);
+    const handleOpenD = () => setOpenD(true);
+    const handleCloseD = () => setOpenD(false);
+
+
     const { currentUser } = useUserStore();
     const pathname = usePathname(); const router = useRouter();
 
@@ -78,7 +84,7 @@ export function HeaderUser() {
                                 )}>{title}</h3></Dropdown.Item>
                         )
                     })}
-                    <Dropdown.Item as={"button"} onClick={onLogout} icon={<LogOut className="text-[#DC2626]" />}
+                    <Dropdown.Item as={"button"} onClick={handleOpenD} icon={<LogOut className="text-[#DC2626]" />}
                         className={
                             "text-[#DC2626] logouthov"}>
                         <h3 className={clsx(
@@ -86,6 +92,24 @@ export function HeaderUser() {
                         )}>Log Out</h3></Dropdown.Item>
                 </Dropdown>
             </div>
+            <Modal open={openD} onClose={handleCloseD} backdrop="static" role="alertdialog">
+                <Modal.Header>
+                    <Modal.Title>
+                        Yakin LogOut?
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Kamu yakin logout dari Kopkas?
+                </Modal.Body>
+                <Modal.Footer className="flex flex-row justify-end gap-5">
+                    <FilledButton onClick={onLogout} bgColor="bg-red-100" color="text-[#DC2626]" paddingy="py-2" paddingx="px-3">
+                        Log Out
+                    </FilledButton>
+                    <FilledButton onClick={handleCloseD} bgColor="bg-gray-50" color="text-black" paddingy="py-2" paddingx="px-3">
+                        Cancel
+                    </FilledButton>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
