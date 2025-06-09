@@ -47,9 +47,8 @@ export function LaporanTablePreview() {
                     </Link>
                 </div>
             </div>
-
             <Table
-                data={reports}
+                data={reports.slice(0, 5)} // Limit only 5 latest reports
                 height={300}
                 hover={true}
                 loading={loading}

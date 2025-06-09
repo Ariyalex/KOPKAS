@@ -39,7 +39,7 @@ export function DashboardAdmin() {
       </div>
       <div className="md:flex md:flex-row grid grid-cols-2 gap-5 w-full">
         {DashboardItems.map(({ title, Icon, jumlah }, index) => (
-          <Card key={index} shadow="shadow-xs" className="flex flex-row justify-between items-center flex-1">
+          <Card key={index} shadow="shadow-xs" className="flex flex-row justify-between items-center gap-1 flex-1">
             <div className="flex flex-col">
               <h3 className="text-base text-[#6B7280]">{title}</h3>
               <h2 className="text-2xl font-bold">{jumlah}</h2>
