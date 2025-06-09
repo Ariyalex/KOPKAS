@@ -86,7 +86,7 @@ export function DetailLaporan({ params }: DetailLaporanProps) {
                 <p className="text-[#6B7280]">Lihat detail laporan yang dikirim pelapor</p>
             </div>
             <div className="flex md:flex-row flex-col gap-5 w-full md:h-full h-fit py-4">
-                <Card bgColor="bg-[#F4F9F4]" padding="md:px-5 px-4 py-3" className="flex flex-col gap-4 flex-4/6" overflow="overflow-visible">
+                <Card bgColor="bg-[#F4F9F4]" padding="md:px-5 px-4 py-3" className="flex flex-col gap-4 flex-4/6" width="w-full" overflow="overflow-visible">
                     <h1 className="font-semibold text-[#5C8D89] text-2xl">Laporan #{report.id.substring(0, 8).toUpperCase()}</h1>
                     <div className="flex flex-col gap-4 justify-around h-full">
                         <Card bgColor="bg-white" className="flex md:flex-row flex-col md:gap-14 gap-2" padding="py-4 px-10" overflow="overflow-visible">

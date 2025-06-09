@@ -54,6 +54,7 @@ export default function Home() {
   }
 
   return (
+    // home page implementation
     <main className="flex flex-col h-full">
       <HeaderHome userData={currentUser} />
       <div className="p-0">

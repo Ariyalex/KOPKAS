@@ -90,7 +90,7 @@ export function DashboardUser() {
         );
     };
 
-    if (userLoading || reportLoading ) {
+    if (userLoading || reportLoading) {
         return (
             <div className="w-full h-full flex items-center justify-center">
                 <Loading text="Loading..." fullScreen={false} />
@@ -207,7 +207,7 @@ export function DashboardUser() {
                 <Card width="w-full" padding="p-5" height="h-full" className="flex flex-col overflow-hidden">
                     <h1 className="text-2xl font-medium text-[#5C8D89]">Laporan Sebelumnya</h1>
                     <div className="flex flex-col gap-4 pr-5 my-4 overflow-y-auto">
-                        {reports.map((report) => (
+                        {reports.slice(0, 5).map((report) => (
                             <div key={report.id} className="flex flex-row pb-4 justify-between border-b-[#E5E7EB] border-b-[1px]">
                                 <div className="flex flex-col">
                                     <h3 className="text-[#5C8D89] font-medium text-lg">Report <span>{report.id}</span></h3>
@@ -219,41 +219,6 @@ export function DashboardUser() {
                     </div>
                 </Card>
             </div>
-            {/* <DashboardMessage  className="flex-2/6" /> */}
         </div>
     );
 }
-
-// chatnya ntaran mas
-
-// message
-// export function DashboardMessage({ className }: DbMessage) {
-//     const supabase = createClientComponentClient<Database>()
-//     const [messages, setMessages] = useState<Message[]>([])
-
-//     // Fetch messages
-//     return (
-//         <div className={clsx("", className)}>
-//             <Card width="w-full" height="h-full" className="flex flex-col overflow-hidden">
-//                 <h1 className="text-2xl font-medium text-[#5C8D89]">Pesan</h1>
-//                 <div className="flex flex-col gap-4 my-4 h-auto overflow-y-scroll">
-//                     {messages.map((message, index) => (
-//                         <div key={index} className="flex flex-row w-full gap-3 bg-[#F4F9F4] rounded-lg p-4">
-//                             <div className="flex flex-col gap-2">
-//                                 <h3 className="text-[#5C8D89] font-medium text-lg">
-//                                     {message.sender.full_name}
-//                                 </h3>
-//                                 <p className="truncate max-w-[230px] overflow-hidden">
-//                                     {message.message}
-//                                 </p>
-//                                 <p className="text-[#6B7280]">
-//                                     {new Date(message.created_at).toLocaleDateString()}
-//                                 </p>
-//                             </div>
-//                         </div>
-//                     ))}
-//                 </div>
-//             </Card>
-//         </div>
-//     )
-// }
