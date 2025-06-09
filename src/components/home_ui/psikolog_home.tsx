@@ -1,7 +1,6 @@
-import { HeartPulse, Shield, ShieldHalf } from "lucide-react";
-import { Card } from "../common/card";
 import Image from "next/image";
 import { CardGesture } from "../animation/transition";
+import { Card } from "../common/card";
 
 interface PsikologItem {
     title: string;
@@ -12,19 +11,19 @@ interface PsikologItem {
 //nav item
 const psikologContent: PsikologItem[] = [
     {
-        title: "Dr. Zeta",
-        icon: "/dummy.jpg",
+        title: "Dr. Siti Nurhaliza, M.Psi",
+        icon: "/dummy.png",
         //routing ditaruh di content
         content: "Psikolog Klinis"
     },
     {
-        title: "Dr. Altria",
-        icon: "/dummy1.webp",
+        title: "Dr. Lestari Hapsari, Psikolog",
+        icon: "/dummy2.png",
         content: "Psikolog Trauma"
     },
     {
-        title: "Dr. Artoria",
-        icon: "/dummy2.jpg",
+        title: "Dr. Aulia Rahmawati, Psikolog",
+        icon: "/dummy3.png",
         content: "Psikolog Forensik"
     },
 

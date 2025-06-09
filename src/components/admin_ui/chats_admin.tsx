@@ -1,5 +1,6 @@
 'use client'
 
+import { formatTimeChats } from '@/utils/formatTime';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Search, X } from "lucide-react";
 import Image from "next/image";
@@ -244,29 +245,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
             setIsLoading(false);
         }
     };
-
-    // Format time for display
-    const formatTime = (timestamp: string) => {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-
-        if (diffInHours < 1) {
-            const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-            if (diffInMinutes < 1) return "Baru saja";
-            return `${diffInMinutes}m`;
-        }
-        if (diffInHours < 24) return `${diffInHours}h`;
-
-        const diffInDays = Math.floor(diffInHours / 24);
-        if (diffInDays < 7) return `${diffInDays}d`;
-
-        return date.toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'short'
-        });
-    };
-
+    
     // Initialize component
     useEffect(() => {
         const initialize = async () => {
@@ -436,7 +415,7 @@ export function ChatsAdmin({ onSelectChat, activeChatId }: ChatsAdminProps) {
                                         {chat.user.full_name || chat.user.email}
                                     </h3>
                                     <span className="text-xs text-gray-500 shrink-0 ml-2">
-                                        {formatTime(chat.lastMessageTime)}
+                                        {formatTimeChats(chat.lastMessageTime)}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-1">

@@ -199,7 +199,7 @@ export function DashboardUser() {
                     <Card padding="p-5" className="flex-1 flex gap-2.5 flex-col">
                         <MessageSquare color="#74B49B" size={40} />
                         <h3 className="text-lg font-medium text-[#5C8D89]">Pesan</h3>
-                        <p><span></span> Pesan belum dibaca</p>
+                        <p><span></span> 2 Pesan belum dibaca</p>
                     </Card>
                 </div>
 

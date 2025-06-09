@@ -1,5 +1,5 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useUserStore } from '@/stores/userStore';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 /**
  * Handles user logout by:
