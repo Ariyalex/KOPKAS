@@ -178,7 +178,9 @@ npm start
 
 ## 🔒 Keamanan & Privasi
 
+
 > ⚠️ **PENTING**: Platform ini menangani data sensitif. Implementasi keamanan yang ketat adalah prioritas utama.
+
 
 ### 🛡️ Fitur Keamanan
 - 🔐 **Autentikasi Multi-layer** dengan Supabase Auth
@@ -224,36 +226,6 @@ KOPKAS/
 
 ---
 
-## 🤝 Kontribusi
-
-Kami sangat menghargai kontribusi dari komunitas! Berikut cara untuk berkontribusi:
-
-### 🛠️ Langkah Kontribusi
-
-1. **Fork** repository ini
-2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** ke branch (`git push origin feature/AmazingFeature`)
-5. **Open** Pull Request
-
-### 📝 Guidelines
-
-- Ikuti coding standards yang ada
-- Tulis tests untuk fitur baru
-- Update dokumentasi jika diperlukan
-- Gunakan commit message yang deskriptif
-
-### 🐛 Melaporkan Bug
-
-Gunakan [Issues](https://github.com/Ariyalex/KOPKAS/issues) untuk melaporkan bug dengan template:
-- **Deskripsi bug**
-- **Langkah reproduksi**
-- **Expected behavior**
-- **Screenshots** (jika ada)
-- **Environment** (OS, browser, dll)
-
----
-
 ## 📄 Lisensi
 
 Projek ini dilisensikan di bawah **MIT License** - lihat file [LICENSE](LICENSE) untuk detail.
@@ -268,10 +240,5 @@ of this software and associated documentation files...
 ```
 
 ---
-
-
-**🛡️ Dibuat dengan ❤️ untuk menciptakan lingkungan kampus yang lebih aman**
-
-⭐ **Jika projek ini bermanfaat, jangan lupa berikan star!** ⭐
 
 </div>
