@@ -1,10 +1,6 @@
-# 🛡️ KOPKAS - Kotak Pengaduan Kekerasan Seksual
+# KOPKAS - Kotak Pengaduan Kekerasan Seksual
 
-<div align="center">
-
-![KOPKAS Logo](https://via.placeholder.com/200x100/4F46E5/FFFFFF?text=KOPKAS)
-
-**Platform Pengaduan Kekerasan Seksual untuk Lingkungan Kampus**
+<div>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-In%20Development-orange)](https://github.com/Ariyalex/KOPKAS)
@@ -13,25 +9,7 @@
 [![Database](https://img.shields.io/badge/Database-Supabase-3ECF8E?logo=supabase)](https://supabase.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 
-[🚀 Demo](https://kopkas.vercel.app) • [📖 Dokumentasi](https://github.com/Ariyalex/KOPKAS/wiki) • [🐛 Lapor Bug](https://github.com/Ariyalex/KOPKAS/issues)
-
 </div>
-
----
-
-## 📋 Daftar Isi
-
-- [🎯 Tentang Projek](#-tentang-projek)
-- [✨ Fitur Utama](#-fitur-utama)
-- [🛠️ Teknologi](#️-teknologi)
-- [👥 Tim Pengembang](#-tim-pengembang)
-- [🚀 Getting Started](#-getting-started)
-- [🔒 Keamanan & Privasi](#-keamanan--privasi)
-- [📱 Screenshots](#-screenshots)
-- [🏗️ Struktur Projek](#️-struktur-projek)
-- [🤝 Kontribusi](#-kontribusi)
-- [📄 Lisensi](#-lisensi)
-- [📞 Kontak](#-kontak)
 
 ---
 
@@ -79,14 +57,14 @@ Projek ini dikembangkan menggunakan **metodologi Scrumban**, yang menggabungkan 
 
 ### 🔄 Status Tracking System
 ```
-📝 PENDING → 🔄 IN_PROGRESS → ✅ RESOLVED
+📝 NEW → 🔄 IN_PROGRESS → ✅ RESOLVED → ❌ RESOLVED 
 ```
 
 ---
 
 ## 🛠️ Teknologi
 
-<div align="center">
+<div>
 
 | Layer | Teknologi | Versi | Alasan Pemilihan |
 |-------|-----------|-------|------------------|
@@ -97,15 +75,6 @@ Projek ini dikembangkan menggunakan **metodologi Scrumban**, yang menggabungkan 
 | **Runtime** | Node.js | 18+ | JavaScript ecosystem, Performance |
 
 </div>
-
-### 🏗️ Arsitektur
-```
-Frontend (Next.js + Tailwind) 
-    ↓
-API Routes (Next.js App Router)
-    ↓
-Supabase Database (PostgreSQL + Real-time)
-```
 
 ---
 
@@ -125,6 +94,7 @@ Supabase Database (PostgreSQL + Real-time)
 <b>Ahmad Zamroni Trikarta</b><br>
 <i>Backend Developer</i><br>
 <i>Database Architect</i><br>
+<i>Client</i><br>
 <a href="https://github.com/zaaammmmm">@zaaammmmm</a>
 </td>
 <td align="center" width="20%">
@@ -221,27 +191,9 @@ npm start
 
 | User Type | Permissions |
 |-----------|-------------|
-| **Anonymous** | ❌ No access |
 | **Authenticated User** | ✅ Create reports, View own reports, Chat with admin |
 | **Admin** | ✅ View all reports, Respond to reports, Manage status |
 | **Super Admin** | ✅ Full system access, User management |
-
----
-
-## 📱 Screenshots
-
-<div align="center">
-
-### 🏠 Landing Page
-![Landing Page](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Landing+Page)
-
-### 📝 Dashboard Pengguna
-![User Dashboard](https://via.placeholder.com/800x400/10B981/FFFFFF?text=User+Dashboard)
-
-### 👨‍💼 Dashboard Admin
-![Admin Dashboard](https://via.placeholder.com/800x400/F59E0B/FFFFFF?text=Admin+Dashboard)
-
-</div>
 
 ---
 
@@ -302,18 +254,6 @@ Gunakan [Issues](https://github.com/Ariyalex/KOPKAS/issues) untuk melaporkan bug
 
 ---
 
-## 📈 Roadmap
-
-- [ ] 🔒 Implementasi two-factor authentication
-- [ ] 📱 Progressive Web App (PWA)
-- [ ] 🌍 Multi-language support
-- [ ] 📊 Advanced analytics dashboard
-- [ ] 🔔 Push notifications
-- [ ] 📧 Email integration
-- [ ] 🎯 Machine learning untuk kategorisasi otomatis
-
----
-
 ## 📄 Lisensi
 
 Projek ini dilisensikan di bawah **MIT License** - lihat file [LICENSE](LICENSE) untuk detail.
@@ -329,28 +269,6 @@ of this software and associated documentation files...
 
 ---
 
-## 📞 Kontak
-
-<div align="center">
-
-### 🤝 Tim KOPKAS
-
-**📧 Email**: kopkas.team@gmail.com  
-**🌐 Website**: [kopkas.id](https://kopkas.id)  
-**📱 GitHub**: [@Ariyalex/KOPKAS](https://github.com/Ariyalex/KOPKAS)
-
-### 🆘 Bantuan & Support
-
-Jika Anda membutuhkan bantuan atau mengalami masalah:
-- 📖 Baca [Dokumentasi](https://github.com/Ariyalex/KOPKAS/wiki)
-- 🐛 Buat [Issue](https://github.com/Ariyalex/KOPKAS/issues)
-- 💬 Diskusi di [Discussions](https://github.com/Ariyalex/KOPKAS/discussions)
-
-</div>
-
----
-
-<div align="center">
 
 **🛡️ Dibuat dengan ❤️ untuk menciptakan lingkungan kampus yang lebih aman**
 
